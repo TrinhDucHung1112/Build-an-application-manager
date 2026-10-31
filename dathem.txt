@@ -1,0 +1,245 @@
+=====================================================================
+DANH SÁCH PHẦN ĐÃ THÊM / THAY ĐỔI SO VỚI SƠ ĐỒ LỚP (SoDoLop_QuanLyNhanSu_V2)
+Các class phụ trách: BangLuong, DanhSachBangLuong, LuongThuong,
+                     ThuongPhat, DanhSachThuongPhat, QuyDinhThuongPhat
+=====================================================================
+
+---------------------------------------------------------------------
+1. QuyDinhThuongPhat
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- Constructor đầy đủ: QuyDinhThuongPhat(maQD, tenQD, loai, dieuKien,
+  nguong, mucTien, donVi) (sơ đồ ghi "..." nên liệt kê đủ 7 tham số).
+- Thuộc tính "loai" chỉ nhận "THUONG" hoặc "PHAT"; thuộc tính
+  "dieuKien" chỉ nhận ">=", ">", "<=", "<", "==".
+- Thuộc tính "donVi" dùng để cho biết chỉ tiêu cần xét khi tự động xét
+  thưởng/phạt: "GIO_TANG_CA", "NGAY_DI_LAM" hoặc "NGAY_NGHI_KHONG_PHEP".
+
+[Thuộc tính thêm]
+- Hằng THUONG = "THUONG", PHAT = "PHAT" (static final).
+- Hằng GIO_TANG_CA, NGAY_DI_LAM, NGAY_NGHI_KHONG_PHEP (static final):
+  các giá trị hợp lệ của "donVi".
+
+[Phương thức thêm]
+- Getter / setter cho toàn bộ thuộc tính: getMaQD()/setMaQD,
+  getTenQD()/setTenQD, getLoai()/setLoai, getDieuKien()/setDieuKien,
+  getNguong()/setNguong, getMucTien()/setMucTien, getDonVi()/setDonVi.
+
+[Chức năng các phương thức đã có trong sơ đồ]
+- kiemTraDieuKien(giaTri): so sánh giaTri với "nguong" theo "dieuKien"
+  (>=, >, <=, <, ==); điều kiện không hợp lệ thì trả false.
+- tinhTien(soLuong): trả về soLuong * mucTien; soLuong <= 0 thì trả 0.
+- laThuong(): trả true nếu loai là "THUONG".
+
+
+---------------------------------------------------------------------
+2. ThuongPhat
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- Constructor đầy đủ: ThuongPhat(maTP, maNV, maQD, loai, lyDo, soLuong,
+  soTien, ngayApDung) (sơ đồ ghi "..." nên liệt kê đủ 8 tham số).
+- tinhSoTien(): trả về soTien (luôn dương); việc cộng hay trừ vào lương
+  dựa vào "loai".
+
+[Constructor thêm]
+- ThuongPhat(maTP, maNV, QuyDinhThuongPhat qd, soLuong, ngayApDung):
+  tạo thẳng từ một quy định; maQD, loai, lyDo (lấy tenQD) lấy từ qd,
+  soTien = qd.tinhTien(soLuong). Dùng trong tuDongXetThuongPhat.
+
+[Phương thức thêm]
+- Getter / setter cho toàn bộ thuộc tính: getMaTP()/setMaTP,
+  getMaNV()/setMaNV, getMaQD()/setMaQD, getLoai()/setLoai,
+  getLyDo()/setLyDo, getSoLuong()/setSoLuong, getSoTien()/setSoTien,
+  getNgayApDung()/setNgayApDung.
+
+[Giữ nguyên như sơ đồ]
+- hienThiThongTin(): in mã, mã NV, loại, lý do, số lượng, số tiền, ngày.
+
+
+---------------------------------------------------------------------
+3. LuongThuong
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- tinhThuong(): trả về soTien nếu loai là "THUONG", ngược lại trả 0.
+
+[Constructor thêm]
+- LuongThuong(maLT, loai, soTien, lyDo): bản có thêm lý do (sơ đồ chỉ
+  có LuongThuong(maLT, loai, soTien)).
+
+[Phương thức thêm]
+- tinhPhat(): trả về soTien nếu loai là "PHAT", ngược lại trả 0.
+- hienThi(): in một dòng thưởng/phạt chi tiết (loại, lý do, số tiền);
+  BangLuong.xuatBangLuong() gọi hàm này cho từng dòng.
+- getMaLT(), getLoai(), getSoTien(), getLyDo(), setLyDo(String).
+
+[Vai trò]
+- Mỗi LuongThuong là một dòng thưởng/phạt chi tiết trên bảng lương,
+  được tạo từ một ThuongPhat của nhân viên trong tháng đó.
+
+
+---------------------------------------------------------------------
+4. BangLuong
+---------------------------------------------------------------------
+[Thuộc tính thêm]
+- luongNhanVien : double: lương lấy từ NhanVien.tinhLuong().
+- dsLuongThuong : LuongThuong[]: các dòng thưởng/phạt chi tiết
+  (thể hiện quan hệ composition BangLuong *-- LuongThuong trong sơ đồ).
+
+[Thay đổi so với sơ đồ]
+- LUONG_TOI_THIEU (static): đặt tạm 5.000.000, cần sửa theo quy định
+  nhóm hoặc cô. getLuongToiThieu() static trả về giá trị này;
+  xuatBangLuong() có ghi chú khi lương thực nhận thấp hơn mức này.
+- tinhTongLuong(): tongLuong = luongNhanVien + phuCap + tienThuong
+  - tienPhat.
+- tinhLuongThucNhan(): luongThucNhan = tongLuong - tienBaoHiem; nếu âm
+  thì gán 0.
+
+[Constructor thêm]
+- BangLuong(maBangLuong, maNV, thang, nam, phuCap, tienThuong,
+  tienPhat, tienBaoHiem, luongNhanVien): dùng khi đọc từ file, tự tính
+  lương thực nhận. Constructor BangLuong(maBangLuong, thang, nam) giữ
+  như sơ đồ (maNV gán sau bằng setMaNV).
+
+[Phương thức thêm]
+- themLuongThuong(LuongThuong lt): thêm một dòng thưởng/phạt vào mảng
+  dsLuongThuong (mảng tự nới thêm một phần tử) rồi gọi
+  capNhatThuongPhat().
+- capNhatThuongPhat(): tính lại tienThuong và tienPhat từ các dòng
+  trong dsLuongThuong.
+- Getter / setter: getMaBangLuong(), getMaNV()/setMaNV, getThang(),
+  getNam(), getPhuCap()/setPhuCap, getTienThuong(), getTienPhat(),
+  getTienBaoHiem()/setTienBaoHiem, getTongLuong(), getLuongThucNhan(),
+  getLuongNhanVien()/setLuongNhanVien, getDsLuongThuong().
+
+[Giữ nguyên như sơ đồ]
+- xuatBangLuong(): in toàn bộ bảng lương (kèm các dòng thưởng/phạt chi
+  tiết).
+
+
+---------------------------------------------------------------------
+5. DanhSachThuongPhat
+---------------------------------------------------------------------
+[Thuộc tính thêm]
+- LOAI_NGHI_KHONG_PHEP = "Khong phep" (static final): giá trị loaiNghi
+  của NghiPhep tính là nghỉ không phép; phải trùng với bên Người 3.
+
+[Thay đổi so với sơ đồ]
+- tuDongXetThuongPhat(thang, nam) -> tuDongXetThuongPhat(thang, nam,
+  NhanVien[] dsNV, QuyDinhThuongPhat[] dsQD, DanhSachChamCong dsCC,
+  NghiPhep[] dsNP): thêm 4 tham số, vì cần danh sách nhân viên, danh
+  sách quy định và dữ liệu chấm công / nghỉ phép (đúng với mũi tên phụ
+  thuộc sang DanhSachChamCong và NghiPhep trong sơ đồ).
+- them(tp): trả false nếu tp null, danh sách đầy hoặc trùng maTP.
+
+[Phương thức thêm - public]
+- timTheoMa(String maTP): trả về ThuongPhat theo mã hoặc null.
+- xuatDanhSach(): in thông tin tất cả thưởng/phạt.
+- getSoLuong(): trả về số thưởng/phạt hiện có.
+
+[Phương thức thêm - private (hỗ trợ nội bộ)]
+- tong(maNV, thang, nam, loai): cộng soTien của các ThuongPhat thuộc
+  nhân viên, đúng loại, đúng tháng/năm; tongThuong và tongPhat gọi hàm
+  này.
+- layGiaTri(chiTieu, maNV, thang, nam, dsCC, dsNP): lấy giá trị thực tế
+  của chỉ tiêu: giờ tăng ca (dsCC.thongKeGioTangCa), số ngày đi làm
+  (dsCC.thongKeSoNgayDiLam) hoặc số ngày nghỉ không phép trong tháng
+  (cộng NghiPhep.tinhSoNgayNghi()).
+
+[Chức năng các phương thức đã có trong sơ đồ]
+- xoaTheoMa(maTP): tìm vị trí, dồn các phần tử phía sau lên, gán phần
+  tử cuối = null, giảm soLuong.
+- timTheoMaNV(maNV): trả về mảng ThuongPhat của nhân viên đó.
+- tongThuong / tongPhat (maNV, thang, nam): tổng tiền thưởng / phạt
+  của nhân viên trong tháng.
+- tuDongXetThuongPhat: với mỗi nhân viên và mỗi quy định, lấy giá trị
+  thực tế của chỉ tiêu, nếu thỏa kiemTraDieuKien thì tạo ThuongPhat
+  (mã dạng TP_maNV_maQD_thang_nam, ngày áp dụng là ngày cuối tháng).
+  Đã có mã đó rồi thì bỏ qua nên chạy lại nhiều lần không bị trùng.
+
+
+---------------------------------------------------------------------
+6. DanhSachBangLuong (implements IQuanLyDuLieu)
+---------------------------------------------------------------------
+[Thuộc tính thêm]
+- TEN_FILE = "bangluong.txt" (static final): file lưu bảng lương.
+
+[Thay đổi so với sơ đồ]
+- xuatBangLuongTheoPhong(maPB, thang, nam) -> xuatBangLuongTheoPhong(
+  maPB, thang, nam, QuanLyNhanSu ql): thêm tham số ql để lấy nhân viên
+  của phòng qua ql.timKiemTheoPhongBan(maPB) (đúng với mũi tên phụ
+  thuộc sang QuanLyNhanSu trong sơ đồ).
+- them(bl): trả false nếu bl null, danh sách đầy hoặc trùng maBangLuong.
+- tongQuyLuong, luongCaoNhat, luongThapNhat, luongTrungBinh: đều tính
+  theo lương thực nhận.
+
+[Phương thức thêm - public]
+- lapBangLuong(NhanVien nv, thang, nam, DanhSachThuongPhat dsTP,
+  DanhSachBaoHiem dsBH): lập bảng lương cho một nhân viên trong tháng:
+  luongNhanVien = nv.tinhLuong(); phụ cấp; các dòng thưởng/phạt trong
+  tháng lấy từ dsTP; tiền bảo hiểm lấy từ dsBH; tính lương thực nhận.
+  Mã bảng lương dạng BL_maNV_thang_nam; đã có thì thay thế, chưa có
+  thì thêm mới.
+- lapBangLuongChoTatCa(NhanVien[] dsNV, thang, nam, dsTP, dsBH): gọi
+  lapBangLuong cho từng nhân viên.
+- getSoLuong(): trả về số bảng lương hiện có.
+
+[Phương thức thêm - private (hỗ trợ nội bộ)]
+- tinhPhuCap(NhanVien nv): phụ cấp = nv.getChucVu().tinhPhuCapChucVu(
+  nv.getLuongCoBan()) + tổng nv.getTrinhDo()[i].tinhPhuCapTrinhDo(
+  nv.getLuongCoBan()) (bỏ qua phần tử null).
+- tinhTienBaoHiem(NhanVien nv, DanhSachBaoHiem dsBH): cộng
+  bh.tinhTienNhanVienDong(nv.getLuongCoBan()) của các bảo hiểm của
+  nhân viên (dsBH.timTheoMaNV).
+
+[Chức năng các phương thức đã có trong sơ đồ]
+- timTheoMaNV(maNV, thang, nam): trả về bảng lương hoặc null.
+- xuatBangLuongNhanVien(maNV): in mọi bảng lương của nhân viên.
+- xuatBangLuongTheoPhong: in bảng lương của các nhân viên trong phòng
+  ban trong tháng.
+- xuatBangLuongCongTy(thang, nam): in mọi bảng lương trong tháng.
+- tongQuyLuong: tổng lương thực nhận trong tháng.
+- luongCaoNhat / luongThapNhat: bảng lương có lương thực nhận cao /
+  thấp nhất trong tháng (null nếu không có).
+- luongTrungBinh: trung bình lương thực nhận trong tháng (0 nếu không
+  có bảng lương nào).
+- ghiFile(): mỗi bảng lương một dòng trong bangluong.txt, các trường
+  cách nhau dấu phẩy (mã bảng lương, mã NV, tháng, năm, phụ cấp, thưởng,
+  phạt, bảo hiểm, lương nhân viên); có bắt IOException.
+- docFile(): đọc lại bangluong.txt, bỏ qua dòng trống hoặc sai định
+  dạng; nếu chưa có file thì báo "Chua co file". Chỉ lưu các số tổng
+  nên không khôi phục được các dòng thưởng/phạt chi tiết.
+
+
+---------------------------------------------------------------------
+7. TÓM TẮT CÁC ĐIỂM CẦN CẬP NHẬT LẠI TRONG SƠ ĐỒ
+---------------------------------------------------------------------
+- QuyDinhThuongPhat: thêm hằng THUONG, PHAT, GIO_TANG_CA, NGAY_DI_LAM,
+  NGAY_NGHI_KHONG_PHEP.
+- ThuongPhat: thêm constructor ThuongPhat(maTP, maNV, qd, soLuong,
+  ngayApDung).
+- LuongThuong: thêm tinhPhat(), hienThi(); constructor có thêm lyDo.
+- BangLuong: thêm luongNhanVien, dsLuongThuong (LuongThuong[]),
+  themLuongThuong(), capNhatThuongPhat(); constructor đầy đủ để đọc
+  file.
+- DanhSachThuongPhat: thêm timTheoMa, xuatDanhSach, getSoLuong;
+  tuDongXetThuongPhat thêm 4 tham số (dsNV, dsQD, dsCC, dsNP); thêm
+  hằng LOAI_NGHI_KHONG_PHEP.
+- DanhSachBangLuong: thêm lapBangLuong, lapBangLuongChoTatCa,
+  getSoLuong; xuatBangLuongTheoPhong thêm tham số QuanLyNhanSu ql.
+
+
+---------------------------------------------------------------------
+8. CÁC HÀM CỦA NGƯỜI KHÁC ĐC GỌI
+---------------------------------------------------------------------
+- NhanVien (Người 1): getMaNV(), getLuongCoBan(), tinhLuong(),
+  getChucVu(), getTrinhDo() (trả về TrinhDoChuyenMon[]).
+- ChucVu, TrinhDoChuyenMon (Người 2): tinhPhuCapChucVu(luongCoBan),
+  tinhPhuCapTrinhDo(luongCoBan) (theo bản Người 2 đã đổi chữ ký).
+- QuanLyNhanSu (Người 2): timKiemTheoPhongBan(maPB) trả về NhanVien[];
+  interface IQuanLyDuLieu (docFile(), ghiFile()).
+- DanhSachChamCong (Người 3): thongKeGioTangCa(maNV, thang),
+  thongKeSoNgayDiLam(maNV, thang).
+- NghiPhep (Người 3): getMaNV(), getLoaiNghi(), getNgayBatDau(),
+  tinhSoNgayNghi().
+- DanhSachBaoHiem, BaoHiem (Người 5): timTheoMaNV(maNV) trả về
+  BaoHiem[]; tinhTienNhanVienDong(luongDongBH).
