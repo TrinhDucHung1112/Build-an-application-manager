@@ -1,0 +1,215 @@
+=====================================================================
+DANH SÁCH PHẦN ĐÃ THÊM / THAY ĐỔI SO VỚI SƠ ĐỒ LỚP (SoDoLop_QuanLyNhanSu_V2)
+Các class phụ trách: IQuanLyDuLieu, PhongBan, DanhSachPhongBan,
+                     ChucVu, TrinhDoChuyenMon, QuanLyNhanSu
+=====================================================================
+
+---------------------------------------------------------------------
+1. IQuanLyDuLieu
+---------------------------------------------------------------------
+- Không thay đổi: giữ đúng sơ đồ (docFile(), ghiFile()).
+
+
+---------------------------------------------------------------------
+2. PhongBan
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- Thuộc tính static "soPB" (đếm số phòng ban) và phương thức static
+  getSoPB() trong sơ đồ: BỎ (đang để comment).
+- Thay bằng thuộc tính thường "soNhanVien : int" để đếm số nhân viên
+  của từng phòng ban (phục vụ demNhanVien()).
+- Thêm "implements Serializable" để ghi được đối tượng vào file
+  (NhanVien chứa PhongBan nên PhongBan cũng phải ghi được).
+- demNhanVien(): đã có trong sơ đồ, nay trả về soNhanVien.
+
+[Phương thức thêm]
+- getMaPB() / setMaPB(String): lấy / gán mã phòng ban; setter tự đổi
+  sang chữ HOA.
+- getTenPB() / setTenPB(String): lấy / gán tên phòng ban; setter tự đổi
+  sang chữ HOA.
+- getMoTa() / setMoTa(String): lấy / gán mô tả phòng ban.
+- nhapPhongBan(Scanner sc): nhập mã, tên, mô tả của một phòng ban từ
+  bàn phím (tự chuyển chữ hoa). Việc nhập nằm ở PhongBan, việc thêm
+  vào danh sách nằm ở DanhSachPhongBan.
+- tangSoNhanVien(): tăng số nhân viên của phòng lên 1 (gọi khi thêm
+  nhân viên vào phòng).
+- giamSoNhanVien(): giảm số nhân viên của phòng đi 1, chỉ giảm khi
+  còn > 0 (gọi khi xóa nhân viên hoặc chuyển phòng).
+
+
+---------------------------------------------------------------------
+3. DanhSachPhongBan
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- them(pb)            -> đổi tên thành themPhong(pb).
+- nhapDanhSach(n)     -> bỏ tham số n, nay là nhapDanhSach(); số lượng
+                         phòng cần nhập được hỏi ngay bên trong hàm.
+- suaTheoMa(maPB)     -> giữ tên và tham số như sơ đồ, nhưng tự tạo
+                         Scanner bên trong để nhập thông tin mới.
+
+[Phương thức thêm]
+- getDanhSach(): trả về mảng PhongBan[] hiện có.
+- getSoLuong(): trả về số phòng ban hiện có trong danh sách.
+  (Cố ý KHÔNG viết setter để dữ liệu danh sách không bị lệch.)
+- timViTri(String maPB): tìm vị trí phòng ban theo mã (không phân biệt
+  hoa/thường); trả về chỉ số trong mảng hoặc -1 nếu không có. Dùng để
+  kiểm tra trùng mã, sửa, xóa.
+- timTheoMa(String maPB): trả về đối tượng PhongBan có mã tương ứng
+  hoặc null. QuanLyNhanSu dùng hàm này để gán đúng phòng ban "thật"
+  trong danh sách cho nhân viên.
+
+[Chức năng các phương thức còn lại (đã có trong sơ đồ)]
+- themPhong(pb): kiểm tra null, danh sách đầy, trùng mã rồi mới thêm.
+- nhapDanhSach(): nhập n phòng, mỗi phòng nhập qua nhapPhongBan() rồi
+  themPhong(); nhập lỗi/trùng thì yêu cầu nhập lại.
+- xoaTheoMa: tìm vị trí, dồn các phần tử phía sau lên, gán phần tử
+  cuối = null, giảm soLuong.
+- suaTheoMa: nhập lại mã, tên, mô tả cho phòng ban tìm được.
+- timKiem(tuKhoa): trả về mảng các phòng ban có mã hoặc tên CHỨA từ
+  khóa.
+- xuatDanhSach: in thông tin tất cả phòng ban.
+
+
+---------------------------------------------------------------------
+4. ChucVu
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- Thêm "implements Serializable" (để ghi file cùng NhanVien).
+- capNhatChucVu()  -> đổi thành capNhatChucVu(Scanner sc): nhận Scanner
+  để nhập mã, tên, hệ số lương mới.
+- tinhPhuCapChucVu() -> đổi thành tinhPhuCapChucVu(double luongCoBan):
+  nhận lương cơ bản của nhân viên và trả về heSoLuong * luongCoBan
+  (vì lương cơ bản không nằm trong ChucVu).
+
+[Phương thức thêm]
+- getMaCV() / setMaCV(String): lấy / gán mã chức vụ.
+- getTenCV() / setTenCV(String): lấy / gán tên chức vụ.
+- getHeSoLuong() / setHeSoLuong(double): lấy / gán hệ số lương.
+- nhap(Scanner sc): nhập mã, tên, hệ số lương cho một chức vụ mới (tự
+  chuyển chữ hoa mã và tên). QuanLyNhanSu gọi hàm này khi tạo chức vụ
+  cho nhân viên.
+
+
+---------------------------------------------------------------------
+5. TrinhDoChuyenMon
+---------------------------------------------------------------------
+[Thay đổi so với sơ đồ]
+- Đổi tên thuộc tính: tenTrinhDo -> tenTD, heSoTrinhDo -> heSoTD.
+- Thêm "implements Serializable".
+- tinhPhuCapTrinhDo() -> đổi thành tinhPhuCapTrinhDo(double luongCoBan):
+  trả về heSoTD * luongCoBan.
+
+[Phương thức thêm]
+- getMaTD()/setMaTD, getTenTD()/setTenTD, getChuyenNganh()/
+  setChuyenNganh, getTruongDaoTao()/setTruongDaoTao,
+  getNamTotNghiep()/setNamTotNghiep, getHeSoTD()/setHeSoTD:
+  getter/setter cho toàn bộ thuộc tính.
+- nhapThongTinTD(Scanner sc): nhập mã, tên trình độ, chuyên ngành,
+  trường đào tạo, năm tốt nghiệp, hệ số trình độ (tự chuyển chữ hoa).
+  Việc nhập thuộc TrinhDoChuyenMon, còn việc thêm trình độ vào
+  nhân viên thuộc NhanVien (vì trình độ là thuộc tính của NhanVien).
+
+[Giữ nguyên như sơ đồ]
+- hienThiThongTin(): in toàn bộ thông tin trình độ.
+
+
+---------------------------------------------------------------------
+6. QuanLyNhanSu (implements IQuanLyDuLieu)
+---------------------------------------------------------------------
+[Thay đổi thuộc tính / constructor so với sơ đồ]
+- danhSach -> đổi tên danhSachNV; soLuong -> đổi tên soLuongNV.
+- Thêm thuộc tính danhSachPB (DanhSachPhongBan): tham chiếu tới danh
+  sách phòng ban để gán / kiểm tra phòng ban cho nhân viên.
+- Thêm thuộc tính Scanner sc dùng chung cho cả class.
+- Thêm hằng DUONG_DAN = "nhanvien.dat": đường dẫn file lưu nhân viên
+  (đã khai báo, chưa được dùng trong docFile/ghiFile).
+- Thêm constructor thứ hai QuanLyNhanSu(int sucChua, DanhSachPhongBan):
+  tạo danh sách và liên kết luôn với danh sách phòng ban.
+
+[Phương thức đổi tên / đổi chữ ký so với sơ đồ]
+- nhapDanhSach(n)       -> nhapDanhSachNV(Scanner sc): hỏi số lượng
+                           cần nhập rồi gọi themKNhanVien(k).
+- xuatDanhSach()        -> xuatDanhSachNV().
+- timKiem(tuKhoa)       -> timKiemTuKhoa(tuKhoa): tìm nhân viên có mã
+                           hoặc tên TRÙNG KHỚP với từ khóa (không phân
+                           biệt hoa/thường).
+- thongKeTheoLoaiNV()   -> thongKeTheoLoaiNv().
+
+[Phương thức thêm - public]
+- getSoLuongNV(): trả về số nhân viên hiện có.
+- getSucChua(): trả về sức chứa tối đa của mảng.
+- setDanhSachPhongBan(DanhSachPhongBan): gán danh sách phòng ban khi
+  tạo đối tượng bằng constructor thứ nhất.
+- timViTri(String maNV): tìm vị trí nhân viên theo mã (không phân biệt
+  hoa/thường), trả -1 nếu không có. Dùng để kiểm tra trùng, sửa, xóa.
+- timTheoMa(String maNV): trả về đối tượng NhanVien theo mã hoặc null.
+- lietKe(boolean[] khop): gom các nhân viên có khop[i] = true thành một
+  mảng kết quả; là hàm dùng chung cho các hàm tìm kiếm.
+- inKetQua(NhanVien[] ketQua): in thông tin các nhân viên trong mảng
+  kết quả tìm kiếm.
+
+[Phương thức thêm - private (hỗ trợ nội bộ)]
+- hoiPhongBan(): yêu cầu nhập mã phòng ban cho đến khi tìm thấy phòng
+  ban tồn tại trong danhSachPB, rồi trả về phòng ban đó.
+- hoiChucVu(): hỏi có nhập chức vụ không; nếu nhập "c" thì tạo ChucVu
+  mới và gọi nhap(sc).
+- ganLienKet(NhanVien nv): sau khi nv.nhap(), nếu nhân viên chưa có
+  phòng ban / chức vụ thì hỏi và gán (vì nhap() của NhanVien chỉ xử lý
+  được thuộc tính riêng, không trỏ được vào đối tượng trong danh sách).
+- lienKetLaiPhongBan(NhanVien nv): dùng khi đọc file; đổi tham chiếu
+  phòng ban của nhân viên về đúng phòng ban gốc trong danhSachPB, nếu
+  chưa có thì thêm phòng đó vào danh sách.
+- doiPhongBan(NhanVien nv): chuyển nhân viên sang phòng ban khác, giảm
+  số nhân viên phòng cũ, tăng số nhân viên phòng mới.
+
+[Chức năng các phương thức đã có trong sơ đồ]
+- themNhanVien(nv): trả false nếu nv null, danh sách đầy hoặc trùng mã;
+  nếu thêm được thì tăng số nhân viên của phòng ban nhân viên đó.
+- themKNhanVien(k): kiểm tra k không vượt số chỗ trống; với mỗi nhân
+  viên cho chọn loại (1: toàn thời gian, 2: bán thời gian, 3: hợp đồng),
+  tạo đối tượng tương ứng, nhập thông tin, gán liên kết, thêm vào danh
+  sách (trùng mã thì nhập lại).
+- suaNhanVien(maNV): menu 1 - đổi phòng ban, 2 - đổi chức vụ, 3 - nhập
+  lại toàn bộ (có kiểm tra trùng mã sau khi sửa và cập nhật số nhân
+  viên giữa hai phòng ban).
+- xoaNhanVien(maNV): giảm số nhân viên của phòng ban, dồn mảng, gán
+  phần tử cuối = null, giảm soLuongNV.
+- timKiemTheoPhongBan(maPB): tìm các nhân viên thuộc phòng ban có mã
+  tương ứng.
+- timKiemTheoLuong(min, max): tìm các nhân viên có tinhLuong() trong
+  khoảng [min, max] (tự đổi chỗ nếu min > max).
+- thongKeTheoLoaiNv(): đếm số nhân viên toàn thời gian / bán thời gian
+  / hợp đồng bằng instanceof.
+- thongKeTheoTrangThai(): đếm số nhân viên theo từng trạng thái (trạng
+  thái rỗng được gom vào "chua co trang thai").
+- thongKeLuong(): tính tổng lương, lương trung bình, nhân viên lương
+  cao nhất và thấp nhất.
+- ghiFile(): ghi số lượng nhân viên rồi từng đối tượng NhanVien (kèm
+  phòng ban, chức vụ, trình độ) bằng ObjectOutputStream; có bắt
+  NotSerializableException và IOException.
+- docFile(): đọc số lượng và các đối tượng vào mảng tạm, nếu không lỗi
+  thì liên kết lại phòng ban rồi thêm vào danh sách; báo số nhân viên
+  đã đọc và số nhân viên bị bỏ qua (trùng mã, đầy, lỗi tham chiếu).
+
+[Có trong sơ đồ nhưng CHƯA có trong code]
+- timKiemTheoChucVu(maCV)
+- thongKeTheoPhongBan()
+
+
+---------------------------------------------------------------------
+7. TÓM TẮT CÁC ĐIỂM CẦN CẬP NHẬT LẠI TRONG SƠ ĐỒ
+---------------------------------------------------------------------
+- PhongBan: bỏ soPB (static) và getSoPB(); thêm soNhanVien,
+  tangSoNhanVien(), giamSoNhanVien(), nhapPhongBan(Scanner).
+- DanhSachPhongBan: them -> themPhong; nhapDanhSach(n) ->
+  nhapDanhSach(); thêm timViTri, timTheoMa, getDanhSach, getSoLuong.
+- ChucVu: thêm nhap(Scanner); capNhatChucVu(Scanner);
+  tinhPhuCapChucVu(luongCoBan).
+- TrinhDoChuyenMon: thêm nhapThongTinTD(Scanner);
+  tinhPhuCapTrinhDo(luongCoBan); đổi tên tenTD, heSoTD.
+- QuanLyNhanSu: thêm danhSachPB; đổi tên các hàm nhập/xuất/tìm kiếm;
+  thêm timViTri, timTheoMa, lietKe, inKetQua và các hàm hỗ trợ
+  (hoiPhongBan, hoiChucVu, ganLienKet, lienKetLaiPhongBan,
+  doiPhongBan).
+- Các class ChucVu, PhongBan, TrinhDoChuyenMon đều thêm
+  "implements Serializable".
