@@ -1,7 +1,8 @@
 import java.util.Arrays;
 
 public class BangLuong {
-    private static final double LUONG_TOI_THIEU = 5000000; 
+//----thuoc tinh----
+    private static final double LUONG_TOI_THIEU = 5000000;     //sua theo quy dinh nhom/co
 
     private String maBangLuong;
     private String maNV;
@@ -13,10 +14,10 @@ public class BangLuong {
     private double tienBaoHiem;
     private double tongLuong;
     private double luongThucNhan;
+    private double luongNhanVien;                              //them: luong tu NhanVien.tinhLuong()
+    private LuongThuong[] dsLuongThuong = new LuongThuong[0];  //them: cac dong thuong/phat chi tiet
 
-    private double luongNhanVien;
-    private LuongThuong[] dsLuongThuong = new LuongThuong[0];
-
+//----constructor----
     public BangLuong(String maBangLuong, int thang, int nam) {
         this.maBangLuong = maBangLuong;
         this.maNV = "";
@@ -24,6 +25,7 @@ public class BangLuong {
         this.nam = nam;
     }
 
+    //dung khi doc file
     public BangLuong(String maBangLuong, String maNV, int thang, int nam, double phuCap,
                      double tienThuong, double tienPhat, double tienBaoHiem, double luongNhanVien) {
         this.maBangLuong = maBangLuong;
@@ -38,12 +40,15 @@ public class BangLuong {
         tinhLuongThucNhan();
     }
 
+//----methods----
+//---thuong phat chi tiet---
     public void themLuongThuong(LuongThuong lt) {
         dsLuongThuong = Arrays.copyOf(dsLuongThuong, dsLuongThuong.length + 1);
         dsLuongThuong[dsLuongThuong.length - 1] = lt;
         capNhatThuongPhat();
     }
 
+    //tinh lai tienThuong, tienPhat tu dsLuongThuong
     public void capNhatThuongPhat() {
         double thuong = 0;
         double phat = 0;
@@ -55,11 +60,14 @@ public class BangLuong {
         this.tienPhat = phat;
     }
 
+//---tinh luong---
+    //tong luong = luong NV + phu cap + thuong - phat
     public double tinhTongLuong() {
         tongLuong = luongNhanVien + phuCap + tienThuong - tienPhat;
         return tongLuong;
     }
 
+    //luong thuc nhan = tong luong - bao hiem (khong am)
     public double tinhLuongThucNhan() {
         tinhTongLuong();
         luongThucNhan = tongLuong - tienBaoHiem;
@@ -67,6 +75,7 @@ public class BangLuong {
         return luongThucNhan;
     }
 
+//---xuat---
     public void xuatBangLuong() {
         System.out.println("===== BANG LUONG " + thang + "/" + nam + " =====");
         System.out.println("Ma bang luong : " + maBangLuong + " | Ma NV: " + maNV);
@@ -83,6 +92,7 @@ public class BangLuong {
         }
     }
 
+//---setter, getter---
     public static double getLuongToiThieu() { return LUONG_TOI_THIEU; }
 
     public String getMaBangLuong() { return maBangLuong; }
