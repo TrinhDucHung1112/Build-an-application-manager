@@ -1,0 +1,127 @@
+=====================================================================
+
+DANH SÁCH PHẦN ĐÃ THÊM / THAY ĐỔI SO VỚI SƠ ĐỒ LỚP (SoDoLop_QuanLyNhanSu_V2)
+
+Các class phụ trách: NghiPhep, ChamCong, DanhSachChamCong
+
+=====================================================================
+
+
+
+---------------------------------------------------------------------
+
+1. NghiPhep
+
+---------------------------------------------------------------------
+
+[Thay đổi so với sơ đồ]
+
+- Thuộc tính `trangThai`: Tự động gán giá trị mặc định là "Cho duyet" ngay bên trong constructor khi khởi tạo đối tượng, vì đơn xin nghỉ phép mới tạo chưa thể được duyệt ngay.
+
+- Phương thức `tinhSoNgayNghi()`: Cụ thể hóa công thức tính toán bằng `ChronoUnit.DAYS.between() + 1` để đảm bảo số ngày nghỉ bao gồm cả ngày bắt đầu.
+
+
+
+[Phương thức thêm]
+
+- getMaNP() / setMaNP(String): lấy / gán mã nghỉ phép.
+
+- getMaNV() / setMaNV(String): lấy / gán mã nhân viên xin nghỉ.
+
+- getNgayBatDau() / setNgayBatDau(LocalDate): lấy / gán ngày bắt đầu nghỉ.
+
+- getNgayKetThuc() / setNgayKetThuc(LocalDate): lấy / gán ngày kết thúc nghỉ.
+
+- getLyDo() / setLyDo(String): lấy / gán lý do nghỉ phép.
+
+- getLoaiNghi() / setLoaiNghi(String): lấy / gán loại nghỉ (có lương, không lương...).
+
+- getTrangThai() / setTrangThai(String): lấy / gán trạng thái (chờ duyệt, đã duyệt).
+
+
+
+
+
+---------------------------------------------------------------------
+
+2. ChamCong
+
+---------------------------------------------------------------------
+
+[Thay đổi so với sơ đồ]
+
+- Phương thức `tinhGioTangCa()`: Bổ sung logic tự động giới hạn `soGioLam` tối đa là 8.0 giờ/ngày. Phần thời gian làm việc vượt quá 8.0 mới được gán sang thuộc tính `gioTangCa`.
+
+
+
+[Phương thức thêm]
+
+- Constructor có tham số: Thêm constructor đầy đủ tham số `ChamCong(maChamCong, maNV, ngay, gioVao, gioRa)` để khởi tạo nhanh đối tượng.
+
+- getMaChamCong() / setMaChamCong(String): lấy / gán mã chấm công. (Bắt buộc thêm để `DanhSachChamCong` có thể tìm kiếm và xóa theo mã).
+
+- getMaNV() / setMaNV(String): lấy / gán mã nhân viên. (Bắt buộc thêm để phục vụ các hàm thống kê theo nhân viên).
+
+- getNgay() / setNgay(LocalDate): lấy / gán ngày làm việc. (Bắt buộc thêm để trích xuất tháng/năm khi thống kê).
+
+- getGioVao() / setGioVao(LocalTime): lấy / gán giờ vào làm.
+
+- getGioRa() / setGioRa(LocalTime): lấy / gán giờ tan ca.
+
+- getSoGioLam(): trả về số giờ làm tiêu chuẩn đã tính toán.
+
+- getGioTangCa(): trả về số giờ tăng ca đã tính toán.
+
+- getTrangThai() / setTrangThai(String): lấy / gán trạng thái điểm danh.
+
+
+
+
+
+---------------------------------------------------------------------
+
+3. DanhSachChamCong
+
+---------------------------------------------------------------------
+
+[Thay đổi so với sơ đồ]
+
+- `xoaTheoMa(ma)`: Bổ sung thuật toán dịch chuyển phần tử (shift elements). Khi xóa, các phần tử phía sau sẽ được dồn lên trước và gán phần tử cuối bằng `null` để mảng không bị đứt đoạn.
+
+- Các hàm `thongKeGioLam`, `thongKeGioTangCa`, `thongKeSoNgayDiLam`: Cụ thể hóa điều kiện lọc bằng cách gọi phương thức `.getMonthValue()` từ thuộc tính `LocalDate` của class `ChamCong` để đối chiếu chính xác với tham số `thang` truyền vào.
+
+
+
+[Phương thức thêm]
+
+- timViTri(String maChamCong): tìm vị trí của đối tượng chấm công trong mảng theo mã, trả về chỉ số (index) hoặc -1 nếu không tồn tại. Phục vụ trực tiếp cho hàm `xoaTheoMa` và kiểm tra trùng lặp.
+
+- getDanhSach(): trả về mảng `ChamCong[]` hiện tại.
+
+- getSoLuong(): trả về số lượng bản ghi chấm công thực tế đang lưu trữ trong mảng.
+
+
+
+[Chức năng các phương thức còn lại (đã có trong sơ đồ)]
+
+- them(cc): kiểm tra sức chứa của mảng, nếu `soLuong` nhỏ hơn độ dài mảng thì thêm vào vị trí cuối cùng và tăng `soLuong` lên 1.
+
+- nhapDanhSach(n): cài đặt vòng lặp gọi từ bàn phím (Scanner) để tạo và đưa `n` đối tượng `ChamCong` vào danh sách.
+
+- xuatDanhSach(): in ra thông tin của toàn bộ các bản ghi chấm công đang lưu trong danh sách.
+
+
+
+
+
+---------------------------------------------------------------------
+
+4. TÓM TẮT CÁC ĐIỂM CẦN CẬP NHẬT LẠI TRONG SƠ ĐỒ
+
+---------------------------------------------------------------------
+
+- NghiPhep: Cần bổ sung các hàm Getter/Setter cho toàn bộ thuộc tính `private` để các lớp khác có thể truy xuất dữ liệu.
+
+- ChamCong: Cần bổ sung constructor có tham số và các hàm Getter/Setter (đặc biệt quan trọng là `getMaChamCong`, `getMaNV`, và `getNgay` để danh sách có thể duyệt và thống kê).
+
+- DanhSachChamCong: Cần bổ sung các hàm hỗ trợ mảng tĩnh bao gồm `timViTri`, `getDanhSach`, và `getSoLuong`.
