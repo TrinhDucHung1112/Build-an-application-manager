@@ -13,7 +13,7 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
     private DanhSachPhongBan danhSachPB;    //lay mang danh sach cua PB(da duoc tao o DSPB)
     private int soLuongNV;
     Scanner sc = new Scanner(System.in);
-    private static final String DUONG_DAN = DuongDanDuLieu.file("nhanvien.dat");
+    private static final String DUONG_DAN = DuongDanDuLieu.file("nhanvien.txt");
 
 //----constructor----
     public QuanLyNhanSu(int sucChua){
@@ -269,6 +269,33 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         return timKiemTuKhoa(tuKhoa);
     }
 
+//---timkiemuutienchinhxac---
+    // Tim theo nhieu khoa (ma NV, ho ten, sdt, email): ket qua khop CHINH XAC dung truoc, khop GAN DUNG dung sau
+    public NhanVien[] timKiemUuTien(String tuKhoa){
+        if (tuKhoa == null || tuKhoa.isBlank()) return new NhanVien[0];
+        String key = chuanHoaTuKhoa(tuKhoa);
+        boolean[] chinhXac = new boolean[soLuongNV];
+        boolean[] ganDung = new boolean[soLuongNV];
+        for (int i = 0; i < soLuongNV; i++) {
+            NhanVien nv = danhSachNV[i];
+            if (nv == null) continue;
+            String[] cacKhoa = { nv.getMaNV(), nv.getHoTen(), nv.getSdt(), nv.getEmail() };
+            for (String k : cacKhoa) {
+                if (chuanHoaTuKhoa(k).equals(key)) chinhXac[i] = true;
+            }
+            String thongTin = chuanHoaTuKhoa(
+                nv.getMaNV() + " " + nv.getHoTen() + " " + nv.getSdt() + " " + nv.getEmail()
+            );
+            ganDung[i] = !chinhXac[i] && thongTin.contains(key);
+        }
+        NhanVien[] a = lietKe(chinhXac);
+        NhanVien[] b = lietKe(ganDung);
+        NhanVien[] ketQua = new NhanVien[a.length + b.length];
+        System.arraycopy(a, 0, ketQua, 0, a.length);
+        System.arraycopy(b, 0, ketQua, a.length, b.length);
+        return ketQua;
+    }
+
     // Cap nhat thong tin co ban, dong bo lai so nhan vien cua cac phong ban.
     public boolean capNhatThongTinCoBan(String maNV, String hoTen, java.time.LocalDate ngaySinh,
             String gioiTinh, String sdt, String email, double luongCoBan,
@@ -341,8 +368,10 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 
 //---inraketqua(in ra ket qua cua ham liet ke)---
     public void inKetQua(NhanVien[] ketQua){
+        System.out.println("tim thay " + ketQua.length + " nhan vien");
         for(NhanVien nv: ketQua){
             nv.hienThiThongTin();
+            System.out.println();
         }
     }
 
@@ -410,56 +439,152 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             if(l < luongMin.tinhLuong())
                 luongMin = danhSachNV[i];
         }
-        System.out.println("tong luong cua toan cong ty: " + tong);
-        System.out.println("luong trung binh cua 1 nhan vien: " + (tong/soLuongNV));
-        System.out.println("nhan vien co luong cao nhat: " + luongMax.getMaNV() + " " + luongMax.getHoTen() + " " + luongMax.tinhLuong());
-        System.out.println("nhan vien co luong cao thap nhat: " + luongMin.getMaNV() + " " + luongMin.getHoTen() + " " + luongMin.tinhLuong());
+        System.out.println("tong luong cua toan cong ty: " + String.format("%,.0f", tong));
+        System.out.println("luong trung binh cua 1 nhan vien: " + String.format("%,.0f", tong/soLuongNV));
+        System.out.println("nhan vien co luong cao nhat: " + luongMax.getMaNV() + " " + luongMax.getHoTen() + " " + String.format("%,.0f", luongMax.tinhLuong()));
+        System.out.println("nhan vien co luong thap nhat: " + luongMin.getMaNV() + " " + luongMin.getHoTen() + " " + String.format("%,.0f", luongMin.tinhLuong()));
     }
 
-@Override 
+    // Dinh dang moi dong (13 truong chung + truong rieng cua tung loai):
+    //   loai|maNV|hoTen|ngaySinh|gioiTinh|sdt|email|luongCoBan|ngayVaoLam|trangThai|maPB|chucVu|trinhDo|...
+    //   TTG : ...|phuCap|thamNien
+    //   BTG : ...|soGioLam|luongTheoGio
+    //   HD  : ...|thoiHanHopDong|luongTheoHopDong|ngayBatDauThucTe|ngayKetThucTe|thoiGianThucTe
+    //   chucVu  = maCV;tenCV;heSo           (de trong neu chua co)
+    //   trinhDo = maTD;tenTD;nganh;truong;namTotNghiep;heSo  (nhieu muc cach nhau boi ~)
+    @Override
     public void docFile(){
         File f = new File(DUONG_DAN);
         if(!f.exists()){
             System.out.println("Chua co du lieu nhan vien (" + DUONG_DAN + "), bat dau moi.");
             return;
         }
-        NhanVien[] tam;     //thuc hien kiem tra doi tuong sau doc file, neu dung ghi vao danh sach dang co, khong thi bo qua
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-            int n = ois.readInt();
-            tam = new NhanVien[n];
-            for (int i = 0; i < n; i++) {
-                tam[i] = (NhanVien) ois.readObject();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Lỗi đọc file nhân viên: " + e.getMessage());
+        java.util.List<String[]> cacDong;
+        try {
+            cacDong = TepVanBan.docDong(DUONG_DAN);
+        } catch (IOException e) {
+            System.out.println("Loi doc file nhan vien: " + e.getMessage());
             return;
         }
 
-        //neu khong loi thuc hien dua vao danh sach
+        //doc thanh cong moi xoa danh sach cu, tranh viec doc 2 lan bi trung hoac lech phong ban
+        java.util.Arrays.fill(danhSachNV, null);
+        soLuongNV = 0;
+
         int boQua = 0;
-        for(NhanVien nv: tam){
-            lienKetLaiPhongBan(nv);     //doi tro cua nv vao doi tuong phong ban trong danh sach(phong ban that)
-            if(!themNhanVien(nv))   //kiem tra so truong hop ma khong them nhan vien(trung ma, nv == null, danh sach day)
+        for(String[] p : cacDong){
+            NhanVien nv = taoNhanVienTuDong(p);
+            if(nv == null || !themNhanVien(nv)){    //loi dinh dang, trung ma hoac danh sach day
+                System.out.println("Bo qua dong nhan vien: " + String.join("|", p));
                 boQua++;
+            }
         }
         System.out.println("da doc soLuongNv = " + soLuongNV);
-        System.out.println("so nhan vien da bo qua(trung ma, danh sach day, loi tham chieu): " + boQua);
+        System.out.println("so nhan vien da bo qua(trung ma, danh sach day, loi dinh dang): " + boQua);
     }
 
-@Override 
-    //dung su ly ngoai le de chuong trinh khong sap giua chung
-    public void ghiFile() {
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DUONG_DAN))) {   //FileOutputStream: ghi ra file kem xoa noi dung cu, ObjectOutputStream: giup ghi du lieu ca 1 doi tuong (implements Seriazilizable)
-            oos.writeInt(soLuongNV);
-            for (int i = 0; i < soLuongNV; i++) {
-                oos.writeObject(danhSachNV[i]);   // ghi ca doi tuong(kem phongban, chuc vu, trinh do chuyen mon o ben trong (luu y: cac class nay bat buoc phai implement Serializable))
+    //tao nhan vien dung loai tu 1 dong text, tra ve null neu dong sai
+    private NhanVien taoNhanVienTuDong(String[] p){
+        try {
+            if(p.length < 15) return null;
+            java.time.LocalDate ngaySinh = java.time.LocalDate.parse(p[3]);
+            java.time.LocalDate ngayVaoLam = java.time.LocalDate.parse(p[8]);
+            double luongCB = Double.parseDouble(p[7]);
+            NhanVien nv;
+            switch(p[0].toUpperCase()){
+                case "TTG":
+                    nv = new NhanVienToanThoiGian(p[1], p[2], ngaySinh, p[4], p[5], p[6], luongCB, ngayVaoLam, p[9],
+                            Double.parseDouble(p[13]), Integer.parseInt(p[14]));
+                    break;
+                case "BTG":
+                    nv = new NhanVienBanThoiGian(p[1], p[2], ngaySinh, p[4], p[5], p[6], luongCB, ngayVaoLam, p[9],
+                            Integer.parseInt(p[13]), Double.parseDouble(p[14]));
+                    break;
+                case "HD":
+                    if(p.length < 18) return null;
+                    nv = new NhanVienHopDong(p[1], p[2], ngaySinh, p[4], p[5], p[6], luongCB, ngayVaoLam, p[9],
+                            Integer.parseInt(p[13]), Double.parseDouble(p[14]),
+                            java.time.LocalDate.parse(p[15]), java.time.LocalDate.parse(p[16]), Integer.parseInt(p[17]));
+                    break;
+                default:
+                    return null;
             }
-            System.out.println("da ghi " + soLuongNV + " nhan vien vao file" + DUONG_DAN);
-        } catch (NotSerializableException e) {
-            System.out.println("loi: class " + e.getMessage()
-                    + " chua implements Serializable. hay them implements Serializable cho NhanVien.");
+            if(!p[10].isEmpty() && danhSachPB != null){
+                PhongBan pb = danhSachPB.timTheoMa(p[10]);      //tro vao phong ban that trong danhSachPB
+                if(pb != null) nv.setPhongBan(pb);
+            }
+            if(!p[11].isEmpty()){
+                String[] cv = p[11].split(";");
+                nv.setChucVu(new ChucVu(cv[0], cv[1], Double.parseDouble(cv[2])));
+            }
+            if(!p[12].isEmpty()){
+                String[] cacTD = p[12].split("~");
+                TrinhDoChuyenMon[] td = new TrinhDoChuyenMon[cacTD.length];
+                for(int i = 0; i < cacTD.length; i++){
+                    String[] t = cacTD[i].split(";");
+                    td[i] = new TrinhDoChuyenMon(t[0], t[1], t[2], t[3], Integer.parseInt(t[4]), Double.parseDouble(t[5]));
+                }
+                nv.setTrinhDo(td);
+            }
+            return nv;
+        } catch (RuntimeException e) {       //DateTimeParseException, NumberFormatException, IllegalArgumentException...
+            return null;
+        }
+    }
+
+    @Override
+    public void ghiFile() {
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuongNV; i++) {
+            NhanVien nv = danhSachNV[i];
+            String loai;
+            Object[] rieng;
+            if (nv instanceof NhanVienToanThoiGian) {
+                NhanVienToanThoiGian t = (NhanVienToanThoiGian) nv;
+                loai = "TTG";
+                rieng = new Object[]{t.getphuCap(), t.getthamNien()};
+            } else if (nv instanceof NhanVienBanThoiGian) {
+                NhanVienBanThoiGian b = (NhanVienBanThoiGian) nv;
+                loai = "BTG";
+                rieng = new Object[]{b.getsoGioLam(), b.getluongTheoGio()};
+            } else {
+                NhanVienHopDong h = (NhanVienHopDong) nv;
+                loai = "HD";
+                rieng = new Object[]{h.getthoiHanHopDong(), h.getluongTheoHopDong(),
+                        h.getngayBatDauThucTe(), h.getngayKetThucTe(), h.getthoiGianThucTe()};
+            }
+            String maPB = nv.getPhongBan() == null ? "" : nv.getPhongBan().getMaPB();
+            Object[] chung = {loai, nv.getMaNV(), nv.getHoTen(), nv.getNgaySinh(), nv.getGioiTinh(), nv.getSdt(),
+                    nv.getEmail(), nv.getLuongCoBan(), nv.getNgayVaoLam(), nv.getTrangThai(), maPB,
+                    chucVuThanhChuoi(nv.getChucVu()), trinhDoThanhChuoi(nv.getTrinhDo())};
+            Object[] tatCa = java.util.Arrays.copyOf(chung, chung.length + rieng.length);
+            System.arraycopy(rieng, 0, tatCa, chung.length, rieng.length);
+            dong.add(TepVanBan.ghep(tatCa));
+        }
+        try {
+            TepVanBan.ghiDong(DUONG_DAN, "loai|maNV|hoTen|ngaySinh|gioiTinh|sdt|email|luongCoBan|ngayVaoLam|trangThai|maPB|chucVu|trinhDo|(truong rieng theo loai)", dong);
+            System.out.println("da ghi " + soLuongNV + " nhan vien vao file " + DUONG_DAN);
         } catch (IOException e) {
             System.out.println("loi ghi file nhan vien " + e.getMessage());
         }
     }
+
+    private String chucVuThanhChuoi(ChucVu cv){
+        if(cv == null) return "";
+        return TepVanBan.lamSachCon(cv.getMaCV()) + ";" + TepVanBan.lamSachCon(cv.getTenCV()) + ";" + TepVanBan.soDep(cv.getHeSoLuong());
+    }
+
+    private String trinhDoThanhChuoi(TrinhDoChuyenMon[] ds){
+        if(ds == null || ds.length == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for(TrinhDoChuyenMon t : ds){
+            if(t == null) continue;
+            if(sb.length() > 0) sb.append("~");
+            sb.append(TepVanBan.lamSachCon(t.getMaTD())).append(";").append(TepVanBan.lamSachCon(t.getTenTD())).append(";")
+              .append(TepVanBan.lamSachCon(t.getChuyenNganh())).append(";").append(TepVanBan.lamSachCon(t.getTruongDaoTao())).append(";")
+              .append(t.getNamTotNghiep()).append(";").append(TepVanBan.soDep(t.getHeSoTD()));
+        }
+        return sb.toString();
+    }
+
 }

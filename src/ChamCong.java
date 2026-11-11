@@ -45,4 +45,6 @@ public class ChamCong implements Serializable {
     public String getMaChamCong() { return maChamCong; }
     public String getMaNV() { return maNV; }
     public LocalDate getNgay() { return ngay; }
+    public LocalTime getGioVao() { return gioVao; }
+    public LocalTime getGioRa() { return gioRa; }
 }

@@ -51,6 +51,16 @@ public class NhanVienToanThoiGian extends NhanVien{
     }
 
     @Override
+    public void hienThiThongTin(){
+        super.hienThiThongTin();
+        System.out.println("Loai nhan vien: Toan thoi gian");
+        System.out.println("Phu cap: " + String.format("%,.0f", phuCap));
+        System.out.println("Tham nien: " + thamNien + " nam");
+        System.out.println("Luong (tinh luong): " + String.format("%,.0f", tinhLuong()));
+    }
+
+
+    @Override
     public double tinhLuong(){
         return getLuongCoBan() + phuCap + thamNien * 200000;
     }

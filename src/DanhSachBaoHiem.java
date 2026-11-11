@@ -111,28 +111,62 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
         System.out.println("-------------------------------------------------------------------------------------------------------------");
     }
 
+    private static final String FILE_TEXT = DuongDanDuLieu.file("baohiem.txt");
+
+    // Dinh dang moi dong:
+    //   BHXH|maBH|maNV|soSo|ngayThamGia|trangThai
+    //   BHYT|maBH|maNV|soSo|ngayThamGia|trangThai|noiKhamChuaBenh|hanTheDen
     @Override
     public void ghiFile() {
-        try (java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(new java.io.FileOutputStream(DuongDanDuLieu.file("baohiem.dat")))) {
-            out.writeInt(soLuong);
-            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            BaoHiem bh = danhSach[i];
+            if (bh instanceof BaoHiemYTe) {
+                BaoHiemYTe yt = (BaoHiemYTe) bh;
+                dong.add(TepVanBan.ghep("BHYT", yt.getMaBH(), yt.getMaNV(), yt.getSoSo(), yt.getNgayThamGia(),
+                        yt.getTrangThai(), yt.getNoiKhamChuaBenh(), yt.getHanTheDen()));
+            } else {
+                dong.add(TepVanBan.ghep("BHXH", bh.getMaBH(), bh.getMaNV(), bh.getSoSo(), bh.getNgayThamGia(),
+                        bh.getTrangThai()));
+            }
+        }
+        try {
+            TepVanBan.ghiDong(FILE_TEXT, "BHXH|maBH|maNV|soSo|ngayThamGia|trangThai   va   BHYT|...|noiKCB|hanTheDen", dong);
             System.out.println("Da luu danh sach bao hiem.");
-        } catch (java.io.IOException e) { System.out.println("Loi luu bao hiem: " + e.getMessage()); }
+        } catch (java.io.IOException e) {
+            System.out.println("Loi luu bao hiem: " + e.getMessage());
+        }
     }
 
     @Override
     public void docFile() {
-        java.io.File f = new java.io.File(DuongDanDuLieu.file("baohiem.dat"));
-        if (!f.exists()) return;
-        try (java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.FileInputStream(f))) {
-            int n = in.readInt();
-            danhSach = new BaoHiem[Math.max(10, n)];
+        if (!new java.io.File(FILE_TEXT).exists()) return;
+        try {
+            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new BaoHiem[Math.max(10, cacDong.size())];
             soLuong = 0;
-            for (int i = 0; i < n; i++) them((BaoHiem) in.readObject());
-        } catch (java.io.IOException | ClassNotFoundException e) {
+            for (String[] p : cacDong) {
+                try {
+                    BaoHiem bh;
+                    if (p[0].equalsIgnoreCase("BHYT") && p.length >= 8) {
+                        bh = new BaoHiemYTe(p[1], p[2], p[3], java.time.LocalDate.parse(p[4]),
+                                p[6], java.time.LocalDate.parse(p[7]));
+                    } else if (p[0].equalsIgnoreCase("BHXH") && p.length >= 6) {
+                        bh = new BaoHiemXaHoi(p[1], p[2], p[3], java.time.LocalDate.parse(p[4]));
+                    } else {
+                        continue;
+                    }
+                    bh.setTrangThai(p[5]);
+                    them(bh);
+                } catch (RuntimeException e) {
+                    System.out.println("Bo qua dong bao hiem loi: " + String.join("|", p));
+                }
+            }
+        } catch (java.io.IOException e) {
             System.out.println("Loi doc bao hiem: " + e.getMessage());
         }
     }
+
 
     public void xuatDanhSach() {
         if (soLuong == 0) {

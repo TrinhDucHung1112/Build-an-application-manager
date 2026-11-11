@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class ThuongPhat implements Serializable {
+public class ThuongPhat implements Serializable, IThongTin {
 //----thuoc tinh----
     private String maTP;
     private String maNV;
@@ -55,6 +55,7 @@ public class ThuongPhat implements Serializable {
     }
 
 //---hienthi---
+    @Override
     public void hienThiThongTin(){
         System.out.println(maTP + " | NV " + maNV + " | " + loai + " | " + lyDo
                 + " | SL " + soLuong + " | " + String.format("%,.0f", soTien) + " | " + ngayApDung);

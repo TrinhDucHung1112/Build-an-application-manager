@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class DanhSachChamCong implements IQuanLyDuLieu {
-    private static final String TEN_FILE = DuongDanDuLieu.file("chamcong.dat");
+    private static final String TEN_FILE = DuongDanDuLieu.file("chamcong.txt");
     private ChamCong[] danhSach;
     private int soLuong;
 
@@ -106,20 +106,40 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
         return ngayDiLam.size();
     }
 
-    @Override public void ghiFile() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(TEN_FILE))) {
-            oos.writeInt(soLuong);
-            for (int i = 0; i < soLuong; i++) oos.writeObject(danhSach[i]);
+    // Dinh dang moi dong: maChamCong|maNV|ngay|gioVao|gioRa
+    @Override
+    public void ghiFile() {
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            ChamCong cc = danhSach[i];
+            dong.add(TepVanBan.ghep(cc.getMaChamCong(), cc.getMaNV(), cc.getNgay(), cc.getGioVao(), cc.getGioRa()));
+        }
+        try {
+            TepVanBan.ghiDong(TEN_FILE, "maChamCong|maNV|ngay(yyyy-MM-dd)|gioVao(HH:mm)|gioRa(HH:mm)", dong);
             System.out.println("Da luu cham cong.");
-        } catch (IOException e) { System.out.println("Loi luu cham cong: " + e.getMessage()); }
+        } catch (IOException e) {
+            System.out.println("Loi luu cham cong: " + e.getMessage());
+        }
     }
 
-    @Override public void docFile() {
-        File f = new File(TEN_FILE);
-        if (!f.exists()) return;
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-            int n = ois.readInt(); danhSach = new ChamCong[Math.max(10, n)]; soLuong = 0;
-            for (int i = 0; i < n; i++) them((ChamCong) ois.readObject());
-        } catch (IOException | ClassNotFoundException e) { System.out.println("Loi doc cham cong: " + e.getMessage()); }
+    @Override
+    public void docFile(){
+        if (!new File(TEN_FILE).exists()) return;
+        try {
+            java.util.List<String[]> cacDong = TepVanBan.docDong(TEN_FILE);
+            danhSach = new ChamCong[Math.max(10, cacDong.size())];
+            soLuong = 0;
+            for (String[] p : cacDong) {
+                if (p.length < 5) continue;
+                try {
+                    them(new ChamCong(p[0], p[1], LocalDate.parse(p[2]), LocalTime.parse(p[3]), LocalTime.parse(p[4])));
+                } catch (RuntimeException e) {
+                    System.out.println("Bo qua dong cham cong loi: " + String.join("|", p));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Loi doc cham cong: " + e.getMessage());
+        }
     }
 }
+

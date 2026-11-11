@@ -109,6 +109,10 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
             return false;
         }
         int idx = timViTri(maPB);
+        if(danhSach[idx].demNhanVien() > 0){
+            System.out.println("phong ban con " + danhSach[idx].demNhanVien() + " nhan vien, hay chuyen nhan vien sang phong ban khac truoc khi xoa");
+            return false;
+        }
         for(int i = idx; i < soLuong - 1; i++){
             danhSach[i] = danhSach[i+1];
         }
@@ -168,25 +172,41 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
         return danhSach[vt];
      }
 
-     @Override
-     public void ghiFile() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DuongDanDuLieu.file("phongban.dat")))) {
-            out.writeInt(soLuong);
-            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
-        } catch (IOException e) { System.out.println("Loi luu phong ban: " + e.getMessage()); }
-     }
+    private static final String FILE_TEXT = DuongDanDuLieu.file("phongban.txt");
 
-     @Override
-     public void docFile() {
-        File f = new File(DuongDanDuLieu.file("phongban.dat"));
-        if (!f.exists()) return;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
-            int n = in.readInt();
-            danhSach = new PhongBan[Math.max(10, n)];
+    // Dinh dang moi dong: maPB|tenPB|moTa
+    @Override
+    public void ghiFile() {
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            PhongBan pb = danhSach[i];
+            dong.add(TepVanBan.ghep(pb.getMaPB(), pb.getTenPB(), pb.getMoTa()));
+        }
+        try {
+            TepVanBan.ghiDong(FILE_TEXT, "maPB|tenPB|moTa", dong);
+        } catch (java.io.IOException e) {
+            System.out.println("Loi luu phong ban: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void docFile() {
+        if (!new java.io.File(FILE_TEXT).exists()) return;
+        try {
+            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new PhongBan[Math.max(10, cacDong.size())];
             soLuong = 0;
-            for (int i = 0; i < n; i++) themPhong((PhongBan) in.readObject());
-        } catch (IOException | ClassNotFoundException e) {
+            for (String[] p : cacDong) {
+                if (p.length < 3) continue;
+                try {
+                    themPhong(new PhongBan(p[0], p[1], p[2]));
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Bo qua dong phong ban loi: " + e.getMessage());
+                }
+            }
+        } catch (java.io.IOException e) {
             System.out.println("Loi doc phong ban: " + e.getMessage());
         }
-     }
+    }
+
 }

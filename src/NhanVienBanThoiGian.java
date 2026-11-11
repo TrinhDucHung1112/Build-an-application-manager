@@ -50,6 +50,16 @@ public class NhanVienBanThoiGian extends NhanVien {
         return  this.luongTheoGio;
     }
 
+    @Override
+    public void hienThiThongTin(){
+        super.hienThiThongTin();
+        System.out.println("Loai nhan vien: Ban thoi gian");
+        System.out.println("So gio lam: " + soGioLam);
+        System.out.println("Luong theo gio: " + String.format("%,.0f", luongTheoGio));
+        System.out.println("Luong (tinh luong): " + String.format("%,.0f", tinhLuong()));
+    }
+
+
     @Override 
     public double tinhLuong(){
         return soGioLam * luongTheoGio;

@@ -130,27 +130,45 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
         for (int i = 0; i < soLuong; i++) danhSach[i].hienThiThongTin();
     }
 
-@Override
+    private static final String FILE_TEXT = DuongDanDuLieu.file("thuongphat.txt");
+
+    // Dinh dang moi dong: maTP|maNV|maQD|loai|lyDo|soLuong|soTien|ngayApDung
+    @Override
     public void ghiFile() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DuongDanDuLieu.file("thuongphat.dat")))) {
-            out.writeInt(soLuong);
-            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
-        } catch (IOException e) { System.out.println("Loi luu thuong phat: " + e.getMessage()); }
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            ThuongPhat tp = danhSach[i];
+            dong.add(TepVanBan.ghep(tp.getMaTP(), tp.getMaNV(), tp.getMaQD(), tp.getLoai(), tp.getLyDo(),
+                    tp.getSoLuong(), tp.getSoTien(), tp.getNgayApDung()));
+        }
+        try {
+            TepVanBan.ghiDong(FILE_TEXT, "maTP|maNV|maQD|loai|lyDo|soLuong|soTien|ngayApDung(yyyy-MM-dd)", dong);
+        } catch (java.io.IOException e) {
+            System.out.println("Loi luu thuong phat: " + e.getMessage());
+        }
     }
 
     @Override
     public void docFile() {
-        File f = new File(DuongDanDuLieu.file("thuongphat.dat"));
-        if (!f.exists()) return;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
-            int n = in.readInt();
-            danhSach = new ThuongPhat[Math.max(10, n)];
+        if (!new java.io.File(FILE_TEXT).exists()) return;
+        try {
+            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new ThuongPhat[Math.max(10, cacDong.size())];
             soLuong = 0;
-            for (int i = 0; i < n; i++) them((ThuongPhat) in.readObject());
-        } catch (IOException | ClassNotFoundException e) {
+            for (String[] p : cacDong) {
+                if (p.length < 8) continue;
+                try {
+                    them(new ThuongPhat(p[0], p[1], p[2], p[3], p[4], Double.parseDouble(p[5]),
+                            Double.parseDouble(p[6]), java.time.LocalDate.parse(p[7])));
+                } catch (RuntimeException e) {
+                    System.out.println("Bo qua dong thuong phat loi: " + String.join("|", p));
+                }
+            }
+        } catch (java.io.IOException e) {
             System.out.println("Loi doc thuong phat: " + e.getMessage());
         }
     }
+
 
     //---getter---
     public int getSoLuong() { return soLuong; }

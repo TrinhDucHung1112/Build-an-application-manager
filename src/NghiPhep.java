@@ -29,6 +29,7 @@ public class NghiPhep implements Serializable {
     public String getLoaiNghi() { return loaiNghi; }
     public void setLoaiNghi(String loaiNghi) { this.loaiNghi = loaiNghi; }
     public String getTrangThai() { return trangThai; }
+    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
 
     public void duyetNghiPhep() {
         this.trangThai = "Da duyet";

@@ -132,9 +132,20 @@ public abstract class NhanVien implements IThongTin, Serializable{
         System.out.println("Gioi tinh: " + gioiTinh);
         System.out.println("So dien thoai: " + sdt);
         System.out.println("Email: " + email);
-        System.out.println("Luong co ban: " + luongCoBan);
+        System.out.println("Luong co ban: " + String.format("%,.0f", luongCoBan));
         System.out.println("Ngay vao lam: " + ngayVaoLam);
         System.out.println("Trang thai: " + trangThai);
+        System.out.println("Phong ban: " + (phongBan == null ? "chua phan phong ban" : phongBan.getTenPB() + " (" + phongBan.getMaPB() + ")"));
+        System.out.println("Chuc vu: " + (chucVu == null ? "chua co" : chucVu.getTenCV() + " (he so " + chucVu.getHeSoLuong() + ")"));
+        if(trinhDo == null || trinhDo.length == 0){
+            System.out.println("Trinh do: chua co");
+        }
+        else{
+            for(TrinhDoChuyenMon td : trinhDo){
+                if(td != null)
+                    System.out.println("Trinh do: " + td.getTenTD() + " - " + td.getChuyenNganh() + " (" + td.getTruongDaoTao() + ", " + td.getNamTotNghiep() + ")");
+            }
+        }
     }
 
     public static int getSoLuongNV() {

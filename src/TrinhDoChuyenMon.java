@@ -2,7 +2,7 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.Scanner;
 
-public class TrinhDoChuyenMon implements Serializable{
+public class TrinhDoChuyenMon implements Serializable, IThongTin{
     private String maTD;
     private String tenTD;
     private String chuyenNganh;
@@ -99,6 +99,7 @@ public class TrinhDoChuyenMon implements Serializable{
     }
 
     // Hiển thị thông tin
+    @Override
     public void hienThiThongTin(){
         System.out.println("Ma trinh do cua nhan vien: " + maTD);
         System.out.println("Ten trinh do cua nhan vien: " + tenTD);

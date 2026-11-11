@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class HopDongLaoDong{
+public class HopDongLaoDong implements Serializable, IThongTin{
     private String maHD;
     private LocalDate ngayKy;
     private LocalDate ngayHetHan;
@@ -73,5 +74,13 @@ public class HopDongLaoDong{
 
     public boolean conHieuLuc() {
         return ngayHetHan != null && !LocalDate.now().isAfter(ngayHetHan);
+    }
+
+    @Override
+    public void hienThiThongTin(){
+        System.out.println("Ma hop dong: " + maHD);
+        System.out.println("Loai hop dong: " + loaiHopDong);
+        System.out.println("Ngay ky: " + ngayKy);
+        System.out.println("Ngay het han: " + ngayHetHan + (conHieuLuc() ? " (con hieu luc)" : " (het hieu luc)"));
     }
 }

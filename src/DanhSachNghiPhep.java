@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class DanhSachNghiPhep implements IQuanLyDuLieu {
     private NghiPhep[] danhSach;
     private int soLuong;
-    private static final String FILE = DuongDanDuLieu.file("nghiphep.dat");
+    private static final String FILE = DuongDanDuLieu.file("nghiphep.txt");
 
     public DanhSachNghiPhep(int sucChua) {
         danhSach = new NghiPhep[Math.max(10, sucChua)];
@@ -70,25 +70,44 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
     public NghiPhep[] getDanhSach() { return Arrays.copyOf(danhSach, soLuong); }
     public int getSoLuong() { return soLuong; }
 
-    @Override public void ghiFile() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(FILE))) {
-            out.writeInt(soLuong);
-            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
-        } catch (IOException e) {
+    // Dinh dang moi dong: maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi|trangThai
+    @Override
+    public void ghiFile() {
+        java.util.List<String> dong = new java.util.ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            NghiPhep np = danhSach[i];
+            dong.add(TepVanBan.ghep(np.getMaNP(), np.getMaNV(), np.getNgayBatDau(), np.getNgayKetThuc(),
+                    np.getLyDo(), np.getLoaiNghi(), np.getTrangThai()));
+        }
+        try {
+            TepVanBan.ghiDong(FILE, "maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi|trangThai", dong);
+        } catch (java.io.IOException e) {
             System.out.println("Loi luu nghi phep: " + e.getMessage());
         }
     }
 
-    @Override public void docFile() {
-        File f = new File(FILE);
-        if (!f.exists()) return;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
-            int n = in.readInt();
-            danhSach = new NghiPhep[Math.max(10, n)];
+    @Override
+    public void docFile() {
+        if (!new java.io.File(FILE).exists()) return;
+        try {
+            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE);
+            danhSach = new NghiPhep[Math.max(10, cacDong.size())];
             soLuong = 0;
-            for (int i = 0; i < n; i++) them((NghiPhep) in.readObject());
-        } catch (IOException | ClassNotFoundException e) {
+            for (String[] p : cacDong) {
+                if (p.length < 7) continue;
+                try {
+                    NghiPhep np = new NghiPhep(p[0], p[1], java.time.LocalDate.parse(p[2]),
+                            java.time.LocalDate.parse(p[3]), p[4]);
+                    np.setLoaiNghi(p[5]);
+                    np.setTrangThai(p[6]);
+                    them(np);
+                } catch (RuntimeException e) {
+                    System.out.println("Bo qua dong nghi phep loi: " + String.join("|", p));
+                }
+            }
+        } catch (java.io.IOException e) {
             System.out.println("Loi doc nghi phep: " + e.getMessage());
         }
     }
+
 }

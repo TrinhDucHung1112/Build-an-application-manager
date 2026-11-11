@@ -7,6 +7,7 @@ public class NhanVienHopDong extends NhanVien {
     private LocalDate ngayBatDauThucTe;
     private LocalDate ngayKetThucTe;
     private int thoiGianThucTe;
+    private HopDongLaoDong hopDong;     //hop dong lao dong cua nhan vien (quan he has-a)
 
     public NhanVienHopDong(){
 
@@ -70,6 +71,7 @@ public class NhanVienHopDong extends NhanVien {
         setngayBatDauThucTe(ngayBatDauThucTe);
         setngayKetThucTe(ngayKetThucTe);
         setthoiGianThucTe(thoiGianThucTe);
+        taoHopDong();
     }
 
     //getter
@@ -88,6 +90,29 @@ public class NhanVienHopDong extends NhanVien {
     public int getthoiGianThucTe(){
         return  this.thoiGianThucTe;
     }
+    public HopDongLaoDong gethopDong(){
+        return this.hopDong;
+    }
+
+    //tao hop dong lao dong tu ngay vao lam va ngay ket thuc cua nhan vien (khong tao neu ngay khong hop le)
+    private void taoHopDong(){
+        if(getNgayVaoLam() == null || ngayKetThucTe == null || ngayKetThucTe.isBefore(getNgayVaoLam())) return;
+        this.hopDong = new HopDongLaoDong("HD_" + getMaNV(), getNgayVaoLam(), ngayKetThucTe, "Co thoi han");
+    }
+
+    @Override
+    public void hienThiThongTin(){
+        super.hienThiThongTin();
+        System.out.println("Loai nhan vien: Hop dong");
+        System.out.println("Thoi han hop dong: " + thoiHanHopDong + " ngay");
+        System.out.println("Luong theo hop dong: " + String.format("%,.0f", luongTheoHopDong));
+        System.out.println("Ngay bat dau thuc te: " + ngayBatDauThucTe);
+        System.out.println("Ngay ket thuc thuc te: " + ngayKetThucTe);
+        System.out.println("Thoi gian thuc te: " + thoiGianThucTe + " ngay");
+        if(hopDong != null)
+            hopDong.hienThiThongTin();
+    }
+
 
     @Override 
     public double tinhLuong(){

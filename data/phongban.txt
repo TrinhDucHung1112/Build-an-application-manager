@@ -1,0 +1,6 @@
+# maPB|tenPB|moTa
+PB01|HANH CHINH|Quan ly hanh chinh nhan su
+PB02|KY THUAT|Phat trien va van hanh he thong
+PB03|KINH DOANH|Ban hang va cham soc khach hang
+PB04|KE TOAN|Quan ly tai chinh, ke toan va thue
+PB05|MARKETING|Truyen thong va thuong hieu

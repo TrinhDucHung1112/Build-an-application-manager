@@ -119,7 +119,7 @@ public class Main {
                     PhongBan pb = dsPB.timTheoMa(docChuoi("Ma phong ban: "));
                     if (pb == null) System.out.println("Khong tim thay."); else pb.hienThiThongTin();
                     break;
-                case 4: System.out.println(dsPB.xoaTheoMa(docChuoi("Ma can xoa: ")) ? "Da xoa." : "Khong tim thay."); break;
+                case 4: System.out.println(dsPB.xoaTheoMa(docChuoi("Ma can xoa: ")) ? "Da xoa." : "Khong xoa duoc phong ban."); break;
             }
         } while (c != 0);
     }
@@ -130,8 +130,8 @@ public class Main {
             System.out.println("\n--- NHAN VIEN ---");
             System.out.println("1. Them 1 nhan vien\n2. Nhap nhieu nhan vien\n3. Xem danh sach");
             System.out.println("4. Tim kiem (chinh xac/gan dung)\n5. Sua thong tin nhan vien\n6. Xoa nhan vien");
-            System.out.println("7. Thong ke theo loai\n8. Thong ke luong\n0. Quay lai");
-            c = docInt("Chon: ", 0, 8);
+            System.out.println("7. Thong ke theo loai\n8. Thong ke luong\n9. Tim theo phong ban\n10. Tim theo khoang luong\n0. Quay lai");
+            c = docInt("Chon: ", 0, 10);
             switch (c) {
                 case 1: themNhanVien(); break;
                 case 2:
@@ -144,7 +144,7 @@ public class Main {
                 case 3: ql.xuatDanhSachNV(); break;
                 case 4:
                     String tuKhoa = docChuoi("Nhap ma, ten, SDT hoac email (co the nhap mot phan): ");
-                    NhanVien[] ketQua = ql.timKiemTuKhoa(tuKhoa);
+                    NhanVien[] ketQua = ql.timKiemUuTien(tuKhoa);
                     if (ketQua.length == 0) System.out.println("Khong tim thay nhan vien phu hop.");
                     else ql.inKetQua(ketQua);
                     break;
@@ -152,6 +152,19 @@ public class Main {
                 case 6: System.out.println(ql.xoaNhanVien(docChuoi("Ma nhan vien can xoa: ")) ? "Da xoa." : "Khong tim thay."); break;
                 case 7: ql.thongKeTheoLoaiNv(); break;
                 case 8: ql.thongKeLuong(); break;
+                case 9:
+                    dsPB.xuatDanhSach();
+                    NhanVien[] theoPB = ql.timKiemTheoPhongBan(docChuoi("Ma phong ban: "));
+                    if (theoPB.length == 0) System.out.println("Khong co nhan vien nao trong phong ban nay.");
+                    else ql.inKetQua(theoPB);
+                    break;
+                case 10:
+                    double tuLuong = docDouble("Luong tu: ", 0);
+                    double denLuong = docDouble("Luong den: ", 0);
+                    NhanVien[] theoLuong = ql.timKiemTheoLuong(tuLuong, denLuong);
+                    if (theoLuong.length == 0) System.out.println("Khong co nhan vien nao trong khoang luong nay.");
+                    else ql.inKetQua(theoLuong);
+                    break;
             }
         } while (c != 0);
     }
@@ -196,6 +209,10 @@ public class Main {
             double heSo = docDouble("He so phu cap chuc vu: ", 0);
             nv.setChucVu(new ChucVu(maCV, tenCV, heSo));
         }
+        String coTD = docChuoi("Co muon them trinh do chuyen mon? (y/n): ");
+        if (coTD.equalsIgnoreCase("y")) {
+            nv.setTrinhDo(docDanhSachTrinhDo());
+        }
         System.out.println(ql.themNhanVien(nv) ? "Them nhan vien thanh cong." : "Them that bai (ma NV trung hoac danh sach loi).");
     }
 
@@ -230,7 +247,46 @@ public class Main {
             System.out.println(ok ? "Cap nhat thanh cong." : "Cap nhat that bai.");
         } catch (IllegalArgumentException e) {
             System.out.println("Du lieu khong hop le: " + e.getMessage());
+            return;
         }
+        String doiCV = docChuoi("Co muon doi chuc vu? (y/n): ");
+        if (doiCV.equalsIgnoreCase("y")) {
+            String maCV = docChuoi("Ma chuc vu: ");
+            String tenCV = docChuoi("Ten chuc vu: ");
+            double heSo = docDouble("He so phu cap chuc vu: ", 0);
+            try {
+                nv.setChucVu(new ChucVu(maCV, tenCV, heSo));
+                System.out.println("Da doi chuc vu.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Du lieu khong hop le: " + e.getMessage());
+            }
+        }
+        String doiTD = docChuoi("Co muon nhap lai trinh do chuyen mon? (y/n): ");
+        if (doiTD.equalsIgnoreCase("y")) {
+            nv.setTrinhDo(docDanhSachTrinhDo());
+            System.out.println("Da cap nhat trinh do.");
+        }
+    }
+
+    //nhap danh sach trinh do chuyen mon cua 1 nhan vien (nhap duoc nhieu trinh do)
+    private static TrinhDoChuyenMon[] docDanhSachTrinhDo() {
+        TrinhDoChuyenMon[] ds = new TrinhDoChuyenMon[0];
+        do {
+            try {
+                String ma = docChuoi("Ma trinh do: ");
+                String ten = docChuoi("Ten trinh do (Cao dang/Dai hoc/Thac si...): ");
+                String nganh = docChuoi("Chuyen nganh: ");
+                String truong = docChuoi("Truong dao tao: ");
+                int nam = docInt("Nam tot nghiep: ", 1950, java.time.Year.now().getValue());
+                double heSo = docDouble("He so trinh do: ", 0);
+                TrinhDoChuyenMon td = new TrinhDoChuyenMon(ma, ten, nganh, truong, nam, heSo);
+                ds = java.util.Arrays.copyOf(ds, ds.length + 1);
+                ds[ds.length - 1] = td;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Du lieu khong hop le: " + e.getMessage());
+            }
+        } while (docChuoi("Them trinh do khac? (y/n): ").equalsIgnoreCase("y"));
+        return ds;
     }
 
     private static void menuNghiPhep() {

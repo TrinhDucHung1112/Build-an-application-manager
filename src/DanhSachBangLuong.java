@@ -198,8 +198,9 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
             for (int i = 0; i < soLuong; i++) {
                 BangLuong bl = danhSach[i];
                 pw.println(bl.getMaBangLuong() + "," + bl.getMaNV() + "," + bl.getThang() + "," + bl.getNam()
-                        + "," + bl.getPhuCap() + "," + bl.getTienThuong() + "," + bl.getTienPhat()
-                        + "," + bl.getTienBaoHiem() + "," + bl.getLuongNhanVien());
+                        + "," + TepVanBan.soDep(bl.getPhuCap()) + "," + TepVanBan.soDep(bl.getTienThuong())
+                        + "," + TepVanBan.soDep(bl.getTienPhat()) + "," + TepVanBan.soDep(bl.getTienBaoHiem())
+                        + "," + TepVanBan.soDep(bl.getLuongNhanVien()));
             }
             System.out.println("Da ghi " + soLuong + " bang luong vao file " + TEN_FILE);
         } catch (IOException e) {

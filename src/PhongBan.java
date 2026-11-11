@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.Scanner;
 
-public class PhongBan implements Serializable {
+public class PhongBan implements Serializable, IThongTin {
     private String maPB;
     private String tenPB;
     private String moTa;
@@ -50,10 +50,12 @@ public class PhongBan implements Serializable {
     }
 
     // Hiển thị thông tin
+    @Override
     public void hienThiThongTin(){
         System.out.println("Ma phong ban: " + maPB);
         System.out.println("Ten phong ban: " + tenPB);
         System.out.println("Mo ta phong ban: " + moTa);
+        System.out.println("So nhan vien: " + soNhanVien);
     }
 
     // Nhập thông tin phòng ban
