@@ -1,8 +1,8 @@
 import java.io.Serializable;
+import java.time.Year;
 import java.util.Scanner;
 
 public class TrinhDoChuyenMon implements Serializable{
-//----thuoc tinh----
     private String maTD;
     private String tenTD;
     private String chuyenNganh;
@@ -10,7 +10,7 @@ public class TrinhDoChuyenMon implements Serializable{
     private int namTotNghiep;
     private double heSoTD;
 
-//----constructor----
+    // Constructor
     public TrinhDoChuyenMon(){
         this.maTD = "";
         this.tenTD = "";
@@ -19,95 +19,108 @@ public class TrinhDoChuyenMon implements Serializable{
         this.namTotNghiep = 0;
         this.heSoTD = 0;
     }
-
-    public TrinhDoChuyenMon(String maTD, String tenTD, String chuyenNganh, String truongDaoTao, int namTotNghiep, double heSoTD){
-        this.maTD = maTD;
-        this.tenTD = tenTD;
-        this.chuyenNganh = chuyenNganh;
-        this.truongDaoTao = truongDaoTao;
-        this.namTotNghiep = namTotNghiep;
-        this.heSoTD = heSoTD;
+    public TrinhDoChuyenMon(String maTD, String tenTD, String chuyenNganh,
+                            String truongDaoTao, int namTotNghiep, double heSoTD){
+        setMaTD(maTD);
+        setTenTD(tenTD);
+        setChuyenNganh(chuyenNganh);
+        setTruongDaoTao(truongDaoTao);
+        setNamTotNghiep(namTotNghiep);
+        setHeSoTD(heSoTD);
     }
 
-//----methods----
-//---getter, setter---
+    // Getter, setter
     public String getMaTD(){
         return maTD;
     }
-
     public void setMaTD(String maTD){
-        this.maTD = maTD;
+        if (maTD == null || maTD.isBlank()){
+            throw new IllegalArgumentException("Ma trinh do khong duoc de trong");
+        }
+        this.maTD = maTD.trim().toUpperCase();
     }
 
     public String getTenTD(){
         return tenTD;
     }
-
     public void setTenTD(String tenTD){
-        this.tenTD = tenTD;
+        if (tenTD == null || tenTD.isBlank()){
+            throw new IllegalArgumentException("Ten trinh do khong duoc de trong");
+        }
+        this.tenTD = tenTD.trim().toUpperCase();
     }
 
     public String getChuyenNganh(){
         return chuyenNganh;
     }
-
     public void setChuyenNganh(String chuyenNganh){
-        this.chuyenNganh = chuyenNganh;
+        if (chuyenNganh == null || chuyenNganh.isBlank()){
+            throw new IllegalArgumentException("Chuyen nganh khong duoc de trong");
+        }
+        this.chuyenNganh = chuyenNganh.trim().toUpperCase();
     }
 
     public String getTruongDaoTao(){
         return truongDaoTao;
     }
-    
     public void setTruongDaoTao(String truongDaoTao){
-        this.truongDaoTao = truongDaoTao;
+        if (truongDaoTao == null || truongDaoTao.isBlank()){
+            throw new IllegalArgumentException("Truong dao tao khong duoc de trong");
+        }
+        this.truongDaoTao = truongDaoTao.trim().toUpperCase();
     }
 
     public int getNamTotNghiep(){
         return namTotNghiep;
     }
-
     public void setNamTotNghiep(int namTotNghiep){
+        if (namTotNghiep < 0 || namTotNghiep > Year.now().getValue()){
+            throw new IllegalArgumentException("Nam tot nghiep khong hop le");
+        }
         this.namTotNghiep = namTotNghiep;
     }
 
     public double getHeSoTD(){
         return heSoTD;
     }
-
-    public void setHeSoTD(double heSoTD){
+    public void setHeSoTD(double heSoTD) {
+        if (!Double.isFinite(heSoTD) || heSoTD < 0){
+            throw new IllegalArgumentException("He so trinh do khong hop le");
+        }
         this.heSoTD = heSoTD;
     }
 
-//---tinhPhuCapTrinhDo---
+    // Tính phụ cấp trình độ
     public double tinhPhuCapTrinhDo(double luongCoBan){
+        if (!Double.isFinite(luongCoBan) || luongCoBan < 0){
+            throw new IllegalArgumentException("Luong co ban khong hop le");
+        }
         return heSoTD * luongCoBan;
     }
 
-//---hienThiThongTin---
+    // Hiển thị thông tin
     public void hienThiThongTin(){
-        System.out.println("maTD cua nhan vien: " + maTD);
-        System.out.println("tenTD cua nhan vien: " + tenTD);
-        System.out.println("chuyenNganh cua nhan vien: " + chuyenNganh);
-        System.out.println("truongDaoTao cua nhan vien:" + truongDaoTao);
-        System.out.println("namTotNghiep cua nhan vien: " + namTotNghiep);
-        System.out.println("heSoTrinhDo cau nhan vien: " + heSoTD);
+        System.out.println("Ma trinh do cua nhan vien: " + maTD);
+        System.out.println("Ten trinh do cua nhan vien: " + tenTD);
+        System.out.println("Chuyen nganh cua nhan vien: " + chuyenNganh);
+        System.out.println("Truong dao tao cua nhan vien: " + truongDaoTao);
+        System.out.println("Nam tot nghiep cua nhan vien: " + namTotNghiep);
+        System.out.println("He so trinh do cua nhan vien: " + heSoTD);
     }
 
-//---nhapThongTinTrinhDo---(bo sung them trong so do)
-//---viec nhap trinh do cua cua class TrinhDo, viec them trinh do se la cua NhanVien(Trinh Do la thuoc tinh cua NhanVien)
+    // Nhập thông tin trình độ chuyên môn
     public void nhapThongTinTD(Scanner sc){
-        System.out.println("nhap vao ma trinh do cua nhan vien:");
-        setMaTD(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao ten trinh do cua nhan vien:");
-        setTenTD(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao chuyen nganh cua nhan vien:");
-        setChuyenNganh(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao truong dao tao cua nhan vien:");
-        setTruongDaoTao(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao nam tot nghiep cua nhan vien:");
+        System.out.println("Nhap vao ma trinh do cua nhan vien:");
+        setMaTD(sc.nextLine());
+        System.out.println("Nhap vao ten trinh do cua nhan vien:");
+        setTenTD(sc.nextLine());
+        System.out.println("Nhap vao chuyen nganh cua nhan vien:");
+        setChuyenNganh(sc.nextLine());
+        System.out.println("Nhap vao truong dao tao cua nhan vien:");
+        setTruongDaoTao(sc.nextLine());
+        System.out.println("Nhap vao nam tot nghiep cua nhan vien:");
         setNamTotNghiep(Integer.parseInt(sc.nextLine()));
-        System.out.println("nhap vao he so trinh do cua nhan vien:");
+        System.out.println("Nhap vao he so trinh do cua nhan vien:");
         setHeSoTD(Double.parseDouble(sc.nextLine()));
     }
 }

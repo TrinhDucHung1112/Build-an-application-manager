@@ -1,8 +1,9 @@
+import java.io.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
 
-public class DanhSachThuongPhat {
+public class DanhSachThuongPhat implements IQuanLyDuLieu {
 //----thuoc tinh----
     public static final String LOAI_NGHI_KHONG_PHEP = "Khong phep";    //phai trung loaiNghi cua NghiPhep
 
@@ -18,7 +19,8 @@ public class DanhSachThuongPhat {
 //----methods----
 //---them, xoa, tim---
     public boolean them(ThuongPhat tp) {
-        if (tp == null || soLuong >= danhSach.length) return false;
+        if (tp == null) return false;
+        if (soLuong >= danhSach.length) danhSach = Arrays.copyOf(danhSach, danhSach.length * 2);
         if (timTheoMa(tp.getMaTP()) != null) return false;             //trung ma
         danhSach[soLuong++] = tp;
         return true;
@@ -79,20 +81,25 @@ public class DanhSachThuongPhat {
     private double layGiaTri(String chiTieu, String maNV, int thang, int nam,
                              DanhSachChamCong dsCC, NghiPhep[] dsNP) {
         if (QuyDinhThuongPhat.GIO_TANG_CA.equals(chiTieu)) {
-            return dsCC.thongKeGioTangCa(maNV, thang);
+            return dsCC.thongKeGioTangCa(maNV, thang, nam);
         }
         if (QuyDinhThuongPhat.NGAY_DI_LAM.equals(chiTieu)) {
-            return dsCC.thongKeSoNgayDiLam(maNV, thang);
+            return dsCC.thongKeSoNgayDiLam(maNV, thang, nam);
         }
         if (QuyDinhThuongPhat.NGAY_NGHI_KHONG_PHEP.equals(chiTieu)) {
             double tong = 0;
             for (NghiPhep np : dsNP) {
                 if (np == null) continue;
-                if (np.getMaNV().equals(maNV)
-                        && LOAI_NGHI_KHONG_PHEP.equalsIgnoreCase(np.getLoaiNghi())
-                        && np.getNgayBatDau().getMonthValue() == thang
-                        && np.getNgayBatDau().getYear() == nam) {
-                    tong += np.tinhSoNgayNghi();
+                if (np.getMaNV().equalsIgnoreCase(maNV)
+                        && LOAI_NGHI_KHONG_PHEP.equalsIgnoreCase(np.getLoaiNghi())) {
+                    java.time.LocalDate dauThang = YearMonth.of(nam, thang).atDay(1);
+                    java.time.LocalDate cuoiThang = YearMonth.of(nam, thang).atEndOfMonth();
+                    java.time.LocalDate batDau = np.getNgayBatDau().isAfter(dauThang)
+                            ? np.getNgayBatDau() : dauThang;
+                    java.time.LocalDate ketThuc = np.getNgayKetThuc().isBefore(cuoiThang)
+                            ? np.getNgayKetThuc() : cuoiThang;
+                    if (!ketThuc.isBefore(batDau))
+                        tong += java.time.temporal.ChronoUnit.DAYS.between(batDau, ketThuc) + 1;
                 }
             }
             return tong;
@@ -123,6 +130,28 @@ public class DanhSachThuongPhat {
         for (int i = 0; i < soLuong; i++) danhSach[i].hienThiThongTin();
     }
 
-//---getter---
+@Override
+    public void ghiFile() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DuongDanDuLieu.file("thuongphat.dat")))) {
+            out.writeInt(soLuong);
+            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
+        } catch (IOException e) { System.out.println("Loi luu thuong phat: " + e.getMessage()); }
+    }
+
+    @Override
+    public void docFile() {
+        File f = new File(DuongDanDuLieu.file("thuongphat.dat"));
+        if (!f.exists()) return;
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
+            int n = in.readInt();
+            danhSach = new ThuongPhat[Math.max(10, n)];
+            soLuong = 0;
+            for (int i = 0; i < n; i++) them((ThuongPhat) in.readObject());
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Loi doc thuong phat: " + e.getMessage());
+        }
+    }
+
+    //---getter---
     public int getSoLuong() { return soLuong; }
 }

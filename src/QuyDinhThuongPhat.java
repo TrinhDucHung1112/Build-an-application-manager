@@ -1,4 +1,4 @@
-public class QuyDinhThuongPhat {
+public class QuyDinhThuongPhat implements java.io.Serializable {
 //----hang so----
     public static final String THUONG = "THUONG";
     public static final String PHAT = "PHAT";

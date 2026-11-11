@@ -1,87 +1,80 @@
 import java.io.Serializable;
 import java.util.Scanner;
 
-public class PhongBan implements Serializable{
-//----thuoc tinh----
+public class PhongBan implements Serializable {
     private String maPB;
     private String tenPB;
     private String moTa;
     private int soNhanVien;
-    // private static int soPB = 0;        //thuoc tinh dung de dem so luong phong trong danh sach
 
-//----constructor----
+    // Constructor
     public PhongBan(){
         this.maPB = "";
         this.tenPB = "";
         this.moTa = "";
-        // soPB++;             //moi lan tao phong se tang so luong len 1
+        this.soNhanVien = 0;
     }
-
     public PhongBan(String maPB, String tenPB, String moTa){
-        this.maPB = maPB;
-        this.tenPB = tenPB;
-        this.moTa = moTa;
-        // soPB++;
+        setMaPB(maPB);
+        setTenPB(tenPB);
+        setMoTa(moTa);
+        this.soNhanVien = 0;
     }
 
-//----methods----
-//---setter, getter---
+    // Getter, setter
     public String getMaPB(){
         return maPB;
     }
-
     public void setMaPB(String maPB){
-        this.maPB = maPB.toUpperCase();
+        if (maPB == null || maPB.isBlank()){
+            throw new IllegalArgumentException("Ma phong ban khong duoc de trong");
+        }
+        this.maPB = maPB.trim().toUpperCase();
     }
 
     public String getTenPB(){
         return tenPB;
     }
-
     public void setTenPB(String tenPB){
-        this.tenPB = tenPB.toUpperCase();
+        if (tenPB == null || tenPB.isBlank()){
+            throw new IllegalArgumentException("Ten phong ban khong duoc de trong");
+        }
+        this.tenPB = tenPB.trim().toUpperCase();
     }
 
     public String getMoTa(){
         return moTa;
     }
-
     public void setMoTa(String moTa){
-        this.moTa = moTa;
+        this.moTa = (moTa == null) ? "" : moTa.trim();
     }
 
-    // public static int getSoPhong(){      //
-    //     return soPB;
-    // }
-
-//---hienthi---
+    // Hiển thị thông tin
     public void hienThiThongTin(){
         System.out.println("Ma phong ban: " + maPB);
         System.out.println("Ten phong ban: " + tenPB);
         System.out.println("Mo ta phong ban: " + moTa);
-        //System.out.println("so nhan vien trong phong: ");
     }
 
-//----nhap---
-//viec nhap phong ban se o PhongBan, them thi se thuc hien o DanhSachPhongBan
+    // Nhập thông tin phòng ban
     public void nhapPhongBan(Scanner sc){
-        System.out.println("nhap vao ma cua phong ban:");
-        setMaPB(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao ten phong ban:");
-        setTenPB(sc.nextLine().toUpperCase());
-        System.out.println("nhap vao mo ta cua phong ban:");
-        setMoTa(sc.nextLine().toUpperCase());
+        System.out.println("Nhap vao ma cua phong ban:");
+        setMaPB(sc.nextLine());
+        System.out.println("Nhap vao ten phong ban:");
+        setTenPB(sc.nextLine());
+        System.out.println("Nhap vao mo ta cua phong ban:");
+        setMoTa(sc.nextLine());
     }
 
-//---soluongNVcuaPB---      can thay doi lai so do
+    // Đếm số nhân viên thuộc phòng ban
     public int demNhanVien(){
         return soNhanVien;
     }
-
     public void giamSoNhanVien(){
-        if(soNhanVien > 0) soNhanVien--;
+        if (soNhanVien > 0) {
+            soNhanVien--;
+        }
     }
-
     public void tangSoNhanVien(){
         soNhanVien++;
     }

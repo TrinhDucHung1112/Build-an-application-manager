@@ -1,4 +1,4 @@
-public class DanhSachBaoHiem {
+public class DanhSachBaoHiem implements IQuanLyDuLieu {
     private BaoHiem[] danhSach;
     private int soLuong;
 
@@ -109,6 +109,29 @@ public class DanhSachBaoHiem {
         System.out.printf("| %-8s | %-8s | %-12s | %-13s | %-10s | %-6s | %s%n",
                 "MÃ BH", "MÃ NV", "SỐ SỔ/THẺ", "NGÀY THAM GIA", "TRẠNG THÁI", "LOẠI", "CHI TIẾT");
         System.out.println("-------------------------------------------------------------------------------------------------------------");
+    }
+
+    @Override
+    public void ghiFile() {
+        try (java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(new java.io.FileOutputStream(DuongDanDuLieu.file("baohiem.dat")))) {
+            out.writeInt(soLuong);
+            for (int i = 0; i < soLuong; i++) out.writeObject(danhSach[i]);
+            System.out.println("Da luu danh sach bao hiem.");
+        } catch (java.io.IOException e) { System.out.println("Loi luu bao hiem: " + e.getMessage()); }
+    }
+
+    @Override
+    public void docFile() {
+        java.io.File f = new java.io.File(DuongDanDuLieu.file("baohiem.dat"));
+        if (!f.exists()) return;
+        try (java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.FileInputStream(f))) {
+            int n = in.readInt();
+            danhSach = new BaoHiem[Math.max(10, n)];
+            soLuong = 0;
+            for (int i = 0; i < n; i++) them((BaoHiem) in.readObject());
+        } catch (java.io.IOException | ClassNotFoundException e) {
+            System.out.println("Loi doc bao hiem: " + e.getMessage());
+        }
     }
 
     public void xuatDanhSach() {

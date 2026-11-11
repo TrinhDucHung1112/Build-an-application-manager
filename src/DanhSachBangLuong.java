@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 
 public class DanhSachBangLuong implements IQuanLyDuLieu {
 //----thuoc tinh----
-    private static final String TEN_FILE = "bangluong.txt";
+    private static final String TEN_FILE = DuongDanDuLieu.file("bangluong.txt");
 
     private BangLuong[] danhSach;
     private int soLuong;
@@ -21,7 +21,9 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
 //----methods----
 //---them, tim---
     public boolean them(BangLuong bl) {
-        if (bl == null || soLuong >= danhSach.length) return false;
+        if (bl == null) return false;
+        if (soLuong >= danhSach.length)
+            danhSach = java.util.Arrays.copyOf(danhSach, danhSach.length * 2);
         for (int i = 0; i < soLuong; i++) {
             if (danhSach[i].getMaBangLuong().equals(bl.getMaBangLuong())) return false;    //trung ma
         }
@@ -56,7 +58,10 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
         BaoHiem[] ds = dsBH.timTheoMaNV(nv.getMaNV());
         if (ds == null) return 0;
         for (BaoHiem bh : ds) {
-            if (bh != null) tong += bh.tinhTienNhanVienDong(nv.getLuongCoBan());
+            if (bh != null && "HieuLuc".equalsIgnoreCase(bh.getTrangThai())) {
+                if (!(bh instanceof BaoHiemYTe) || ((BaoHiemYTe) bh).conHanThe())
+                    tong += bh.tinhTienNhanVienDong(nv.getLuongCoBan());
+            }
         }
         return tong;
     }
@@ -210,6 +215,7 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
             return;
         }
         soLuong = 0;
+        danhSach = new BangLuong[Math.max(10, danhSach.length)];
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String dong;
             while ((dong = br.readLine()) != null) {
@@ -232,4 +238,7 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
 
 //---getter---
     public int getSoLuong() { return soLuong; }
+    public BangLuong getBangLuong(int i) {
+        return (i < 0 || i >= soLuong) ? null : danhSach[i];
+    }
 }

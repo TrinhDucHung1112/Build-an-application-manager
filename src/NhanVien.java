@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-public abstract class NhanVien implements IThongTin{
+public abstract class NhanVien implements IThongTin, Serializable{
     private String maNV;
     private String hoTen;
     private LocalDate ngaySinh;
@@ -16,86 +17,88 @@ public abstract class NhanVien implements IThongTin{
     private TrinhDoChuyenMon[] trinhDo;
 
     private static int soLuongNV = 0;
-    
-    public NhanVien(){
-        soLuongNV++;
-    }
 
     //setter
-    public void setmaNV(String m){
+    public void setMaNV(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("Ma nhan vien khong duoc de trong");
         }
         this.maNV = m;
     }
-    public void sethoTen(String m){
+    public void setHoTen(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("Ho va Ten khong duoc de trong");
         }
         this.hoTen = m;
     }
-    public void setngaySinh(LocalDate m){
+    public void setNgaySinh(LocalDate m){
         if(m == null|| m.isAfter(LocalDate.now())){
             throw new IllegalArgumentException("Ngay sinh khong hop le");
         }
         this.ngaySinh = m;
     }
-    public void setgioiTinh(String m){
+    public void setGioiTinh(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("Gioi tinh khong duoc de trong");
         }
         this.gioiTinh = m;
     }
-    public void setsdt(String m){
+    public void setSdt(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("So dien thoai khong duoc de trong");
         }
         this.sdt = m;
     }
-    public void setemail(String m){
+    public void setEmail(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("Email khong duoc de trong");
         }
         this.email = m;
     }
-    public void setluongCoBan(double m){
+    public void setLuongCoBan(double m){
         if(m < 0){
             throw new IllegalArgumentException("Luong khong hop le");
         }
         this.luongCoBan = m;
     }
-    public void setngayVaoLam(LocalDate m){
+    public void setNgayVaoLam(LocalDate m){
         if(m == null|| m.isAfter(LocalDate.now())){
             throw new IllegalArgumentException("Ngay vao lam khong duoc de trong");
         }
         this.ngayVaoLam = m;
     }
-    public void settrangThai(String m){
+    public void setTrangThai(String m){
         if(m == null|| m.isBlank()){
             throw new IllegalArgumentException("Trang thai khong duoc de trong");
         }
         this.trangThai = m;
     }
-    public void setchucVu(ChucVu chucVu) {
+    public void setChucVu(ChucVu chucVu) {
         if (chucVu == null) {
             throw new IllegalArgumentException("Chuc vu khong duoc de trong");
         }
         this.chucVu = chucVu;
     }
-    public void setphongBan(PhongBan phongBan) {
+    public void setPhongBan(PhongBan phongBan) {
         if (phongBan == null) {
             throw new IllegalArgumentException("Phong ban khong duoc de trong");
         }
         this.phongBan = phongBan;
     }
-    public void settrinhDo(TrinhDoChuyenMon[] trinhDo) {
+    public void xoaPhongBan() {
+        this.phongBan = null;
+    }
+    public void setTrinhDo(TrinhDoChuyenMon[] trinhDo) {
         if (trinhDo == null) {
             throw new IllegalArgumentException("Trinh do khong duoc de trong");
         }
         this.trinhDo = trinhDo.clone();
     }
 
-
+    //Constructor
+    public NhanVien(){
+        soLuongNV++;
+    }
     public NhanVien(
         String maNV,
         String hoTen,
@@ -107,15 +110,15 @@ public abstract class NhanVien implements IThongTin{
         LocalDate ngayVaoLam,
         String trangThai){
 
-        setmaNV(maNV);
-        sethoTen(hoTen);
-        setngaySinh(ngaySinh);
-        setgioiTinh(gioiTinh);
-        setsdt(sdt);
-        setemail(email);
-        setluongCoBan(luongCoBan);
-        setngayVaoLam(ngayVaoLam);
-        settrangThai(trangThai);
+        setMaNV(maNV);
+        setHoTen(hoTen);
+        setNgaySinh(ngaySinh);
+        setGioiTinh(gioiTinh);
+        setSdt(sdt);
+        setEmail(email);
+        setLuongCoBan(luongCoBan);
+        setNgayVaoLam(ngayVaoLam);
+        setTrangThai(trangThai);
 
         soLuongNV++;
     }
@@ -142,60 +145,66 @@ public abstract class NhanVien implements IThongTin{
         Scanner sc = new Scanner(System.in);
 
         System.out.print("Ma nhan vien: ");
-        setmaNV(sc.nextLine());
+        setMaNV(sc.nextLine());
 
         System.out.print("Ho ten: ");
-        sethoTen(sc.nextLine());
+        setHoTen(sc.nextLine());
 
         System.out.print("Ngay sinh (yyyy-MM-dd): ");
-        setngaySinh(LocalDate.parse(sc.nextLine()));
+        setNgaySinh(LocalDate.parse(sc.nextLine()));
 
         System.out.print("Gioi tinh: ");
-        setgioiTinh(sc.nextLine());
+        setGioiTinh(sc.nextLine());
 
         System.out.print("So dien thoai: ");
-        setsdt(sc.nextLine());
+        setSdt(sc.nextLine());
 
         System.out.print("Email: ");
-        setemail(sc.nextLine());
+        setEmail(sc.nextLine());
 
         System.out.print("Luong co ban: ");
-        setluongCoBan(Double.parseDouble(sc.nextLine()));
+        setLuongCoBan(Double.parseDouble(sc.nextLine()));
 
         System.out.print("Ngay vao lam (yyyy-MM-dd): ");
-        setngayVaoLam(LocalDate.parse(sc.nextLine()));
+        setNgayVaoLam(LocalDate.parse(sc.nextLine()));
 
         System.out.print("Trang thai: ");
-        settrangThai(sc.nextLine());
+        setTrangThai(sc.nextLine());
     }
 
     //getter
-    public String getmaNV(){
+    public String getMaNV(){
         return this.maNV;
     }
-    public String gethoTen(){
+    public String getHoTen(){
         return this.hoTen;
     }
-    public LocalDate getngaySinh(){
+    public LocalDate getNgaySinh(){
         return this.ngaySinh;
     }
-    public String getgioiTinh(){
+    public String getGioiTinh(){
         return this.gioiTinh;
     }
-    public String getsdt(){
+    public String getSdt(){
         return this.sdt;
     }
-    public String getemail(){
+    public String getEmail(){
         return this.email;
     }
-    public double getluongCoBan(){
+    public double getLuongCoBan(){
         return this.luongCoBan;
     }
-    public LocalDate getngayVaoLam(){
+    public LocalDate getNgayVaoLam(){
         return this.ngayVaoLam;
     }
-    public String gettrangThai(){
+    public String getTrangThai(){
         return this.trangThai;
+    }
+
+    public ChucVu getChucVu() { return chucVu; }
+    public PhongBan getPhongBan() { return phongBan; }
+    public TrinhDoChuyenMon[] getTrinhDo() {
+        return trinhDo == null ? null : trinhDo.clone();
     }
 
     public double chamCong(int ngay, int gioVao, int gioRa){

@@ -52,6 +52,6 @@ public class NhanVienToanThoiGian extends NhanVien{
 
     @Override
     public double tinhLuong(){
-        return getluongCoBan() + phuCap + thamNien * 200000;
+        return getLuongCoBan() + phuCap + thamNien * 200000;
     }
 }

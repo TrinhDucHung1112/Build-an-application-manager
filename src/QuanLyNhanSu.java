@@ -13,7 +13,7 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
     private DanhSachPhongBan danhSachPB;    //lay mang danh sach cua PB(da duoc tao o DSPB)
     private int soLuongNV;
     Scanner sc = new Scanner(System.in);
-    private static final String DUONG_DAN = "nhanvien.dat";
+    private static final String DUONG_DAN = DuongDanDuLieu.file("nhanvien.dat");
 
 //----constructor----
     public QuanLyNhanSu(int sucChua){
@@ -33,6 +33,12 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         return soLuongNV;
     }
 
+    public NhanVien[] getDanhSachNV() {
+        NhanVien[] ketQua = new NhanVien[soLuongNV];
+        System.arraycopy(danhSachNV, 0, ketQua, 0, soLuongNV);
+        return ketQua;
+    }
+
     public int getSucChua(){
         return danhSachNV.length;
     }
@@ -48,11 +54,10 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         themKNhanVien(k);
     }
 
-    public boolean themNhanVien(NhanVien nv) {
+    public boolean themNhanVien(NhanVien nv){
         if (nv == null) return false;
         if (soLuongNV == danhSachNV.length) return false;
         if (timViTri(nv.getMaNV()) != -1) return false;
- 
         danhSachNV[soLuongNV] = nv;
         soLuongNV++;
         if (nv.getPhongBan() != null) nv.getPhongBan().tangSoNhanVien();
@@ -70,10 +75,10 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             System.out.println("chon loai nhan vien (1: NV toan thoi gian, 2: Nv ban thoi gian, 3: Nv hop dong)");
             int choose;
             NhanVien nv;
-            do {
+            do{
                 choose = Integer.parseInt(sc.nextLine());
-            } while (choose < 1 || choose > 3); 
-            switch (choose) {
+            }while(choose < 1 || choose > 3); 
+            switch(choose){
                 case 1:
                     nv = new NhanVienToanThoiGian();
                     break;
@@ -104,23 +109,23 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         return cv;
     }
 
-    private PhongBan hoiPhongBan() {
-        if (danhSachPB == null) return null;
-        while (true) {
+    private PhongBan hoiPhongBan(){
+        if(danhSachPB == null) return null;
+        while(true){
             System.out.println("nhap vao maPB cua nhan vien: ");
             String ma = sc.nextLine().toUpperCase();
             PhongBan pb = danhSachPB.timTheoMa(ma);
-            if (pb != null) return pb;
+            if(pb != null) return pb;
             System.out.println("khong tim thay phong ban nay");
         }
     }
     
-    private void ganLienKet(NhanVien nv) { 
-        if (nv.getPhongBan() == null) {
+    private void ganLienKet(NhanVien nv){ 
+        if(nv.getPhongBan() == null) {
             PhongBan pb = hoiPhongBan();
             if (pb != null) nv.setPhongBan(pb);
         }
-        if (nv.getChucVu() == null) {
+        if(nv.getChucVu() == null) {
             ChucVu cv = hoiChucVu();
             if (cv != null) nv.setChucVu(cv);
         }
@@ -236,15 +241,57 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
     }
 
 //---timKiemTuKHoa---
+    // Tim kiem theo tu khoa: uu tien khop chinh xac, dong thoi chap nhan khop gan dung.
+    // Ho tro ma NV, ho ten, so dien thoai va email.
     public NhanVien[] timKiemTuKhoa(String tuKhoa){
-        if(tuKhoa == null)
-            return new NhanVien[0];
-        boolean khop[] = new boolean[soLuongNV];
-        for(int i = 0; i < soLuongNV; i++){
-            if(danhSachNV[i] != null && ((danhSachNV[i].getMaNV() != null && danhSachNV[i].getMaNV().equalsIgnoreCase(tuKhoa)) || (danhSachNV[i].getHoTen() != null && danhSachNV[i].getHoTen().equalsIgnoreCase(tuKhoa))))
-                khop[i] = true;
+        if (tuKhoa == null || tuKhoa.isBlank()) return new NhanVien[0];
+        String key = chuanHoaTuKhoa(tuKhoa);
+        boolean[] khop = new boolean[soLuongNV];
+        for (int i = 0; i < soLuongNV; i++) {
+            NhanVien nv = danhSachNV[i];
+            if (nv == null) continue;
+            String thongTin = chuanHoaTuKhoa(
+                nv.getMaNV() + " " + nv.getHoTen() + " " + nv.getSdt() + " " + nv.getEmail()
+            );
+            khop[i] = thongTin.contains(key);
         }
         return lietKe(khop);
+    }
+
+    private String chuanHoaTuKhoa(String value) {
+        return java.text.Normalizer.normalize(value == null ? "" : value,
+                java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .toLowerCase(java.util.Locale.ROOT).trim();
+    }
+
+    public NhanVien[] timKiemGanDung(String tuKhoa) {
+        return timKiemTuKhoa(tuKhoa);
+    }
+
+    // Cap nhat thong tin co ban, dong bo lai so nhan vien cua cac phong ban.
+    public boolean capNhatThongTinCoBan(String maNV, String hoTen, java.time.LocalDate ngaySinh,
+            String gioiTinh, String sdt, String email, double luongCoBan,
+            java.time.LocalDate ngayVaoLam, String trangThai, PhongBan phongBanMoi) {
+        NhanVien nv = timTheoMa(maNV);
+        if (nv == null) return false;
+        nv.setHoTen(hoTen);
+        nv.setNgaySinh(ngaySinh);
+        nv.setGioiTinh(gioiTinh);
+        nv.setSdt(sdt);
+        nv.setEmail(email);
+        nv.setLuongCoBan(luongCoBan);
+        nv.setNgayVaoLam(ngayVaoLam);
+        nv.setTrangThai(trangThai);
+        PhongBan phongBanCu = nv.getPhongBan();
+        if (phongBanCu != phongBanMoi) {
+            if (phongBanCu != null) phongBanCu.giamSoNhanVien();
+            if (phongBanMoi != null) phongBanMoi.tangSoNhanVien();
+            // Cho phep bo phan nhan vien khoi phong ban.
+            if (phongBanMoi != null) nv.setPhongBan(phongBanMoi);
+            else nv.xoaPhongBan();
+        }
+        return true;
     }
 
     public NhanVien[] lietKe(boolean[] khop){
@@ -371,9 +418,9 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 
 @Override 
     public void docFile(){
-        File f = new File(/*duong dan file */);
+        File f = new File(DUONG_DAN);
         if(!f.exists()){
-            System.out.println("khong the doc file");
+            System.out.println("Chua co du lieu nhan vien (" + DUONG_DAN + "), bat dau moi.");
             return;
         }
         NhanVien[] tam;     //thuc hien kiem tra doi tuong sau doc file, neu dung ghi vao danh sach dang co, khong thi bo qua
@@ -402,12 +449,12 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 @Override 
     //dung su ly ngoai le de chuong trinh khong sap giua chung
     public void ghiFile() {
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(/*duong dan file*/))) {   //FileOutputStream: ghi ra file kem xoa noi dung cu, ObjectOutputStream: giup ghi du lieu ca 1 doi tuong (implements Seriazilizable)
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DUONG_DAN))) {   //FileOutputStream: ghi ra file kem xoa noi dung cu, ObjectOutputStream: giup ghi du lieu ca 1 doi tuong (implements Seriazilizable)
             oos.writeInt(soLuongNV);
             for (int i = 0; i < soLuongNV; i++) {
                 oos.writeObject(danhSachNV[i]);   // ghi ca doi tuong(kem phongban, chuc vu, trinh do chuyen mon o ben trong (luu y: cac class nay bat buoc phai implement Serializable))
             }
-            System.out.println("da ghi " + soLuongNV + " nhan vien vao file" + /*duong dan file */);
+            System.out.println("da ghi " + soLuongNV + " nhan vien vao file" + DUONG_DAN);
         } catch (NotSerializableException e) {
             System.out.println("loi: class " + e.getMessage()
                     + " chua implements Serializable. hay them implements Serializable cho NhanVien.");

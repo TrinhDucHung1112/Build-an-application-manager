@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class ThuongPhat {
+public class ThuongPhat implements Serializable {
 //----thuoc tinh----
     private String maTP;
     private String maNV;
@@ -12,7 +13,7 @@ public class ThuongPhat {
     private LocalDate ngayApDung;
 
 //----constructor----
-    public ThuongPhat() {
+    public ThuongPhat(){
         this.maTP = "";
         this.maNV = "";
         this.maQD = "";
@@ -24,7 +25,7 @@ public class ThuongPhat {
     }
 
     public ThuongPhat(String maTP, String maNV, String maQD, String loai, String lyDo,
-                      double soLuong, double soTien, LocalDate ngayApDung) {
+                      double soLuong, double soTien, LocalDate ngayApDung){
         this.maTP = maTP;
         this.maNV = maNV;
         this.maQD = maQD;
@@ -36,7 +37,7 @@ public class ThuongPhat {
     }
 
     //tao tu quy dinh: loai, ly do, so tien lay tu quy dinh
-    public ThuongPhat(String maTP, String maNV, QuyDinhThuongPhat qd, double soLuong, LocalDate ngayApDung) {
+    public ThuongPhat(String maTP, String maNV, QuyDinhThuongPhat qd, double soLuong, LocalDate ngayApDung){
         this.maTP = maTP;
         this.maNV = maNV;
         this.maQD = qd.getMaQD();
@@ -49,31 +50,31 @@ public class ThuongPhat {
 
 //----methods----
     //so tien luon duong, dua vao loai de cong hay tru
-    public double tinhSoTien() {
+    public double tinhSoTien(){
         return soTien;
     }
 
 //---hienthi---
-    public void hienThiThongTin() {
+    public void hienThiThongTin(){
         System.out.println(maTP + " | NV " + maNV + " | " + loai + " | " + lyDo
                 + " | SL " + soLuong + " | " + String.format("%,.0f", soTien) + " | " + ngayApDung);
     }
 
 //---setter, getter---
-    public String getMaTP() { return maTP; }
+    public String getMaTP(){ return maTP; }
     public void setMaTP(String maTP) { this.maTP = maTP; }
-    public String getMaNV() { return maNV; }
+    public String getMaNV(){ return maNV; }
     public void setMaNV(String maNV) { this.maNV = maNV; }
-    public String getMaQD() { return maQD; }
+    public String getMaQD(){ return maQD; }
     public void setMaQD(String maQD) { this.maQD = maQD; }
-    public String getLoai() { return loai; }
+    public String getLoai(){ return loai; }
     public void setLoai(String loai) { this.loai = loai; }
-    public String getLyDo() { return lyDo; }
+    public String getLyDo(){ return lyDo; }
     public void setLyDo(String lyDo) { this.lyDo = lyDo; }
-    public double getSoLuong() { return soLuong; }
+    public double getSoLuong(){ return soLuong; }
     public void setSoLuong(double soLuong) { this.soLuong = soLuong; }
-    public double getSoTien() { return soTien; }
+    public double getSoTien(){ return soTien; }
     public void setSoTien(double soTien) { this.soTien = soTien; }
-    public LocalDate getNgayApDung() { return ngayApDung; }
-    public void setNgayApDung(LocalDate ngayApDung) { this.ngayApDung = ngayApDung; }
+    public LocalDate getNgayApDung(){ return ngayApDung; }
+    public void setNgayApDung(LocalDate ngayApDung){ this.ngayApDung = ngayApDung; }
 }

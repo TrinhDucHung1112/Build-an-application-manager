@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-public class ChamCong {
+public class ChamCong implements Serializable {
     private String maChamCong;
     private String maNV;
     private LocalDate ngay;
@@ -35,12 +36,8 @@ public class ChamCong {
     }
 
     public double tinhGioTangCa() {
-        if (this.soGioLam > 8.0) {
-            this.gioTangCa = this.soGioLam - 8.0;
-            this.soGioLam = 8.0;
-        } else {
-            this.gioTangCa = 0;
-        }
+        double tongGio = tinhGioLam();
+        this.gioTangCa = Math.max(0, tongGio - 8.0);
         return this.gioTangCa;
     }
 

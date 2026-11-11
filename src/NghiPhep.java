@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class NghiPhep {
+public class NghiPhep implements Serializable {
     private String maNP;
     private String maNV;
     private LocalDate ngayBatDau;
@@ -17,7 +18,17 @@ public class NghiPhep {
         this.ngayKetThuc = ngayKetThuc;
         this.lyDo = lyDo;
         this.trangThai = "Cho duyet";
+        this.loaiNghi = "Co phep";
     }
+
+    public String getMaNP() { return maNP; }
+    public String getMaNV() { return maNV; }
+    public LocalDate getNgayBatDau() { return ngayBatDau; }
+    public LocalDate getNgayKetThuc() { return ngayKetThuc; }
+    public String getLyDo() { return lyDo; }
+    public String getLoaiNghi() { return loaiNghi; }
+    public void setLoaiNghi(String loaiNghi) { this.loaiNghi = loaiNghi; }
+    public String getTrangThai() { return trangThai; }
 
     public void duyetNghiPhep() {
         this.trangThai = "Da duyet";

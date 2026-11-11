@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class BaoHiem {
+public abstract class BaoHiem implements Serializable {
     private String maBH;
     private String maNV;
     private String soSo;
