@@ -21,9 +21,14 @@ public final class DuongDanDuLieu {
 
     private static File xacDinhThuMuc() {
         File cwd = new File("").getAbsoluteFile();
-        // Dang chay trong src -> dung ../data; ngoai ra dung ./data
+        // Dang chay trong src -> dung ../data
         if (cwd.getName().equals("src")) {
             return new File(cwd.getParentFile(), TEN_THU_MUC);
+        }
+        // Dang chay tu thu muc ngoai (VD: mo VS Code o thu muc OOP(PRJ) roi bam F5) -> tim data ben trong du an
+        File trongDuAn = new File(new File(cwd, "Build-an-application-manager"), TEN_THU_MUC);
+        if (!new File(cwd, TEN_THU_MUC).exists() && trongDuAn.exists()) {
+            return trongDuAn;
         }
         return new File(cwd, TEN_THU_MUC);
     }
