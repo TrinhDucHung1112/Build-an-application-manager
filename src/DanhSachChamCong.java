@@ -33,12 +33,20 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
     }
 
     public void xuatDanhSach() {
-        if (soLuong == 0) { System.out.println("Danh sach cham cong rong."); return; }
+        if (soLuong == 0) { GiaoDien.in("Danh sach cham cong rong."); return; }
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
         for (int i = 0; i < soLuong; i++) {
             ChamCong cc = danhSach[i];
-            System.out.printf("%s | NV: %s | Ngay: %s | Gio lam: %.2f | Tang ca: %.2f%n",
-                    cc.getMaChamCong(), cc.getMaNV(), cc.getNgay(), cc.tinhGioLam(), cc.tinhGioTangCa());
+            dong.add(new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
+                    String.valueOf(cc.getGioVao()), String.valueOf(cc.getGioRa()),
+                    String.format("%.2f", cc.tinhGioLam()), String.format("%.2f", cc.tinhGioTangCa())});
         }
+        GiaoDien.inBang(
+                new String[]{"MA CC", "MA NV", "NGAY", "GIO VAO", "GIO RA", "GIO LAM", "TANG CA"},
+                new int[]{10, 8, 10, 8, 8, 8, 8},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.GIUA, GiaoDien.GIUA, GiaoDien.PHAI, GiaoDien.PHAI},
+                dong);
+        GiaoDien.in("Tong so ban ghi cham cong: " + soLuong);
     }
 
     public boolean them(ChamCong cc) {
@@ -116,9 +124,9 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
         }
         try {
             TepVanBan.ghiDong(TEN_FILE, "maChamCong|maNV|ngay(yyyy-MM-dd)|gioVao(HH:mm)|gioRa(HH:mm)", dong);
-            System.out.println("Da luu cham cong.");
+            GiaoDien.in("Da luu cham cong.");
         } catch (IOException e) {
-            System.out.println("Loi luu cham cong: " + e.getMessage());
+            GiaoDien.in("Loi luu cham cong: " + e.getMessage());
         }
     }
 
@@ -134,11 +142,11 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
                 try {
                     them(new ChamCong(p[0], p[1], LocalDate.parse(p[2]), LocalTime.parse(p[3]), LocalTime.parse(p[4])));
                 } catch (RuntimeException e) {
-                    System.out.println("Bo qua dong cham cong loi: " + String.join("|", p));
+                    GiaoDien.in("Bo qua dong cham cong loi: " + String.join("|", p));
                 }
             }
         } catch (IOException e) {
-            System.out.println("Loi doc cham cong: " + e.getMessage());
+            GiaoDien.in("Loi doc cham cong: " + e.getMessage());
         }
     }
 }

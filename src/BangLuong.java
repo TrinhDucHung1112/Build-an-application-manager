@@ -77,18 +77,20 @@ public class BangLuong {
 
 //---xuat---
     public void xuatBangLuong() {
-        System.out.println("===== BANG LUONG " + thang + "/" + nam + " =====");
-        System.out.println("Ma bang luong : " + maBangLuong + " | Ma NV: " + maNV);
-        System.out.println(String.format("Luong nhan vien: %,.0f", luongNhanVien));
-        System.out.println(String.format("Phu cap        : %,.0f", phuCap));
-        System.out.println(String.format("Tien thuong    : %,.0f", tienThuong));
-        System.out.println(String.format("Tien phat      : %,.0f", tienPhat));
-        for (LuongThuong lt : dsLuongThuong) lt.hienThi();
-        System.out.println(String.format("Tong luong     : %,.0f", tongLuong));
-        System.out.println(String.format("Tien bao hiem  : %,.0f", tienBaoHiem));
-        System.out.println(String.format("LUONG THUC NHAN: %,.0f", luongThucNhan));
+        GiaoDien.in("BANG LUONG THANG " + thang + "/" + nam + "   |   Ma bang luong: " + maBangLuong + "   |   Ma NV: " + maNV);
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Luong nhan vien", String.format("%,.0f", luongNhanVien)});
+        dong.add(new String[]{"Phu cap", String.format("%,.0f", phuCap)});
+        dong.add(new String[]{"Tien thuong", String.format("%,.0f", tienThuong)});
+        dong.add(new String[]{"Tien phat", String.format("%,.0f", tienPhat)});
+        for (LuongThuong lt : dsLuongThuong)
+            dong.add(new String[]{"   + " + lt.getLoai() + ": " + lt.getLyDo(), String.format("%,.0f", lt.getSoTien())});
+        dong.add(new String[]{"Tong luong", String.format("%,.0f", tongLuong)});
+        dong.add(new String[]{"Tien bao hiem", String.format("%,.0f", tienBaoHiem)});
+        dong.add(new String[]{"LUONG THUC NHAN", String.format("%,.0f", luongThucNhan)});
+        GiaoDien.inThongTin("KHOAN MUC", "SO TIEN (VND)", dong);
         if (luongThucNhan < LUONG_TOI_THIEU) {
-            System.out.println("(Luu y: thap hon luong toi thieu " + String.format("%,.0f", LUONG_TOI_THIEU) + ")");
+            GiaoDien.in("Luu y: thap hon luong toi thieu " + String.format("%,.0f", LUONG_TOI_THIEU) + " VND");
         }
     }
 

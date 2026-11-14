@@ -108,39 +108,64 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
         boolean co = false;
         for (int i = 0; i < soLuong; i++) {
             if (danhSach[i].getMaNV().equals(maNV)) {
+                if (co) GiaoDien.in("");
                 danhSach[i].xuatBangLuong();
                 co = true;
             }
         }
-        if (!co) System.out.println("Khong co bang luong cua nhan vien " + maNV);
+        if (!co) GiaoDien.in("Khong co bang luong cua nhan vien " + maNV);
     }
 
     //ql de lay nhan vien theo phong ban
     public void xuatBangLuongTheoPhong(String maPB, int thang, int nam, QuanLyNhanSu ql) {
         NhanVien[] dsNV = ql.timKiemTheoPhongBan(maPB);
-        boolean co = false;
+        java.util.List<BangLuong> kq = new java.util.ArrayList<>();
         if (dsNV != null) {
             for (NhanVien nv : dsNV) {
                 if (nv == null) continue;
                 BangLuong bl = timTheoMaNV(nv.getMaNV(), thang, nam);
-                if (bl != null) {
-                    bl.xuatBangLuong();
-                    co = true;
-                }
+                if (bl != null) kq.add(bl);
             }
         }
-        if (!co) System.out.println("Khong co bang luong phong " + maPB + " thang " + thang + "/" + nam);
+        if (kq.isEmpty()) {
+            GiaoDien.in("Khong co bang luong phong " + maPB + " thang " + thang + "/" + nam);
+            return;
+        }
+        GiaoDien.in("BANG LUONG PHONG " + maPB.toUpperCase() + " THANG " + thang + "/" + nam);
+        inBang(kq.toArray(new BangLuong[0]));
     }
 
     public void xuatBangLuongCongTy(int thang, int nam) {
-        boolean co = false;
+        java.util.List<BangLuong> kq = new java.util.ArrayList<>();
         for (int i = 0; i < soLuong; i++) {
-            if (danhSach[i].getThang() == thang && danhSach[i].getNam() == nam) {
-                danhSach[i].xuatBangLuong();
-                co = true;
-            }
+            if (danhSach[i].getThang() == thang && danhSach[i].getNam() == nam) kq.add(danhSach[i]);
         }
-        if (!co) System.out.println("Khong co bang luong thang " + thang + "/" + nam);
+        if (kq.isEmpty()) {
+            GiaoDien.in("Khong co bang luong thang " + thang + "/" + nam);
+            return;
+        }
+        GiaoDien.in("BANG LUONG CONG TY THANG " + thang + "/" + nam + " (don vi: VND)");
+        inBang(kq.toArray(new BangLuong[0]));
+        GiaoDien.in("Tong quy luong thuc nhan: " + String.format("%,.0f", tongQuyLuong(thang, nam)) + " VND");
+        GiaoDien.in("(Xem chi tiet thuong/phat cua tung nguoi: chon 'Xem bang luong theo ma NV')");
+    }
+
+    //in tom tat bang luong, moi nhan vien 1 dong
+    public static void inBang(BangLuong[] ds) {
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (BangLuong bl : ds) {
+            if (bl == null) continue;
+            dong.add(new String[]{bl.getMaNV(),
+                    String.format("%,.0f", bl.getLuongNhanVien()), String.format("%,.0f", bl.getPhuCap()),
+                    String.format("%,.0f", bl.getTienThuong()), String.format("%,.0f", bl.getTienPhat()),
+                    String.format("%,.0f", bl.getTienBaoHiem()), String.format("%,.0f", bl.getTongLuong()),
+                    String.format("%,.0f", bl.getLuongThucNhan())});
+        }
+        GiaoDien.inBang(
+                new String[]{"MA NV", "LUONG NV", "PHU CAP", "THUONG", "PHAT", "BAO HIEM", "TONG LUONG", "THUC NHAN"},
+                new int[]{8, 12, 12, 12, 12, 12, 12, 12},
+                new String[]{GiaoDien.TRAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI},
+                dong);
     }
 
 //---thong ke (theo luong thuc nhan)---
@@ -202,9 +227,9 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
                         + "," + TepVanBan.soDep(bl.getTienPhat()) + "," + TepVanBan.soDep(bl.getTienBaoHiem())
                         + "," + TepVanBan.soDep(bl.getLuongNhanVien()));
             }
-            System.out.println("Da ghi " + soLuong + " bang luong vao file " + TEN_FILE);
+            GiaoDien.in("Da ghi " + soLuong + " bang luong vao file " + TEN_FILE);
         } catch (IOException e) {
-            System.out.println("Loi ghi file: " + e.getMessage());
+            GiaoDien.in("Loi ghi file bang luong: " + e.getMessage());
         }
     }
 
@@ -212,7 +237,7 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
     public void docFile() {
         File f = new File(TEN_FILE);
         if (!f.exists()) {
-            System.out.println("Chua co file " + TEN_FILE);
+            GiaoDien.in("Chua co file " + TEN_FILE);
             return;
         }
         soLuong = 0;
@@ -228,12 +253,12 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
                             Double.parseDouble(p[4]), Double.parseDouble(p[5]), Double.parseDouble(p[6]),
                             Double.parseDouble(p[7]), Double.parseDouble(p[8])));
                 } catch (NumberFormatException e) {
-                    System.out.println("Bo qua dong sai dinh dang: " + dong);
+                    GiaoDien.in("Bo qua dong sai dinh dang: " + dong);
                 }
             }
-            System.out.println("Da doc " + soLuong + " bang luong tu file " + TEN_FILE);
+            GiaoDien.in("Da doc " + soLuong + " bang luong tu file " + TEN_FILE);
         } catch (IOException e) {
-            System.out.println("Loi doc file: " + e.getMessage());
+            GiaoDien.in("Loi doc file bang luong: " + e.getMessage());
         }
     }
 

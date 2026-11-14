@@ -126,8 +126,29 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
     }
 
 //---hienthi---
+    //in danh sach thuong/phat dang bang co STT
+    public static void inBang(ThuongPhat[] ds) {
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (ThuongPhat tp : ds) {
+            if (tp == null) continue;
+            dong.add(new String[]{tp.getMaTP(), tp.getMaNV(), tp.getLoai(), tp.getLyDo(),
+                    TepVanBan.soDep(tp.getSoLuong()), String.format("%,.0f", tp.getSoTien()),
+                    String.valueOf(tp.getNgayApDung())});
+        }
+        GiaoDien.inBang(
+                new String[]{"MA TP", "MA NV", "LOAI", "LY DO", "SO LUONG", "SO TIEN", "NGAY AP DUNG"},
+                new int[]{24, 8, 7, 30, 8, 11, 12},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.TRAI},
+                dong);
+    }
+
     public void xuatDanhSach() {
-        for (int i = 0; i < soLuong; i++) danhSach[i].hienThiThongTin();
+        if (soLuong == 0) {
+            GiaoDien.in("Danh sach thuong/phat rong.");
+            return;
+        }
+        inBang(Arrays.copyOf(danhSach, soLuong));
+        GiaoDien.in("Tong so khoan thuong/phat: " + soLuong);
     }
 
     private static final String FILE_TEXT = DuongDanDuLieu.file("thuongphat.txt");
@@ -144,7 +165,7 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
         try {
             TepVanBan.ghiDong(FILE_TEXT, "maTP|maNV|maQD|loai|lyDo|soLuong|soTien|ngayApDung(yyyy-MM-dd)", dong);
         } catch (java.io.IOException e) {
-            System.out.println("Loi luu thuong phat: " + e.getMessage());
+            GiaoDien.in("Loi luu thuong phat: " + e.getMessage());
         }
     }
 
@@ -161,11 +182,11 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
                     them(new ThuongPhat(p[0], p[1], p[2], p[3], p[4], Double.parseDouble(p[5]),
                             Double.parseDouble(p[6]), java.time.LocalDate.parse(p[7])));
                 } catch (RuntimeException e) {
-                    System.out.println("Bo qua dong thuong phat loi: " + String.join("|", p));
+                    GiaoDien.in("Bo qua dong thuong phat loi: " + String.join("|", p));
                 }
             }
         } catch (java.io.IOException e) {
-            System.out.println("Loi doc thuong phat: " + e.getMessage());
+            GiaoDien.in("Loi doc thuong phat: " + e.getMessage());
         }
     }
 

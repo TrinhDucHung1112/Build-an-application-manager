@@ -101,16 +101,26 @@ public class NhanVienHopDong extends NhanVien {
     }
 
     @Override
-    public void hienThiThongTin(){
-        super.hienThiThongTin();
-        System.out.println("Loai nhan vien: Hop dong");
-        System.out.println("Thoi han hop dong: " + thoiHanHopDong + " ngay");
-        System.out.println("Luong theo hop dong: " + String.format("%,.0f", luongTheoHopDong));
-        System.out.println("Ngay bat dau thuc te: " + ngayBatDauThucTe);
-        System.out.println("Ngay ket thuc thuc te: " + ngayKetThucTe);
-        System.out.println("Thoi gian thuc te: " + thoiGianThucTe + " ngay");
-        if(hopDong != null)
-            hopDong.hienThiThongTin();
+    protected java.util.List<String[]> thongTinRieng(){
+        java.util.List<String[]> r = new java.util.ArrayList<>();
+        r.add(new String[]{"Loai nhan vien", "Hop dong"});
+        r.add(new String[]{"Thoi han hop dong", thoiHanHopDong + " ngay"});
+        r.add(new String[]{"Luong theo hop dong", String.format("%,.0f", luongTheoHopDong)});
+        r.add(new String[]{"Ngay bat dau thuc te", String.valueOf(ngayBatDauThucTe)});
+        r.add(new String[]{"Ngay ket thuc thuc te", String.valueOf(ngayKetThucTe)});
+        r.add(new String[]{"Thoi gian thuc te", thoiGianThucTe + " ngay"});
+        if(hopDong != null){
+            r.add(new String[]{"Ma hop dong", hopDong.getmaHD()});
+            r.add(new String[]{"Loai hop dong", hopDong.getloaiHopDong()});
+            r.add(new String[]{"Ngay ky", String.valueOf(hopDong.getngayKy())});
+            r.add(new String[]{"Ngay het han", hopDong.getngayHetHan() + (hopDong.conHieuLuc() ? " (con hieu luc)" : " (het hieu luc)")});
+        }
+        return r;
+    }
+
+    @Override
+    public String tenLoai(){
+        return "Hop dong";
     }
 
 

@@ -52,10 +52,7 @@ public class PhongBan implements Serializable, IThongTin {
     // Hiển thị thông tin
     @Override
     public void hienThiThongTin(){
-        System.out.println("Ma phong ban: " + maPB);
-        System.out.println("Ten phong ban: " + tenPB);
-        System.out.println("Mo ta phong ban: " + moTa);
-        System.out.println("So nhan vien: " + soNhanVien);
+        DanhSachPhongBan.inBang(new PhongBan[]{ this });
     }
 
     // Nhập thông tin phòng ban

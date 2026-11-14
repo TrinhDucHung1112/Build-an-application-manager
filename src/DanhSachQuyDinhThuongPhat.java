@@ -41,15 +41,22 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
 
     public void xuatDanhSach() {
         if (soLuong == 0) {
-            System.out.println("Chua co quy dinh thuong/phat.");
+            GiaoDien.in("Chua co quy dinh thuong/phat.");
             return;
         }
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
         for (int i = 0; i < soLuong; i++) {
             QuyDinhThuongPhat qd = danhSach[i];
-            System.out.printf("%s | %s | %s | %s %.2f | %.0f VND/%s%n",
-                    qd.getMaQD(), qd.getTenQD(), qd.getLoai(), qd.getDieuKien(),
-                    qd.getNguong(), qd.getMucTien(), qd.getDonVi());
+            dong.add(new String[]{qd.getMaQD(), qd.getTenQD(), qd.getLoai(),
+                    qd.getDieuKien() + " " + TepVanBan.soDep(qd.getNguong()),
+                    String.format("%,.0f", qd.getMucTien()), qd.getDonVi()});
         }
+        GiaoDien.inBang(
+                new String[]{"MA QD", "TEN QUY DINH", "LOAI", "DIEU KIEN", "MUC TIEN (VND)", "DON VI"},
+                new int[]{8, 28, 7, 10, 14, 22},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.PHAI, GiaoDien.TRAI},
+                dong);
+        GiaoDien.in("Tong so quy dinh: " + soLuong);
     }
 
     // Dinh dang moi dong: maQD|tenQD|loai|dieuKien|nguong|mucTien|donVi
@@ -64,7 +71,7 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
         try {
             TepVanBan.ghiDong(FILE, "maQD|tenQD|loai|dieuKien|nguong|mucTien|donVi", dong);
         } catch (java.io.IOException e) {
-            System.out.println("Loi luu quy dinh: " + e.getMessage());
+            GiaoDien.in("Loi luu quy dinh: " + e.getMessage());
         }
     }
 
@@ -81,11 +88,11 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
                     them(new QuyDinhThuongPhat(p[0], p[1], p[2], p[3], Double.parseDouble(p[4]),
                             Double.parseDouble(p[5]), p[6]));
                 } catch (RuntimeException e) {
-                    System.out.println("Bo qua dong quy dinh loi: " + String.join("|", p));
+                    GiaoDien.in("Bo qua dong quy dinh loi: " + String.join("|", p));
                 }
             }
         } catch (java.io.IOException e) {
-            System.out.println("Loi doc quy dinh: " + e.getMessage());
+            GiaoDien.in("Loi doc quy dinh: " + e.getMessage());
         }
     }
 

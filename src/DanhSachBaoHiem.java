@@ -43,7 +43,7 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
     public boolean them(BaoHiem bh) {
         if (bh == null) return false;
         if (viTriTheoMa(bh.getMaBH()) != -1) {
-            System.out.println("Lỗi: Mã bảo hiểm đã tồn tại!");
+            GiaoDien.in("Loi: Ma bao hiem da ton tai!");
             return false;
         }
         if (soLuong >= danhSach.length) {
@@ -104,11 +104,31 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
         return tong;
     }
 
-    public static void inTieuDeBang() {
-        System.out.println("-------------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-8s | %-8s | %-12s | %-13s | %-10s | %-6s | %s%n",
-                "MÃ BH", "MÃ NV", "SỐ SỔ/THẺ", "NGÀY THAM GIA", "TRẠNG THÁI", "LOẠI", "CHI TIẾT");
-        System.out.println("-------------------------------------------------------------------------------------------------------------");
+    //in danh sach bao hiem dang bang co STT (dung chung cho xem danh sach va tim theo ma NV)
+    public static void inBang(BaoHiem[] ds) {
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (BaoHiem bh : ds) {
+            if (bh == null) continue;
+            String loai;
+            String chiTiet;
+            if (bh instanceof BaoHiemYTe) {
+                BaoHiemYTe yt = (BaoHiemYTe) bh;
+                loai = "BHYT";
+                chiTiet = "KCB: " + yt.getNoiKhamChuaBenh() + "\nHan the: " + yt.getHanTheDen()
+                        + (yt.conHanThe() ? " (con han)" : " (het han)");
+            } else {
+                loai = "BHXH";
+                chiTiet = String.format("NV dong %.1f%% - DN dong %.1f%%",
+                        BaoHiemXaHoi.getTyLeNV() * 100, BaoHiemXaHoi.getTyLeDN() * 100);
+            }
+            dong.add(new String[]{bh.getMaBH(), bh.getMaNV(), bh.getSoSo(),
+                    String.valueOf(bh.getNgayThamGia()), bh.getTrangThai(), loai, chiTiet});
+        }
+        GiaoDien.inBang(
+                new String[]{"MA BH", "MA NV", "SO SO/THE", "NGAY THAM GIA", "TRANG THAI", "LOAI", "CHI TIET"},
+                new int[]{8, 8, 14, 13, 10, 5, 36},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI},
+                dong);
     }
 
     private static final String FILE_TEXT = DuongDanDuLieu.file("baohiem.txt");
@@ -132,9 +152,9 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
         }
         try {
             TepVanBan.ghiDong(FILE_TEXT, "BHXH|maBH|maNV|soSo|ngayThamGia|trangThai   va   BHYT|...|noiKCB|hanTheDen", dong);
-            System.out.println("Da luu danh sach bao hiem.");
+            GiaoDien.in("Da luu danh sach bao hiem.");
         } catch (java.io.IOException e) {
-            System.out.println("Loi luu bao hiem: " + e.getMessage());
+            GiaoDien.in("Loi luu bao hiem: " + e.getMessage());
         }
     }
 
@@ -159,24 +179,23 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
                     bh.setTrangThai(p[5]);
                     them(bh);
                 } catch (RuntimeException e) {
-                    System.out.println("Bo qua dong bao hiem loi: " + String.join("|", p));
+                    GiaoDien.in("Bo qua dong bao hiem loi: " + String.join("|", p));
                 }
             }
         } catch (java.io.IOException e) {
-            System.out.println("Loi doc bao hiem: " + e.getMessage());
+            GiaoDien.in("Loi doc bao hiem: " + e.getMessage());
         }
     }
 
 
     public void xuatDanhSach() {
         if (soLuong == 0) {
-            System.out.println("Danh sách bảo hiểm rỗng.");
+            GiaoDien.in("Danh sach bao hiem rong.");
             return;
         }
-        inTieuDeBang();
-        for (int i = 0; i < soLuong; i++) {
-            danhSach[i].hienThiThongTin();
-        }
-        System.out.println("-------------------------------------------------------------------------------------------------------------");
+        BaoHiem[] ds = new BaoHiem[soLuong];
+        System.arraycopy(danhSach, 0, ds, 0, soLuong);
+        inBang(ds);
+        GiaoDien.in("Tong so ho so bao hiem: " + soLuong);
     }
 }

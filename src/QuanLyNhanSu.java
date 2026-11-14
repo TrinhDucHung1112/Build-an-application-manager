@@ -164,13 +164,34 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 //---xuatdanhsach---
     public void xuatDanhSachNV() {
         if (soLuongNV == 0) {
-            System.out.println("danh sach trong");
+            GiaoDien.in("Danh sach nhan vien trong.");
             return;
         }
-        for (int i = 0; i < soLuongNV; i++) {
-            System.out.println("nhan vien: " + (i+1));
-            danhSachNV[i].hienThiThongTin();      
+        inBang(getDanhSachNV());
+        GiaoDien.in("Tong so nhan vien: " + soLuongNV);
+    }
+
+    //in danh sach nhan vien dang bang co STT (dung chung cho xem danh sach, tim kiem, bao cao)
+    //muon xem day du thong tin 1 nhan vien thi goi nv.hienThiThongTin()
+    public static void inBang(NhanVien[] ds) {
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (NhanVien nv : ds) {
+            if (nv == null) continue;
+            dong.add(new String[]{
+                nv.getMaNV(),
+                nv.getHoTen(),
+                nv.getPhongBan() == null ? "(chua phan)" : nv.getPhongBan().getTenPB(),
+                nv.getChucVu() == null ? "" : nv.getChucVu().getTenCV(),
+                nv.tenLoai(),
+                String.format("%,.0f", nv.tinhLuong()),
+                nv.getTrangThai()});
         }
+        GiaoDien.inBang(
+            new String[]{"MA NV", "HO TEN", "PHONG BAN", "CHUC VU", "LOAI", "LUONG", "TRANG THAI"},
+            new int[]{8, 22, 14, 16, 8, 12, 11},
+            new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI,
+                         GiaoDien.TRAI, GiaoDien.PHAI, GiaoDien.TRAI},
+            dong);
     }
 
 //---doiphongban---
@@ -368,11 +389,8 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 
 //---inraketqua(in ra ket qua cua ham liet ke)---
     public void inKetQua(NhanVien[] ketQua){
-        System.out.println("tim thay " + ketQua.length + " nhan vien");
-        for(NhanVien nv: ketQua){
-            nv.hienThiThongTin();
-            System.out.println();
-        }
+        GiaoDien.in("Tim thay " + ketQua.length + " nhan vien.");
+        if(ketQua.length > 0) inBang(ketQua);
     }
 
 //---thongketheoloainhanvien---
@@ -389,14 +407,17 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             if(nv instanceof NhanVienHopDong)
                 nhanVienHD++;
         }
-        System.out.println("so luong nhan vien toan thoi gian: " + nhanVienTTG);
-        System.out.println("so luong nhan vien ban thoi gian: " + nhanVienBTG);
-        System.out.println("so luong nhan vien hop dong: " + nhanVienHD);
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Nhan vien toan thoi gian", String.valueOf(nhanVienTTG)});
+        dong.add(new String[]{"Nhan vien ban thoi gian", String.valueOf(nhanVienBTG)});
+        dong.add(new String[]{"Nhan vien hop dong", String.valueOf(nhanVienHD)});
+        GiaoDien.inBang(new String[]{"LOAI NHAN VIEN", "SO LUONG"}, new int[]{28, 10},
+                new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
+        GiaoDien.in("Tong so nhan vien: " + soLuongNV);
     }
 
 //---thongketheotrangthai---
     public void thongKeTheoTrangThai(){
-        System.out.println("thong ke theo trang thai");
         String tenTT[] = new String[soLuongNV];     //dung de them trang thai
         int demTT[] = new int[soLuongNV];       //dung de dem trang thai trung
         int stt = 0;
@@ -420,14 +441,23 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
                 demTT[vitri]++;
             }
         }
-        for(int i = 0; i < stt; i++){
-            System.out.println("trang thai " + tenTT[i] + " co so luong la:" + demTT[i]);
+        if(stt == 0){
+            GiaoDien.in("Danh sach rong.");
+            return;
         }
-        if(stt == 0) System.out.println("danh sach rong");
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for(int i = 0; i < stt; i++){
+            dong.add(new String[]{tenTT[i], String.valueOf(demTT[i])});
+        }
+        GiaoDien.inBang(new String[]{"TRANG THAI", "SO LUONG"}, new int[]{28, 10},
+                new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
     }
 
     public void thongKeLuong(){
-        if(soLuongNV == 0) return;
+        if(soLuongNV == 0){
+            GiaoDien.in("Danh sach nhan vien rong, chua co gi de thong ke luong.");
+            return;
+        }
         double tong = 0;
         NhanVien luongMax = danhSachNV[0];
         NhanVien luongMin = danhSachNV[0];
@@ -439,10 +469,12 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             if(l < luongMin.tinhLuong())
                 luongMin = danhSachNV[i];
         }
-        System.out.println("tong luong cua toan cong ty: " + String.format("%,.0f", tong));
-        System.out.println("luong trung binh cua 1 nhan vien: " + String.format("%,.0f", tong/soLuongNV));
-        System.out.println("nhan vien co luong cao nhat: " + luongMax.getMaNV() + " " + luongMax.getHoTen() + " " + String.format("%,.0f", luongMax.tinhLuong()));
-        System.out.println("nhan vien co luong thap nhat: " + luongMin.getMaNV() + " " + luongMin.getHoTen() + " " + String.format("%,.0f", luongMin.tinhLuong()));
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Tong luong toan cong ty", String.format("%,.0f", tong) + " VND"});
+        dong.add(new String[]{"Luong trung binh 1 nhan vien", String.format("%,.0f", tong/soLuongNV) + " VND"});
+        dong.add(new String[]{"Luong cao nhat", luongMax.getMaNV() + " - " + luongMax.getHoTen() + ": " + String.format("%,.0f", luongMax.tinhLuong()) + " VND"});
+        dong.add(new String[]{"Luong thap nhat", luongMin.getMaNV() + " - " + luongMin.getHoTen() + ": " + String.format("%,.0f", luongMin.tinhLuong()) + " VND"});
+        GiaoDien.inThongKe(dong);
     }
 
     // Dinh dang moi dong (13 truong chung + truong rieng cua tung loai):
@@ -456,14 +488,14 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
     public void docFile(){
         File f = new File(DUONG_DAN);
         if(!f.exists()){
-            System.out.println("Chua co du lieu nhan vien (" + DUONG_DAN + "), bat dau moi.");
+            GiaoDien.in("Chua co du lieu nhan vien (" + DUONG_DAN + "), bat dau moi.");
             return;
         }
         java.util.List<String[]> cacDong;
         try {
             cacDong = TepVanBan.docDong(DUONG_DAN);
         } catch (IOException e) {
-            System.out.println("Loi doc file nhan vien: " + e.getMessage());
+            GiaoDien.in("Loi doc file nhan vien: " + e.getMessage());
             return;
         }
 
@@ -475,12 +507,11 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         for(String[] p : cacDong){
             NhanVien nv = taoNhanVienTuDong(p);
             if(nv == null || !themNhanVien(nv)){    //loi dinh dang, trung ma hoac danh sach day
-                System.out.println("Bo qua dong nhan vien: " + String.join("|", p));
+                GiaoDien.in("Bo qua dong nhan vien: " + String.join("|", p));
                 boQua++;
             }
         }
-        System.out.println("da doc soLuongNv = " + soLuongNV);
-        System.out.println("so nhan vien da bo qua(trung ma, danh sach day, loi dinh dang): " + boQua);
+        GiaoDien.in("Da doc " + soLuongNV + " nhan vien tu file, bo qua " + boQua + " dong (trung ma / danh sach day / sai dinh dang).");
     }
 
     //tao nhan vien dung loai tu 1 dong text, tra ve null neu dong sai
@@ -563,9 +594,9 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
         }
         try {
             TepVanBan.ghiDong(DUONG_DAN, "loai|maNV|hoTen|ngaySinh|gioiTinh|sdt|email|luongCoBan|ngayVaoLam|trangThai|maPB|chucVu|trinhDo|(truong rieng theo loai)", dong);
-            System.out.println("da ghi " + soLuongNV + " nhan vien vao file " + DUONG_DAN);
+            GiaoDien.in("Da ghi " + soLuongNV + " nhan vien vao file " + DUONG_DAN);
         } catch (IOException e) {
-            System.out.println("loi ghi file nhan vien " + e.getMessage());
+            GiaoDien.in("Loi ghi file nhan vien: " + e.getMessage());
         }
     }
 

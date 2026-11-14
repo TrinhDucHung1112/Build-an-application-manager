@@ -31,11 +31,13 @@ public class BaoCaoNhanSu {
                 if (!((BaoHiemYTe) bh).conHanThe()) soTheHetHan++;
             }
         }
-        System.out.println("\n----- THONG KE BAO HIEM -----");
-        System.out.println("Tong so ho so       : " + dsBaoHiem.getSoLuong());
-        System.out.println("So ho so BHXH       : " + soBHXH);
-        System.out.println("So ho so BHYT       : " + soBHYT);
-        System.out.println("So the BHYT het han : " + soTheHetHan);
+        GiaoDien.tieuMuc("THONG KE BAO HIEM");
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Tong so ho so", String.valueOf(dsBaoHiem.getSoLuong())});
+        dong.add(new String[]{"So ho so BHXH", String.valueOf(soBHXH)});
+        dong.add(new String[]{"So ho so BHYT", String.valueOf(soBHYT)});
+        dong.add(new String[]{"So the BHYT het han", String.valueOf(soTheHetHan)});
+        GiaoDien.inThongKe(dong);
     }
 
     public void thongKeTheoPhongBan(QuanLyNhanSu ql) {
@@ -44,23 +46,32 @@ public class BaoCaoNhanSu {
             String ten = nv.getPhongBan() == null ? "Chua phan phong" : nv.getPhongBan().getTenPB();
             dem.put(ten, dem.getOrDefault(ten, 0) + 1);
         }
-        System.out.println("\n----- NHAN SU THEO PHONG BAN -----");
-        if (dem.isEmpty()) System.out.println("Chua co nhan vien.");
+        GiaoDien.tieuMuc("NHAN SU THEO PHONG BAN");
+        if (dem.isEmpty()) {
+            GiaoDien.in("Chua co nhan vien.");
+            return;
+        }
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
         for (Map.Entry<String, Integer> e : dem.entrySet())
-            System.out.println(e.getKey() + ": " + e.getValue() + " nhan vien");
+            dong.add(new String[]{e.getKey(), String.valueOf(e.getValue())});
+        GiaoDien.inBang(new String[]{"PHONG BAN", "SO NHAN VIEN"}, new int[]{28, 14},
+                new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
     }
 
     public void thongKeLuong(DanhSachBangLuong ds, int thang, int nam) {
-        System.out.println("\n----- THONG KE LUONG " + thang + "/" + nam + " -----");
-        System.out.printf("Tong quy luong : %,.0f VND%n", ds.tongQuyLuong(thang, nam));
-        System.out.printf("Luong trung binh: %,.0f VND%n", ds.luongTrungBinh(thang, nam));
+        GiaoDien.tieuMuc("THONG KE LUONG " + thang + "/" + nam);
         BangLuong cao = ds.luongCaoNhat(thang, nam);
         BangLuong thap = ds.luongThapNhat(thang, nam);
-        if (cao == null) System.out.println("Chua co bang luong trong thang.");
-        else {
-            System.out.printf("Luong cao nhat : %s - %,.0f VND%n", cao.getMaNV(), cao.getLuongThucNhan());
-            System.out.printf("Luong thap nhat: %s - %,.0f VND%n", thap.getMaNV(), thap.getLuongThucNhan());
+        if (cao == null) {
+            GiaoDien.in("Chua co bang luong trong thang.");
+            return;
         }
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Tong quy luong", String.format("%,.0f VND", ds.tongQuyLuong(thang, nam))});
+        dong.add(new String[]{"Luong trung binh", String.format("%,.0f VND", ds.luongTrungBinh(thang, nam))});
+        dong.add(new String[]{"Luong cao nhat", String.format("%s - %,.0f VND", cao.getMaNV(), cao.getLuongThucNhan())});
+        dong.add(new String[]{"Luong thap nhat", String.format("%s - %,.0f VND", thap.getMaNV(), thap.getLuongThucNhan())});
+        GiaoDien.inThongKe(dong);
     }
 
     public void thongKeLuongCaoThapNhat(DanhSachBangLuong ds, int thang, int nam) {
@@ -75,16 +86,18 @@ public class BaoCaoNhanSu {
             else if (tt.contains("tam")) tamNghi++;
             else nghi++;
         }
-        System.out.println("\n----- TRANG THAI NHAN SU -----");
-        System.out.println("Dang lam: " + dangLam);
-        System.out.println("Tam nghi: " + tamNghi);
-        System.out.println("Nghi/khac: " + nghi);
+        GiaoDien.tieuMuc("TRANG THAI NHAN SU");
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        dong.add(new String[]{"Dang lam", String.valueOf(dangLam)});
+        dong.add(new String[]{"Tam nghi", String.valueOf(tamNghi)});
+        dong.add(new String[]{"Nghi / khac", String.valueOf(nghi)});
+        GiaoDien.inBang(new String[]{"TRANG THAI", "SO LUONG"}, new int[]{28, 10},
+                new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
     }
 
     public void inBaoCaoToanCongTy(QuanLyNhanSu ql, DanhSachBangLuong ds, int thang, int nam) {
-        System.out.println("\n========== BAO CAO TOAN CONG TY ==========");
-        System.out.println("Ngay lap: " + LocalDate.now());
-        System.out.println("Tong nhan vien: " + ql.getSoLuongNV());
+        GiaoDien.in("BAO CAO TOAN CONG TY - THANG " + thang + "/" + nam);
+        GiaoDien.in("Ngay lap: " + LocalDate.now() + "   |   Tong nhan vien: " + ql.getSoLuongNV());
         thongKeTheoPhongBan(ql);
         thongKeHoatDongVaNghi(ql);
         thongKeLuong(ds, thang, nam);
@@ -93,32 +106,32 @@ public class BaoCaoNhanSu {
 
     public void inBaoCaoTheoPhong(String maPB, QuanLyNhanSu ql, DanhSachBangLuong ds, int thang, int nam) {
         NhanVien[] nhanVien = ql.timKiemTheoPhongBan(maPB);
-        System.out.println("\n========== BAO CAO PHONG " + maPB + " ==========");
-        System.out.println("So nhan vien: " + nhanVien.length);
-        ql.inKetQua(nhanVien);
+        GiaoDien.in("BAO CAO PHONG " + maPB.toUpperCase() + " - THANG " + thang + "/" + nam);
+        GiaoDien.in("So nhan vien: " + nhanVien.length);
+        if (nhanVien.length > 0) QuanLyNhanSu.inBang(nhanVien);
         double tongLuong = 0;
         for (NhanVien nv : nhanVien) {
             BangLuong bl = ds.timTheoMaNV(nv.getMaNV(), thang, nam);
             if (bl != null) tongLuong += bl.getLuongThucNhan();
         }
-        System.out.printf("Tong luong thuc nhan phong: %,.0f VND%n", tongLuong);
+        GiaoDien.in(String.format("Tong luong thuc nhan phong: %,.0f VND", tongLuong));
     }
 
     public void thongKeNhanSu(QuanLyNhanSu ql, DanhSachBangLuong dsBangLuong) {
-        System.out.println("\n----- THONG KE NHAN SU -----");
-        System.out.println("Tong so nhan vien: " + ql.getSoLuongNV());
+        GiaoDien.in("THONG KE NHAN SU");
+        GiaoDien.tieuMuc("THEO LOAI NHAN VIEN");
         ql.thongKeTheoLoaiNv();
+        GiaoDien.tieuMuc("THEO TRANG THAI");
         ql.thongKeTheoTrangThai();
+        GiaoDien.tieuMuc("LUONG TOAN CONG TY");
         ql.thongKeLuong();
         thongKeTheoPhongBan(ql);
-        System.out.println("So bang luong da lap: " + dsBangLuong.getSoLuong());
+        GiaoDien.in("");
+        GiaoDien.in("So bang luong da lap: " + dsBangLuong.getSoLuong());
     }
 
     public void xuatBaoCao() {
-        System.out.println("\n=======================================================");
-        System.out.println("         BAO CAO TONG QUAN HE THONG NHAN SU");
-        System.out.println("              Ngay lap: " + ngayLap);
-        System.out.println("=======================================================");
+        GiaoDien.in("BAO CAO TONG QUAN HE THONG NHAN SU - Ngay lap: " + ngayLap);
         thongKeBaoHiem();
     }
 }

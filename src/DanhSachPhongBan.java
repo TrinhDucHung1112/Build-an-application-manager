@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.io.*;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DanhSachPhongBan implements IQuanLyDuLieu {
 //-----thuoc tinh-----
@@ -55,7 +57,7 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
             danhSach = Arrays.copyOf(danhSach, danhSach.length * 2);
         }
         if(timViTri(pb.getMaPB()) >= 0){
-            System.out.println("phong nay da co, trung ma phong ban");
+            GiaoDien.in("Phong nay da co, trung ma phong ban.");
             return false;
         }
         danhSach[soLuong++] = pb;
@@ -90,27 +92,38 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
     // }
 
 //---xuatdanhsach---
+    //in danh sach phong ban dang bang co STT (dung chung cho xem danh sach, tim kiem...)
+    public static void inBang(PhongBan[] ds){
+        List<String[]> dong = new ArrayList<>();
+        for(PhongBan pb : ds){
+            if(pb == null) continue;
+            dong.add(new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(pb.demNhanVien())});
+        }
+        GiaoDien.inBang(
+            new String[]{"MA PB", "TEN PHONG BAN", "MO TA", "SO NV"},
+            new int[]{8, 22, 50, 6},
+            new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.PHAI},
+            dong);
+    }
+
     public void xuatDanhSach(){
         if(soLuong == 0){
-            System.out.println("danh sach rong");
+            GiaoDien.in("Danh sach phong ban rong.");
             return;
         }
-
-        for(int i = 0; i < soLuong; i++){
-            System.out.println("THONG TIN PHONG BAN: " + i);
-            danhSach[i].hienThiThongTin();
-        }
+        inBang(getDanhSach());
+        GiaoDien.in("Tong so phong ban: " + soLuong);
     }
 
 //---xoadanhsachtheoma---
      public boolean xoaTheoMa(String maPB){
         if(timViTri(maPB) == -1){
-            System.out.println("ma khong ton tai hoac khong tim thay vi tri ma");
+            GiaoDien.in("Ma phong ban khong ton tai.");
             return false;
         }
         int idx = timViTri(maPB);
         if(danhSach[idx].demNhanVien() > 0){
-            System.out.println("phong ban con " + danhSach[idx].demNhanVien() + " nhan vien, hay chuyen nhan vien sang phong ban khac truoc khi xoa");
+            GiaoDien.in("Phong ban con " + danhSach[idx].demNhanVien() + " nhan vien, hay chuyen nhan vien sang phong ban khac truoc khi xoa.");
             return false;
         }
         for(int i = idx; i < soLuong - 1; i++){
@@ -185,7 +198,7 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
         try {
             TepVanBan.ghiDong(FILE_TEXT, "maPB|tenPB|moTa", dong);
         } catch (java.io.IOException e) {
-            System.out.println("Loi luu phong ban: " + e.getMessage());
+            GiaoDien.in("Loi luu phong ban: " + e.getMessage());
         }
     }
 
@@ -201,11 +214,11 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
                 try {
                     themPhong(new PhongBan(p[0], p[1], p[2]));
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Bo qua dong phong ban loi: " + e.getMessage());
+                    GiaoDien.in("Bo qua dong phong ban loi: " + e.getMessage());
                 }
             }
         } catch (java.io.IOException e) {
-            System.out.println("Loi doc phong ban: " + e.getMessage());
+            GiaoDien.in("Loi doc phong ban: " + e.getMessage());
         }
     }
 

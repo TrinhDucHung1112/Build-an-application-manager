@@ -51,12 +51,17 @@ public class NhanVienBanThoiGian extends NhanVien {
     }
 
     @Override
-    public void hienThiThongTin(){
-        super.hienThiThongTin();
-        System.out.println("Loai nhan vien: Ban thoi gian");
-        System.out.println("So gio lam: " + soGioLam);
-        System.out.println("Luong theo gio: " + String.format("%,.0f", luongTheoGio));
-        System.out.println("Luong (tinh luong): " + String.format("%,.0f", tinhLuong()));
+    protected java.util.List<String[]> thongTinRieng(){
+        java.util.List<String[]> r = new java.util.ArrayList<>();
+        r.add(new String[]{"Loai nhan vien", "Ban thoi gian"});
+        r.add(new String[]{"So gio lam", String.valueOf(soGioLam)});
+        r.add(new String[]{"Luong theo gio", String.format("%,.0f", luongTheoGio)});
+        return r;
+    }
+
+    @Override
+    public String tenLoai(){
+        return "Ban TG";
     }
 
 

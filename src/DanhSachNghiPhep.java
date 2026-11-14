@@ -54,17 +54,29 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
         return true;
     }
 
+    //in danh sach don nghi phep dang bang co STT
+    public static void inBang(NghiPhep[] ds) {
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (NghiPhep np : ds) {
+            if (np == null) continue;
+            dong.add(new String[]{np.getMaNP(), np.getMaNV(), String.valueOf(np.getNgayBatDau()),
+                    String.valueOf(np.getNgayKetThuc()), String.valueOf(np.tinhSoNgayNghi()),
+                    np.getLoaiNghi(), np.getTrangThai(), np.getLyDo()});
+        }
+        GiaoDien.inBang(
+                new String[]{"MA DON", "MA NV", "TU NGAY", "DEN NGAY", "SO NGAY", "LOAI NGHI", "TRANG THAI", "LY DO"},
+                new int[]{10, 8, 10, 10, 7, 10, 10, 28},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.PHAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI},
+                dong);
+    }
+
     public void xuatDanhSach() {
         if (soLuong == 0) {
-            System.out.println("Danh sach nghi phep rong.");
+            GiaoDien.in("Danh sach nghi phep rong.");
             return;
         }
-        for (int i = 0; i < soLuong; i++) {
-            NghiPhep np = danhSach[i];
-            System.out.printf("%s | NV: %s | %s -> %s | %s | %s | %s ngay%n",
-                    np.getMaNP(), np.getMaNV(), np.getNgayBatDau(), np.getNgayKetThuc(),
-                    np.getLoaiNghi(), np.getTrangThai(), np.tinhSoNgayNghi());
-        }
+        inBang(getDanhSach());
+        GiaoDien.in("Tong so don nghi phep: " + soLuong);
     }
 
     public NghiPhep[] getDanhSach() { return Arrays.copyOf(danhSach, soLuong); }
@@ -82,7 +94,7 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
         try {
             TepVanBan.ghiDong(FILE, "maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi|trangThai", dong);
         } catch (java.io.IOException e) {
-            System.out.println("Loi luu nghi phep: " + e.getMessage());
+            GiaoDien.in("Loi luu nghi phep: " + e.getMessage());
         }
     }
 
@@ -102,11 +114,11 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
                     np.setTrangThai(p[6]);
                     them(np);
                 } catch (RuntimeException e) {
-                    System.out.println("Bo qua dong nghi phep loi: " + String.join("|", p));
+                    GiaoDien.in("Bo qua dong nghi phep loi: " + String.join("|", p));
                 }
             }
         } catch (java.io.IOException e) {
-            System.out.println("Loi doc nghi phep: " + e.getMessage());
+            GiaoDien.in("Loi doc nghi phep: " + e.getMessage());
         }
     }
 
