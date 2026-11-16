@@ -1,6 +1,9 @@
 # maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi(Co phep/Khong phep)|trangThai(Cho duyet/Da duyet)
-NP001|NV004|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
-NP002|NV007|2026-10-19|2026-10-20|Viec rieng|Khong phep|Da duyet
-NP003|NV011|2026-10-08|2026-10-08|Viec gia dinh|Co phep|Da duyet
-NP004|NV009|2026-09-21|2026-09-25|Nghi du lich|Co phep|Da duyet
-NP005|NV002|2026-11-16|2026-11-18|Nghi phep nam|Co phep|Cho duyet
+NP001|NVT002|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
+NP002|NVB001|2026-10-19|2026-10-20|Viec rieng|Khong phep|Da duyet
+NP003|NVH002|2026-10-08|2026-10-08|Viec gia dinh|Co phep|Da duyet
+NP004|NVB003|2026-09-21|2026-09-25|Nghi du lich|Co phep|Da duyet
+NP005|NVT001|2026-11-16|2026-11-18|Nghi phep nam|Co phep|Cho duyet
+NP006|TP003|2026-10-22|2026-10-23|Viec gia dinh|Co phep|Da duyet
+NP007|NVT005|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
+NP008|NVB004|2026-11-18|2026-11-19|Viec rieng|Khong phep|Cho duyet

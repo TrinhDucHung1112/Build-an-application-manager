@@ -53,6 +53,16 @@ public class ChucVu implements Serializable{
         return luongCoBan * heSoLuong;
     }
 
+    /** 4 chuc vu co san cua cong ty: 1 Giam doc, 2 Truong phong, 3 Pho phong, 4 Nhan vien. */
+    public static ChucVu macDinh(int muc){
+        switch (muc){
+            case 1: return new ChucVu("CV01", "GIAM DOC", 0.5);
+            case 2: return new ChucVu("CV02", "TRUONG PHONG", 0.3);
+            case 3: return new ChucVu("CV03", "PHO PHONG", 0.2);
+            default: return new ChucVu("CV04", "NHAN VIEN", 0);
+        }
+    }
+
     // Nhap chuc vu
     public void nhap(Scanner sc){
         System.out.print("Nhap ma chuc vu: ");

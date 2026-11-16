@@ -22,9 +22,33 @@ public class Main {
     private static final DanhSachQuyDinhThuongPhat dsQD = new DanhSachQuyDinhThuongPhat(50);
     private static final DanhSachBangLuong dsBL = new DanhSachBangLuong(200);
     private static final BaoCaoNhanSu baoCao = new BaoCaoNhanSu(dsBH);
+    private static final DanhSachTaiKhoan dsTK = new DanhSachTaiKhoan(100);
+
+    //nhan vien dang dang nhap (null khi chua dang nhap) - dung cho phan quyen
+    private static NhanVien nguoiDangNhap = null;
 
     public static void main(String[] args) {
         chay("KHOI DONG - NAP DU LIEU", Main::napDuLieu);
+        boolean tiepTuc = true;
+        while (tiepTuc) {
+            nguoiDangNhap = null;
+            int chon = menu("QUAN LY NHAN SU - DANG NHAP", new String[]{
+                "1. Dang nhap",
+                "2. Dang ky tai khoan moi",
+                "0. Thoat"}, 2);
+            switch (chon) {
+                case 1:
+                    chay("DANG NHAP", Main::dangNhap);
+                    if (nguoiDangNhap != null) menuChinh();
+                    break;
+                case 2: chay("DANG KY TAI KHOAN MOI", Main::dangKy); break;
+                case 0: chay("THOAT CHUONG TRINH", () -> GiaoDien.in("Da dong chuong trinh.")); tiepTuc = false; break;
+            }
+        }
+    }
+
+    //menu chinh sau khi dang nhap. Chon 0 = dang xuat: hoi co luu du lieu khong roi quay lai man hinh dang nhap
+    private static void menuChinh() {
         int chon;
         do {
             chon = menu("QUAN LY NHAN SU", new String[]{
@@ -39,7 +63,7 @@ public class Main {
                 "9. Quan ly quy dinh thuong phat",
                 "10. Luu toan bo du lieu",
                 "11. Doc du lieu tu file",
-                "0. Thoat"}, 11);
+                "0. Dang xuat (ve man hinh dang nhap)"}, 11);
             switch (chon) {
                 case 1: menuPhongBan(); break;
                 case 2: menuNhanVien(); break;
@@ -52,9 +76,164 @@ public class Main {
                 case 9: menuQuyDinhThuongPhat(); break;
                 case 10: chay("LUU TOAN BO DU LIEU", Main::luuDuLieu); break;
                 case 11: chay("DOC DU LIEU TU FILE", Main::docDuLieu); break;
-                case 0: chay("THOAT CHUONG TRINH", Main::thoat); break;
+                case 0: chay("DANG XUAT", Main::dangXuat); break;
             }
         } while (chon != 0);
+    }
+
+//----------------- DANG NHAP / DANG KY -----------------
+    //tai khoan = ma nhan vien, mat khau = phan so + phan chu cua ma (VD: TP001 -> 001TP)
+    private static void dangNhap() {
+        for (int lan = 1; lan <= 3; lan++) {
+            String taiKhoan = docChuoi("Tai khoan (ma nhan vien): ");
+            String matKhau = docChuoi("Mat khau: ");
+            TaiKhoan tk = dsTK.dangNhap(taiKhoan, matKhau);
+            if (tk == null) {
+                GiaoDien.in("Sai tai khoan hoac mat khau (lan " + lan + "/3).");
+                continue;
+            }
+            NhanVien nv = ql.timTheoMa(tk.getTenDangNhap());
+            if (nv == null) {
+                GiaoDien.in("Tai khoan nay khong con gan voi nhan vien nao.");
+                return;
+            }
+            if (nv.getTrangThai().toLowerCase().startsWith("nghi")) {
+                GiaoDien.in("Tai khoan da bi khoa vi nhan vien da nghi viec.");
+                return;
+            }
+            nguoiDangNhap = nv;
+            String tenCV = nv.getChucVu() == null ? "chua co chuc vu" : nv.getChucVu().getTenCV();
+            GiaoDien.in("");
+            GiaoDien.in("Dang nhap thanh cong. Xin chao " + nv.getHoTen() + " (" + tenCV + ").");
+            return;
+        }
+        GiaoDien.in("Nhap sai qua 3 lan, quay lai man hinh dau.");
+    }
+
+    //nguoi moi tu dang ky: luon la NHAN VIEN thuong, ma duoc cap tu dong, luong/hop dong de mac dinh de quan ly cap nhat sau
+    private static void dangKy() {
+        GiaoDien.in("Tai khoan moi co chuc vu NHAN VIEN. Ma nhan vien duoc cap tu dong.");
+        int loai = docInt("Loai NV (1: Toan thoi gian, 2: Ban thoi gian, 3: Hop dong): ", 1, 3);
+        String ten = docChuoiKhongRong("Ho ten: ");
+        LocalDate ns = docNgaySinh();
+        String gt = docGioiTinh();
+        String sdt = docSoDienThoai();
+        String email = docEmail();
+
+        ChucVu chucVu = ChucVu.macDinh(4);
+        String ma = MaNhanVien.taoMaMoi(MaNhanVien.tienTo(loai, chucVu), ql.getDanhSachNV());
+        LocalDate homNay = LocalDate.now();
+        NhanVien nv;
+        if (loai == 1) {
+            nv = new NhanVienToanThoiGian(ma, ten, ns, gt, sdt, email, 10000000, homNay, "Dang lam", 0, 0);
+        } else if (loai == 2) {
+            nv = new NhanVienBanThoiGian(ma, ten, ns, gt, sdt, email, 6000000, homNay, "Dang lam", 0, 30000);
+        } else {
+            nv = new NhanVienHopDong(ma, ten, ns, gt, sdt, email, 8000000, homNay, "Dang lam",
+                    180, 12000000, homNay, homNay.plusDays(180), 180);
+        }
+        nv.setChucVu(chucVu);
+
+        GiaoDien.in("");
+        GiaoDien.in("Danh sach phong ban hien co:");
+        dsPB.xuatDanhSach();
+        String maPB = docChuoi("Ma phong ban (bo trong neu chua biet): ");
+        if (!maPB.isBlank()) {
+            PhongBan pb = dsPB.timTheoMa(maPB);
+            if (pb == null) GiaoDien.in("Khong tim thay phong ban; ban chua duoc xep phong.");
+            else nv.setPhongBan(pb);
+        }
+
+        if (!ql.themNhanVien(nv)) {
+            GiaoDien.in("Dang ky that bai (danh sach nhan vien da day).");
+            return;
+        }
+        String matKhau = MaNhanVien.matKhauMacDinh(ma);
+        dsTK.them(new TaiKhoan(ma, matKhau));
+        ql.ghiFile();
+        dsTK.ghiFile();
+
+        List<String[]> dong = new ArrayList<>();
+        dong.add(new String[]{"Ho ten", ten});
+        dong.add(new String[]{"Tai khoan (ma NV)", ma});
+        dong.add(new String[]{"Mat khau", matKhau});
+        GiaoDien.in("");
+        GiaoDien.in("Dang ky thanh cong! Hay ghi nho tai khoan de dang nhap:");
+        GiaoDien.inThongTin(dong);
+    }
+
+    //tuoi toi thieu de dang ky / them nhan vien
+    private static final int TUOI_TOI_THIEU = 16;
+
+    //ngay sinh: <= hom nay va du TUOI_TOI_THIEU tuoi. Moi loi bao rieng, ghi ro ngay hom nay
+    private static LocalDate docNgaySinh() {
+        LocalDate homNay = LocalDate.now();
+        LocalDate hanCuoi = homNay.minusYears(TUOI_TOI_THIEU);
+        GiaoDien.in("Hom nay la " + homNay + ". Ngay sinh phai tu hom nay tro ve truoc va du "
+                + TUOI_TOI_THIEU + " tuoi tro len (sinh tu " + hanCuoi + " tro ve truoc).");
+        while (true) {
+            String nhap = docChuoi("Ngay sinh (yyyy-MM-dd, VD 2005-03-21): ");
+            LocalDate ns;
+            try {
+                ns = LocalDate.parse(nhap);
+            } catch (Exception e) {
+                GiaoDien.in("Sai dinh dang. Nhap theo yyyy-MM-dd, nho co dau '-' (VD 2005-03-21).");
+                continue;
+            }
+            if (ns.isAfter(homNay)) {
+                GiaoDien.in("Sai: ngay sinh khong duoc sau hom nay (" + homNay + ").");
+            } else if (ns.isAfter(hanCuoi)) {
+                GiaoDien.in("Sai: phai du " + TUOI_TOI_THIEU + " tuoi tro len (ngay sinh phai la " + hanCuoi + " hoac som hon).");
+            } else {
+                return ns;
+            }
+        }
+    }
+
+    //gioi tinh: chon 1 trong 3
+    private static String docGioiTinh() {
+        GiaoDien.in("Gioi tinh: 1. Nam (male) | 2. Nu (female) | 3. Khac (other)");
+        int c = docInt("Chon gioi tinh (1-3): ", 1, 3);
+        return c == 1 ? "Nam" : c == 2 ? "Nu" : "Khac";
+    }
+
+    //so dien thoai: chi gom chu so, 8 hoac 10 so, khong toan so 0
+    private static String docSoDienThoai() {
+        while (true) {
+            String sdt = docChuoi("So dien thoai (chi gom chu so, 8 hoac 10 so, VD 01234567): ");
+            if (!sdt.matches("\\d+")) {
+                GiaoDien.in("Sai: so dien thoai chi duoc gom chu so 0-9, khong co dau cach hay ky tu khac.");
+            } else if (sdt.length() != 8 && sdt.length() != 10) {
+                GiaoDien.in("Sai: so dien thoai phai co 8 hoac 10 chu so (ban nhap " + sdt.length() + " so).");
+            } else if (sdt.matches("0+")) {
+                GiaoDien.in("Sai: so dien thoai khong duoc toan so 0.");
+            } else {
+                return sdt;
+            }
+        }
+    }
+
+    //email: bat buoc ket thuc bang @gmail.com va phai co phan ten phia truoc
+    private static String docEmail() {
+        while (true) {
+            String email = docChuoi("Email (phai ket thuc bang @gmail.com, VD ten@gmail.com): ").toLowerCase();
+            if (email.matches("[a-z0-9._%+-]+@gmail\\.com")) return email;
+            GiaoDien.in("Sai: email phai co dang ten@gmail.com (ten chi gom chu, so va cac ky tu . _ % + -).");
+        }
+    }
+
+    private static String docChuoiKhongRong(String prompt) {
+        while (true) {
+            String s = docChuoi(prompt);
+            if (!s.isBlank()) return s;
+            GiaoDien.in("Khong duoc de trong.");
+        }
+    }
+
+    //chon 1 trong 4 chuc vu co san
+    private static ChucVu docChucVu() {
+        GiaoDien.in("Chuc vu: 1. Giam doc | 2. Truong phong | 3. Pho phong | 4. Nhan vien");
+        return ChucVu.macDinh(docInt("Chon chuc vu: ", 1, 4));
     }
 
     private static void napDuLieu() {
@@ -70,7 +249,15 @@ public class Main {
         dsNP.docFile();
         dsQD.docFile();
         dsBL.docFile();
+        napTaiKhoan();
         GiaoDien.in("Nap du lieu xong.");
+    }
+
+    //doc tai khoan tu file, nhan vien nao chua co tai khoan thi tu tao (mat khau mac dinh)
+    private static void napTaiKhoan() {
+        dsTK.docFile();
+        int them = dsTK.dongBoVoiNhanVien(ql.getDanhSachNV());
+        if (them > 0) GiaoDien.in("Da tao them " + them + " tai khoan con thieu (mat khau mac dinh).");
     }
 
 //----------------- khung giao dien & ham nhap -----------------
@@ -220,7 +407,17 @@ public class Main {
     }
 
     private static void nvXoa() {
-        GiaoDien.in(ql.xoaNhanVien(docChuoi("Ma nhan vien can xoa: ")) ? "Da xoa." : "Khong tim thay.");
+        String ma = docChuoi("Ma nhan vien can xoa: ");
+        if (nguoiDangNhap != null && nguoiDangNhap.getMaNV().equalsIgnoreCase(ma)) {
+            GiaoDien.in("Khong the xoa chinh tai khoan dang dang nhap.");
+            return;
+        }
+        if (ql.xoaNhanVien(ma)) {
+            dsTK.xoaTheoTen(ma);
+            GiaoDien.in("Da xoa nhan vien va tai khoan cua nhan vien.");
+        } else {
+            GiaoDien.in("Khong tim thay.");
+        }
     }
 
     private static void nvTheoPhongBan() {
@@ -246,12 +443,14 @@ public class Main {
 
     private static void themNhanVien() {
         int loai = docInt("Loai NV (1: Toan thoi gian, 2: Ban thoi gian, 3: Hop dong): ", 1, 3);
-        String ma = docChuoi("Ma NV: ");
+        ChucVu chucVu = docChucVu();
+        String ma = MaNhanVien.taoMaMoi(MaNhanVien.tienTo(loai, chucVu), ql.getDanhSachNV());
+        GiaoDien.in("Ma NV duoc cap tu dong: " + ma);
         String ten = docChuoi("Ho ten: ");
-        LocalDate ns = docNgay("Ngay sinh (yyyy-MM-dd): ");
-        String gt = docChuoi("Gioi tinh: ");
-        String sdt = docChuoi("So dien thoai: ");
-        String email = docChuoi("Email: ");
+        LocalDate ns = docNgaySinh();
+        String gt = docGioiTinh();
+        String sdt = docSoDienThoai();
+        String email = docEmail();
         double luong = docDouble("Luong co ban: ", 0);
         LocalDate vaoLam = docNgay("Ngay vao lam (yyyy-MM-dd): ");
         String trangThai = docChuoi("Trang thai (Dang lam/Nghi): ");
@@ -279,18 +478,19 @@ public class Main {
             if (pb == null) { GiaoDien.in("Khong tim thay phong ban; nhan vien chua duoc gan phong."); }
             else nv.setPhongBan(pb);
         }
-        String coCV = docChuoi("Co muon gan chuc vu? (y/n): ");
-        if (coCV.equalsIgnoreCase("y")) {
-            String maCV = docChuoi("Ma chuc vu: ");
-            String tenCV = docChuoi("Ten chuc vu: ");
-            double heSo = docDouble("He so phu cap chuc vu: ", 0);
-            nv.setChucVu(new ChucVu(maCV, tenCV, heSo));
-        }
+        nv.setChucVu(chucVu);
         String coTD = docChuoi("Co muon them trinh do chuyen mon? (y/n): ");
         if (coTD.equalsIgnoreCase("y")) {
             nv.setTrinhDo(docDanhSachTrinhDo());
         }
-        GiaoDien.in(ql.themNhanVien(nv) ? "Them nhan vien thanh cong." : "Them that bai (ma NV trung hoac danh sach loi).");
+        if (ql.themNhanVien(nv)) {
+            String matKhau = MaNhanVien.matKhauMacDinh(ma);
+            dsTK.them(new TaiKhoan(ma, matKhau));
+            GiaoDien.in("Them nhan vien thanh cong.");
+            GiaoDien.in("Tai khoan: " + ma + "  |  Mat khau: " + matKhau);
+        } else {
+            GiaoDien.in("Them that bai (ma NV trung hoac danh sach loi).");
+        }
     }
 
     private static void suaNhanVienTuMenu() {
@@ -305,10 +505,10 @@ public class Main {
         GiaoDien.in("");
         GiaoDien.in("Nhap thong tin moi:");
         String ten = docChuoi("Ho ten: ");
-        LocalDate ns = docNgay("Ngay sinh (yyyy-MM-dd): ");
-        String gt = docChuoi("Gioi tinh: ");
-        String sdt = docChuoi("So dien thoai: ");
-        String email = docChuoi("Email: ");
+        LocalDate ns = docNgaySinh();
+        String gt = docGioiTinh();
+        String sdt = docSoDienThoai();
+        String email = docEmail();
         double luong = docDouble("Luong co ban: ", 0);
         LocalDate vaoLam = docNgay("Ngay vao lam (yyyy-MM-dd): ");
         String trangThai = docChuoi("Trang thai: ");
@@ -331,15 +531,8 @@ public class Main {
         }
         String doiCV = docChuoi("Co muon doi chuc vu? (y/n): ");
         if (doiCV.equalsIgnoreCase("y")) {
-            String maCV = docChuoi("Ma chuc vu: ");
-            String tenCV = docChuoi("Ten chuc vu: ");
-            double heSo = docDouble("He so phu cap chuc vu: ", 0);
-            try {
-                nv.setChucVu(new ChucVu(maCV, tenCV, heSo));
-                GiaoDien.in("Da doi chuc vu.");
-            } catch (IllegalArgumentException e) {
-                GiaoDien.in("Du lieu khong hop le: " + e.getMessage());
-            }
+            nv.setChucVu(docChucVu());
+            GiaoDien.in("Da doi chuc vu (ma NV van giu nguyen: " + nv.getMaNV() + ").");
         }
         String doiTD = docChuoi("Co muon nhap lai trinh do chuyen mon? (y/n): ");
         if (doiTD.equalsIgnoreCase("y")) {
@@ -733,26 +926,28 @@ public class Main {
     }
 
 //----------------- LUU / DOC / THOAT -----------------
-    private static void thoat() {
-        hoiLuuTruocKhiThoat();
-        GiaoDien.in("Da dong chuong trinh.");
+    private static void dangXuat() {
+        hoiLuuTruocKhiDangXuat();
+        GiaoDien.in("Da dang xuat. Quay lai man hinh dang nhap.");
     }
 
-    private static void hoiLuuTruocKhiThoat() {
-        String tl = docChuoi("Luu toan bo du lieu truoc khi thoat? (y/n): ");
+    private static void hoiLuuTruocKhiDangXuat() {
+        String tl = docChuoi("Luu toan bo du lieu truoc khi dang xuat? (y/n): ");
         if (tl.equalsIgnoreCase("y")) luuDuLieu();
         else GiaoDien.in("Khong luu. Cac thay doi chua luu se bi mat.");
     }
 
     private static void luuDuLieu() {
         dsPB.ghiFile(); ql.ghiFile(); dsCC.ghiFile(); dsBH.ghiFile();
-        dsTP.ghiFile(); dsNP.ghiFile(); dsQD.ghiFile(); dsBL.ghiFile();
+        dsTP.ghiFile(); dsNP.ghiFile(); dsQD.ghiFile(); dsBL.ghiFile(); dsTK.ghiFile();
         GiaoDien.in("Da luu toan bo du lieu vao thu muc data.");
     }
 
     private static void docDuLieu() {
         dsPB.docFile(); ql.docFile(); dsCC.docFile(); dsBH.docFile();
         dsTP.docFile(); dsNP.docFile(); dsQD.docFile(); dsBL.docFile();
+        napTaiKhoan();
+        if (nguoiDangNhap != null) nguoiDangNhap = ql.timTheoMa(nguoiDangNhap.getMaNV());   //lam moi nguoi dang nhap theo du lieu vua doc
         GiaoDien.in("Da doc xong du lieu tu file.");
     }
 }
