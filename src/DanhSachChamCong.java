@@ -58,6 +58,44 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
         return true;
     }
 
+    public int getSoLuong() { return soLuong; }
+
+    //----tim kiem / loc (phuc vu phan quyen: chi lay cham cong cua nhan vien trong pham vi cho phep)----
+    public ChamCong timTheoMa(String ma) {
+        if (ma == null) return null;
+        for (int i = 0; i < soLuong; i++) {
+            if (danhSach[i].getMaChamCong().equalsIgnoreCase(ma.trim())) return danhSach[i];
+        }
+        return null;
+    }
+
+    public ChamCong[] timTheoMaNV(String maNV) {
+        ChamCong[] tam = new ChamCong[soLuong];
+        int dem = 0;
+        if (maNV != null) {
+            for (int i = 0; i < soLuong; i++) {
+                if (danhSach[i].getMaNV().equalsIgnoreCase(maNV.trim())) tam[dem++] = danhSach[i];
+            }
+        }
+        return Arrays.copyOf(tam, dem);
+    }
+
+    public static void inBang(ChamCong[] ds) {
+        if (ds == null || ds.length == 0) { GiaoDien.in("Khong co ban ghi cham cong nao."); return; }
+        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        for (ChamCong cc : ds) {
+            dong.add(new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
+                    String.valueOf(cc.getGioVao()), String.valueOf(cc.getGioRa()),
+                    String.format("%.2f", cc.tinhGioLam()), String.format("%.2f", cc.tinhGioTangCa())});
+        }
+        GiaoDien.inBang(
+                new String[]{"MA CC", "MA NV", "NGAY", "GIO VAO", "GIO RA", "GIO LAM", "TANG CA"},
+                new int[]{10, 8, 10, 8, 8, 8, 8},
+                new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.GIUA, GiaoDien.GIUA, GiaoDien.PHAI, GiaoDien.PHAI},
+                dong);
+        GiaoDien.in("Tong so ban ghi cham cong: " + ds.length);
+    }
+
     public boolean xoaTheoMa(String ma) {
         for (int i = 0; i < soLuong; i++) if (danhSach[i].getMaChamCong().equalsIgnoreCase(ma)) {
             System.arraycopy(danhSach, i + 1, danhSach, i, soLuong - i - 1);
