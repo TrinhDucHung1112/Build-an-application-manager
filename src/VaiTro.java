@@ -40,7 +40,7 @@ public enum VaiTro {
                 Quyen.XEM_CHAM_CONG, Quyen.THEM_CHAM_CONG, Quyen.XOA_CHAM_CONG,
                 Quyen.XEM_NGHI_PHEP, Quyen.DUYET_NGHI_PHEP, Quyen.XEM_BAO_HIEM,
                 Quyen.XEM_THUONG_PHAT, Quyen.THEM_THUONG_PHAT,
-                Quyen.XEM_BAO_CAO_PHONG, Quyen.XEM_HOP_DONG);
+                Quyen.XEM_BAO_CAO_PHONG, Quyen.XEM_HOP_DONG, Quyen.DUYET_YEU_CAU);
 
         //Pho phong: xem trong phong, cham cong + duyet nghi phep cho nhan vien thuong, khong xem luong nguoi khac
         PHO_PHONG.cap(PhamVi.PHONG_BAN,

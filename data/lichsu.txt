@@ -1,0 +1,12 @@
+# maNV|nam|maPB|maCV|tenCV|heSoCV|luongCoBan|ghiChu  (nam khong co dong = giu nguyen nhu nam truoc do)
+GD001|2015|PB02|CV02|TRUONG PHONG|0.3|15000000|Vao lam, giu chuc truong phong
+GD001|2017|PB02|CV02|TRUONG PHONG|0.3|17000000|Tang luong
+GD001|2019|PB01|CV01|GIAM DOC|0.5|18000000|Bo nhiem giam doc, chuyen phong Hanh chinh
+GD001|2022|PB01|CV01|GIAM DOC|0.5|19000000|Tang luong
+GD001|2024|PB01|CV01|GIAM DOC|0.5|20000000|Tang luong
+GD002|2014|PB04|CV03|PHO PHONG|0.2|14000000|Vao lam, giu chuc pho phong
+GD002|2016|PB04|CV02|TRUONG PHONG|0.3|17000000|Bo nhiem truong phong
+GD002|2018|PB03|CV02|TRUONG PHONG|0.3|19000000|Chuyen phong Kinh doanh
+GD002|2020|PB04|CV01|GIAM DOC|0.5|21000000|Bo nhiem giam doc, ve phong Ke toan
+GD002|2023|PB04|CV01|GIAM DOC|0.5|21500000|Tang luong
+GD003|2025|PB05|CV01|GIAM DOC|0.5|20000000|Vao lam giam doc, phong Marketing

@@ -54,6 +54,9 @@ public enum Quyen {
     XEM_BAO_CAO_PHONG("Xem bao cao phong ban", false, false),
     XEM_HOP_DONG("Xem hop dong lao dong", true, false),
 
+    //--- yeu cau (nhan vien/truong phong/pho phong gui yeu cau sua ho so len cap tren) ---
+    DUYET_YEU_CAU("Duyet yeu cau sua ho so", true, true),
+
     //--- he thong ---
     QUAN_LY_TAI_KHOAN("Quan ly tai khoan (duyet, reset, khoa/mo khoa)", false, false),
     XEM_NHAT_KY("Xem nhat ky he thong", false, false),

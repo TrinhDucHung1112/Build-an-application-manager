@@ -1,0 +1,10 @@
+# maHD|maNV|loai|ngayKy(yyyy-MM-dd)|ngayHetHan(de trong = khong thoi han)|ghiChu
+HD_GD001_1|GD001|Thu viec|2015-06-01|2015-07-31|Thu viec 2 thang
+HD_GD001_2|GD001|Co thoi han|2015-08-01|2018-07-31|Hop dong 3 nam
+HD_GD001_3|GD001|Khong thoi han|2018-08-01||Ky hop dong khong thoi han
+HD_GD002_1|GD002|Thu viec|2014-03-10|2014-05-09|Thu viec 2 thang
+HD_GD002_2|GD002|Co thoi han|2014-05-10|2017-05-09|Hop dong 3 nam
+HD_GD002_3|GD002|Co thoi han|2017-05-10|2020-05-09|Gia han lan 1
+HD_GD002_4|GD002|Khong thoi han|2020-05-10||Ky hop dong khong thoi han
+HD_GD003_1|GD003|Thu viec|2025-09-01|2025-10-31|Thu viec 2 thang
+HD_GD003_2|GD003|Co thoi han|2025-11-01|2027-10-31|Hop dong 2 nam
