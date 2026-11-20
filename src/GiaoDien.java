@@ -20,6 +20,15 @@ public final class GiaoDien {
 
     private GiaoDien() {}
 
+    //ham doc 1 dong tu ban phim (do Main gan) de chia trang cac bang dai
+    private static java.util.function.Function<String, String> docDong;
+    private static final int NGUONG_CHIA_TRANG = 30;     //bang co nhieu hon so dong nay thi tu chia trang
+    private static final int DONG_MOI_TRANG = 20;
+
+    public static void setDocDong(java.util.function.Function<String, String> f) {
+        docDong = f;
+    }
+
 //----khung nhap/xuat----
     public static void batDau(String tieuDe) {
         String t = " " + tieuDe + " ";
@@ -80,7 +89,7 @@ public final class GiaoDien {
             }
             tatCa.add(h);
         }
-        ve(td, max, ca, tatCa);
+        ve(td, max, ca, tatCa, true);
     }
 
 //----in bang khong co STT (dung cho thong tin chi tiet / thong ke)----
@@ -89,7 +98,7 @@ public final class GiaoDien {
             in("(Khong co du lieu)");
             return;
         }
-        ve(tieuDe, rongToiDa, canh, dong);
+        ve(tieuDe, rongToiDa, canh, dong, false);
     }
 
     //bang 2 cot: THONG TIN | GIA TRI
@@ -111,7 +120,7 @@ public final class GiaoDien {
     }
 
 //----ve bang----
-    private static void ve(String[] td, int[] max, String[] canh, List<String[]> dong) {
+    private static void ve(String[] td, int[] max, String[] canh, List<String[]> dong, boolean choPhepChiaTrang) {
         int n = td.length;
         int[] rong = new int[n];
         for (int c = 0; c < n; c++) {
@@ -142,11 +151,23 @@ public final class GiaoDien {
         StringBuilder ngang = new StringBuilder("+");
         for (int c = 0; c < n; c++) ngang.append("-".repeat(rong[c] + 2)).append("+");
 
-        System.out.println(LE + ngang);
-        inHang(td, rong, canh, true);
-        System.out.println(LE + ngang);
-        for (String[] d : dong) inHang(d, rong, canh, false);
-        System.out.println(LE + ngang);
+        //bang dai thi chia trang (cot giu nguyen do rong giua cac trang)
+        int tong = dong.size();
+        boolean chia = choPhepChiaTrang && docDong != null && tong > NGUONG_CHIA_TRANG;
+        int moiTrang = chia ? DONG_MOI_TRANG : Math.max(1, tong);
+        int soTrang = (tong + moiTrang - 1) / moiTrang;
+        for (int tu = 0, trang = 1; tu < tong; tu += moiTrang, trang++) {
+            int den = Math.min(tong, tu + moiTrang);
+            System.out.println(LE + ngang);
+            inHang(td, rong, canh, true);
+            System.out.println(LE + ngang);
+            for (int i = tu; i < den; i++) inHang(dong.get(i), rong, canh, false);
+            System.out.println(LE + ngang);
+            if (chia && den < tong) {
+                String r = docDong.apply("Trang " + trang + "/" + soTrang + " (" + tong + " dong). Enter = trang tiep, q = dung xem: ");
+                if (r.trim().equalsIgnoreCase("q")) break;
+            }
+        }
     }
 
     private static int tongRong(int[] rong) {
