@@ -101,19 +101,19 @@ public class NhanVienHopDong extends NhanVien {
     }
 
     @Override
-    protected java.util.List<String[]> thongTinRieng(){
-        java.util.List<String[]> r = new java.util.ArrayList<>();
-        r.add(new String[]{"Loai nhan vien", "Hop dong"});
-        r.add(new String[]{"Thoi han hop dong", thoiHanHopDong + " ngay"});
-        r.add(new String[]{"Luong theo hop dong", String.format("%,.0f", luongTheoHopDong)});
-        r.add(new String[]{"Ngay bat dau thuc te", String.valueOf(ngayBatDauThucTe)});
-        r.add(new String[]{"Ngay ket thuc thuc te", String.valueOf(ngayKetThucTe)});
-        r.add(new String[]{"Thoi gian thuc te", thoiGianThucTe + " ngay"});
+    protected String[][] thongTinRieng(){
+        String[][] r = new String[0][];
+        r = Mang.them(r, new String[]{"Loai nhan vien", "Hop dong"});
+        r = Mang.them(r, new String[]{"Thoi han hop dong", thoiHanHopDong + " ngay"});
+        r = Mang.them(r, new String[]{"Luong theo hop dong", String.format("%,.0f", luongTheoHopDong)});
+        r = Mang.them(r, new String[]{"Ngay bat dau thuc te", String.valueOf(ngayBatDauThucTe)});
+        r = Mang.them(r, new String[]{"Ngay ket thuc thuc te", String.valueOf(ngayKetThucTe)});
+        r = Mang.them(r, new String[]{"Thoi gian thuc te", thoiGianThucTe + " ngay"});
         if(hopDong != null){
-            r.add(new String[]{"Ma hop dong", hopDong.getmaHD()});
-            r.add(new String[]{"Loai hop dong", hopDong.getloaiHopDong()});
-            r.add(new String[]{"Ngay ky", String.valueOf(hopDong.getngayKy())});
-            r.add(new String[]{"Ngay het han", hopDong.getngayHetHan() + (hopDong.conHieuLuc() ? " (con hieu luc)" : " (het hieu luc)")});
+            r = Mang.them(r, new String[]{"Ma hop dong", hopDong.getmaHD()});
+            r = Mang.them(r, new String[]{"Loai hop dong", hopDong.getloaiHopDong()});
+            r = Mang.them(r, new String[]{"Ngay ky", String.valueOf(hopDong.getngayKy())});
+            r = Mang.them(r, new String[]{"Ngay het han", hopDong.getngayHetHan() + (hopDong.conHieuLuc() ? " (con hieu luc)" : " (het hieu luc)")});
         }
         return r;
     }

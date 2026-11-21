@@ -6,6 +6,7 @@ public class PhongBan implements Serializable, IThongTin {
     private String tenPB;
     private String moTa;
     private int soNhanVien;
+    private String maGiamDoc = "";       //giam doc quan ly phong ban nay ("" = chua phan cong: moi giam doc deu quan ly)
 
     // Constructor
     public PhongBan(){
@@ -19,6 +20,18 @@ public class PhongBan implements Serializable, IThongTin {
         setTenPB(tenPB);
         setMoTa(moTa);
         this.soNhanVien = 0;
+    }
+
+    public PhongBan(String maPB, String tenPB, String moTa, String maGiamDoc){
+        this(maPB, tenPB, moTa);
+        setMaGiamDoc(maGiamDoc);
+    }
+
+    public String getMaGiamDoc(){
+        return maGiamDoc;
+    }
+    public void setMaGiamDoc(String maGiamDoc){
+        this.maGiamDoc = (maGiamDoc == null) ? "" : maGiamDoc.trim().toUpperCase();
     }
 
     // Getter, setter

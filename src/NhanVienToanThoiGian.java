@@ -51,11 +51,11 @@ public class NhanVienToanThoiGian extends NhanVien{
     }
 
     @Override
-    protected java.util.List<String[]> thongTinRieng(){
-        java.util.List<String[]> r = new java.util.ArrayList<>();
-        r.add(new String[]{"Loai nhan vien", "Toan thoi gian"});
-        r.add(new String[]{"Phu cap", String.format("%,.0f", phuCap)});
-        r.add(new String[]{"Tham nien", thamNien + " nam"});
+    protected String[][] thongTinRieng(){
+        String[][] r = new String[0][];
+        r = Mang.them(r, new String[]{"Loai nhan vien", "Toan thoi gian"});
+        r = Mang.them(r, new String[]{"Phu cap", String.format("%,.0f", phuCap)});
+        r = Mang.them(r, new String[]{"Tham nien", thamNien + " nam"});
         return r;
     }
 

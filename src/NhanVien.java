@@ -1,7 +1,5 @@
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public abstract class NhanVien implements IThongTin, Serializable{
@@ -129,36 +127,36 @@ public abstract class NhanVien implements IThongTin, Serializable{
 
     //in thong tin chi tiet 1 nhan vien dang bang 2 cot (THONG TIN | GIA TRI)
     public void hienThiThongTin(){
-        List<String[]> cap = new ArrayList<>();
-        cap.add(new String[]{"Ma nhan vien", maNV});
-        cap.add(new String[]{"Ho ten", hoTen});
-        cap.add(new String[]{"Ngay sinh", String.valueOf(ngaySinh)});
-        cap.add(new String[]{"Gioi tinh", gioiTinh});
-        cap.add(new String[]{"So dien thoai", sdt});
-        cap.add(new String[]{"Email", email});
-        cap.add(new String[]{"Luong co ban", String.format("%,.0f", luongCoBan)});
-        cap.add(new String[]{"Ngay vao lam", String.valueOf(ngayVaoLam)});
-        cap.add(new String[]{"Trang thai", trangThai});
-        cap.add(new String[]{"Phong ban", phongBan == null ? "chua phan phong ban" : phongBan.getTenPB() + " (" + phongBan.getMaPB() + ")"});
-        cap.add(new String[]{"Chuc vu", chucVu == null ? "chua co" : chucVu.getTenCV() + " (he so " + chucVu.getHeSoLuong() + ")"});
+        String[][] cap = new String[0][];
+        cap = Mang.them(cap, new String[]{"Ma nhan vien", maNV});
+        cap = Mang.them(cap, new String[]{"Ho ten", hoTen});
+        cap = Mang.them(cap, new String[]{"Ngay sinh", String.valueOf(ngaySinh)});
+        cap = Mang.them(cap, new String[]{"Gioi tinh", gioiTinh});
+        cap = Mang.them(cap, new String[]{"So dien thoai", sdt});
+        cap = Mang.them(cap, new String[]{"Email", email});
+        cap = Mang.them(cap, new String[]{"Luong co ban", String.format("%,.0f", luongCoBan)});
+        cap = Mang.them(cap, new String[]{"Ngay vao lam", String.valueOf(ngayVaoLam)});
+        cap = Mang.them(cap, new String[]{"Trang thai", trangThai});
+        cap = Mang.them(cap, new String[]{"Phong ban", phongBan == null ? "chua phan phong ban" : phongBan.getTenPB() + " (" + phongBan.getMaPB() + ")"});
+        cap = Mang.them(cap, new String[]{"Chuc vu", chucVu == null ? "chua co" : chucVu.getTenCV() + " (he so " + chucVu.getHeSoLuong() + ")"});
         if(trinhDo == null || trinhDo.length == 0){
-            cap.add(new String[]{"Trinh do", "chua co"});
+            cap = Mang.them(cap, new String[]{"Trinh do", "chua co"});
         }
         else{
             int stt = 1;
             for(TrinhDoChuyenMon td : trinhDo){
                 if(td != null)
-                    cap.add(new String[]{"Trinh do " + (stt++), td.getTenTD() + " - " + td.getChuyenNganh() + " (" + td.getTruongDaoTao() + ", " + td.getNamTotNghiep() + ")"});
+                    cap = Mang.them(cap, new String[]{"Trinh do " + (stt++), td.getTenTD() + " - " + td.getChuyenNganh() + " (" + td.getTruongDaoTao() + ", " + td.getNamTotNghiep() + ")"});
             }
         }
-        cap.addAll(thongTinRieng());        //phan rieng cua tung loai nhan vien (lop con ghi de)
-        cap.add(new String[]{"Luong (tinh luong)", String.format("%,.0f", tinhLuong())});
+        cap = Mang.themTatCa(cap, thongTinRieng());        //phan rieng cua tung loai nhan vien (lop con ghi de)
+        cap = Mang.them(cap, new String[]{"Luong (tinh luong)", String.format("%,.0f", tinhLuong())});
         GiaoDien.inThongTin(cap);
     }
 
     //cac dong thong tin rieng cua tung loai nhan vien, lop con ghi de (da hinh)
-    protected List<String[]> thongTinRieng(){
-        return new ArrayList<>();
+    protected String[][] thongTinRieng(){
+        return new String[0][];
     }
 
     //ten loai ngan gon dung o cot LOAI trong bang danh sach, lop con ghi de

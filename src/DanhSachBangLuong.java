@@ -119,43 +119,43 @@ public class DanhSachBangLuong implements IQuanLyDuLieu {
     //ql de lay nhan vien theo phong ban
     public void xuatBangLuongTheoPhong(String maPB, int thang, int nam, QuanLyNhanSu ql) {
         NhanVien[] dsNV = ql.timKiemTheoPhongBan(maPB);
-        java.util.List<BangLuong> kq = new java.util.ArrayList<>();
+        BangLuong[] kq = new BangLuong[0];
         if (dsNV != null) {
             for (NhanVien nv : dsNV) {
                 if (nv == null) continue;
                 BangLuong bl = timTheoMaNV(nv.getMaNV(), thang, nam);
-                if (bl != null) kq.add(bl);
+                if (bl != null) kq = Mang.them(kq, bl);
             }
         }
-        if (kq.isEmpty()) {
+        if ((kq.length == 0)) {
             GiaoDien.in("Khong co bang luong phong " + maPB + " thang " + thang + "/" + nam);
             return;
         }
         GiaoDien.in("BANG LUONG PHONG " + maPB.toUpperCase() + " THANG " + thang + "/" + nam);
-        inBang(kq.toArray(new BangLuong[0]));
+        inBang(kq);
     }
 
     public void xuatBangLuongCongTy(int thang, int nam) {
-        java.util.List<BangLuong> kq = new java.util.ArrayList<>();
+        BangLuong[] kq = new BangLuong[0];
         for (int i = 0; i < soLuong; i++) {
-            if (danhSach[i].getThang() == thang && danhSach[i].getNam() == nam) kq.add(danhSach[i]);
+            if (danhSach[i].getThang() == thang && danhSach[i].getNam() == nam) kq = Mang.them(kq, danhSach[i]);
         }
-        if (kq.isEmpty()) {
+        if ((kq.length == 0)) {
             GiaoDien.in("Khong co bang luong thang " + thang + "/" + nam);
             return;
         }
         GiaoDien.in("BANG LUONG CONG TY THANG " + thang + "/" + nam + " (don vi: VND)");
-        inBang(kq.toArray(new BangLuong[0]));
+        inBang(kq);
         GiaoDien.in("Tong quy luong thuc nhan: " + String.format("%,.0f", tongQuyLuong(thang, nam)) + " VND");
         GiaoDien.in("(Xem chi tiet thuong/phat cua tung nguoi: chon 'Xem bang luong theo ma NV')");
     }
 
     //in tom tat bang luong, moi nhan vien 1 dong
     public static void inBang(BangLuong[] ds) {
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (BangLuong bl : ds) {
             if (bl == null) continue;
-            dong.add(new String[]{bl.getMaNV(),
+            dong = Mang.them(dong, new String[]{bl.getMaNV(),
                     String.format("%,.0f", bl.getLuongNhanVien()), String.format("%,.0f", bl.getPhuCap()),
                     String.format("%,.0f", bl.getTienThuong()), String.format("%,.0f", bl.getTienPhat()),
                     String.format("%,.0f", bl.getTienBaoHiem()), String.format("%,.0f", bl.getTongLuong()),

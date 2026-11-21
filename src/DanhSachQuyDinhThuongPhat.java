@@ -44,10 +44,10 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
             GiaoDien.in("Chua co quy dinh thuong/phat.");
             return;
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (int i = 0; i < soLuong; i++) {
             QuyDinhThuongPhat qd = danhSach[i];
-            dong.add(new String[]{qd.getMaQD(), qd.getTenQD(), qd.getLoai(),
+            dong = Mang.them(dong, new String[]{qd.getMaQD(), qd.getTenQD(), qd.getLoai(),
                     qd.getDieuKien() + " " + TepVanBan.soDep(qd.getNguong()),
                     String.format("%,.0f", qd.getMucTien()), qd.getDonVi()});
         }
@@ -62,10 +62,10 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
     // Dinh dang moi dong: maQD|tenQD|loai|dieuKien|nguong|mucTien|donVi
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             QuyDinhThuongPhat qd = danhSach[i];
-            dong.add(TepVanBan.ghep(qd.getMaQD(), qd.getTenQD(), qd.getLoai(), qd.getDieuKien(),
+            dong = Mang.them(dong, TepVanBan.ghep(qd.getMaQD(), qd.getTenQD(), qd.getLoai(), qd.getDieuKien(),
                     qd.getNguong(), qd.getMucTien(), qd.getDonVi()));
         }
         try {
@@ -79,8 +79,8 @@ public class DanhSachQuyDinhThuongPhat implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE);
-            danhSach = new QuyDinhThuongPhat[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(FILE);
+            danhSach = new QuyDinhThuongPhat[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 7) continue;

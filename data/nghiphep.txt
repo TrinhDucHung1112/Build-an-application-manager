@@ -1,6 +1,84 @@
-# maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi(Co phep/Khong phep)|trangThai(Cho duyet/Da duyet)
-NP001|NV004|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
-NP002|NV007|2026-10-19|2026-10-20|Viec rieng|Khong phep|Da duyet
-NP003|NV011|2026-10-08|2026-10-08|Viec gia dinh|Co phep|Da duyet
-NP004|NV009|2026-09-21|2026-09-25|Nghi du lich|Co phep|Da duyet
-NP005|NV002|2026-11-16|2026-11-18|Nghi phep nam|Co phep|Cho duyet
+# maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi|trangThai
+NP001|NVT002|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
+NP002|NVB001|2026-10-19|2026-10-20|Viec rieng|Khong phep|Da duyet
+NP003|NVH002|2026-10-08|2026-10-08|Viec gia dinh|Co phep|Da duyet
+NP004|NVB003|2026-09-21|2026-09-25|Nghi du lich|Co phep|Da duyet
+NP005|NVT001|2026-11-16|2026-11-18|Nghi phep nam|Co phep|Cho duyet
+NP006|TP003|2026-10-22|2026-10-23|Viec gia dinh|Co phep|Da duyet
+NP007|NVT005|2026-10-14|2026-10-15|Kham benh|Co phep|Da duyet
+NP008|NVB004|2026-11-18|2026-11-19|Viec rieng|Khong phep|Cho duyet
+NP101|GD001|2015-06-10|2015-06-10|Nghi du lich|Co phep|Da duyet
+NP102|GD001|2016-02-03|2016-02-04|Kham benh|Co phep|Da duyet
+NP103|GD001|2016-03-01|2016-03-02|Kham benh|Co phep|Da duyet
+NP104|GD001|2016-06-17|2016-06-21|Kham benh|Co phep|Da duyet
+NP105|GD001|2017-01-05|2017-01-05|Nghi du lich|Co phep|Da duyet
+NP106|GD001|2017-08-23|2017-08-25|Kham benh|Co phep|Da duyet
+NP107|GD001|2017-09-21|2017-09-25|Nghi du lich|Co phep|Da duyet
+NP108|GD001|2019-01-07|2019-01-07|Kham benh|Co phep|Da duyet
+NP109|GD001|2019-04-16|2019-04-17|Nghi phep nam|Co phep|Da duyet
+NP110|GD001|2019-10-02|2019-10-04|Viec gia dinh|Co phep|Da duyet
+NP111|GD001|2020-01-23|2020-01-23|Viec gia dinh|Co phep|Da duyet
+NP112|GD001|2020-03-09|2020-03-10|Kham benh|Co phep|Da duyet
+NP113|GD001|2020-06-04|2020-06-05|Viec gia dinh|Co phep|Da duyet
+NP114|GD001|2020-10-06|2020-10-06|Kham benh|Co phep|Da duyet
+NP115|GD001|2021-01-18|2021-01-18|Viec gia dinh|Co phep|Da duyet
+NP116|GD001|2021-02-11|2021-02-12|Nghi phep nam|Co phep|Da duyet
+NP117|GD001|2021-04-13|2021-04-15|Nghi phep nam|Co phep|Da duyet
+NP118|GD001|2021-05-17|2021-05-18|Nghi phep nam|Co phep|Da duyet
+NP119|GD001|2021-12-14|2021-12-15|Nghi phep nam|Co phep|Da duyet
+NP120|GD001|2022-02-09|2022-02-10|Nghi phep nam|Co phep|Da duyet
+NP121|GD001|2022-03-28|2022-03-29|Kham benh|Co phep|Da duyet
+NP122|GD001|2022-08-10|2022-08-10|Viec rieng|Khong phep|Da duyet
+NP123|GD001|2023-02-02|2023-02-03|Nghi phep nam|Co phep|Da duyet
+NP124|GD001|2023-03-10|2023-03-10|Viec gia dinh|Co phep|Da duyet
+NP125|GD001|2023-06-15|2023-06-16|Kham benh|Co phep|Da duyet
+NP126|GD001|2023-12-26|2023-12-27|Viec gia dinh|Co phep|Da duyet
+NP127|GD001|2024-01-24|2024-01-24|Kham benh|Co phep|Da duyet
+NP128|GD001|2024-05-15|2024-05-17|Kham benh|Co phep|Da duyet
+NP129|GD001|2024-08-20|2024-08-22|Viec gia dinh|Co phep|Da duyet
+NP130|GD001|2024-09-25|2024-09-26|Nghi phep nam|Co phep|Da duyet
+NP131|GD001|2025-02-24|2025-02-25|Viec rieng|Khong phep|Da duyet
+NP132|GD001|2025-03-14|2025-03-17|Kham benh|Co phep|Da duyet
+NP133|GD001|2025-05-21|2025-05-22|Kham benh|Co phep|Da duyet
+NP134|GD001|2025-06-09|2025-06-09|Kham benh|Co phep|Da duyet
+NP135|GD001|2025-09-10|2025-09-12|Kham benh|Co phep|Da duyet
+NP136|GD001|2026-01-21|2026-01-22|Kham benh|Co phep|Da duyet
+NP137|GD001|2026-03-26|2026-03-27|Nghi du lich|Co phep|Da duyet
+NP138|GD001|2026-06-15|2026-06-16|Viec rieng|Khong phep|Da duyet
+NP139|GD001|2026-07-24|2026-07-27|Viec gia dinh|Co phep|Da duyet
+NP140|GD002|2014-04-29|2014-04-29|Kham benh|Co phep|Da duyet
+NP141|GD002|2014-08-06|2014-08-06|Viec gia dinh|Co phep|Da duyet
+NP142|GD002|2014-09-12|2014-09-12|Viec rieng|Khong phep|Da duyet
+NP143|GD002|2014-11-13|2014-11-13|Nghi phep nam|Co phep|Da duyet
+NP144|GD002|2015-02-12|2015-02-13|Viec rieng|Khong phep|Da duyet
+NP145|GD002|2015-03-12|2015-03-13|Nghi du lich|Co phep|Da duyet
+NP146|GD002|2016-07-07|2016-07-11|Kham benh|Co phep|Da duyet
+NP147|GD002|2017-02-01|2017-02-03|Kham benh|Co phep|Da duyet
+NP148|GD002|2017-03-07|2017-03-09|Viec gia dinh|Co phep|Da duyet
+NP149|GD002|2017-04-04|2017-04-04|Viec rieng|Khong phep|Da duyet
+NP150|GD002|2017-06-08|2017-06-08|Nghi phep nam|Co phep|Da duyet
+NP151|GD002|2017-08-30|2017-08-30|Viec gia dinh|Co phep|Da duyet
+NP152|GD002|2018-02-06|2018-02-06|Kham benh|Co phep|Da duyet
+NP153|GD002|2018-09-24|2018-09-25|Nghi phep nam|Co phep|Da duyet
+NP154|GD002|2019-02-21|2019-02-21|Nghi phep nam|Co phep|Da duyet
+NP155|GD002|2019-08-08|2019-08-08|Kham benh|Co phep|Da duyet
+NP156|GD002|2019-09-06|2019-09-09|Nghi du lich|Co phep|Da duyet
+NP157|GD002|2019-11-25|2019-11-25|Kham benh|Co phep|Da duyet
+NP158|GD002|2020-09-25|2020-09-25|Viec gia dinh|Co phep|Da duyet
+NP159|GD002|2021-02-23|2021-02-23|Kham benh|Co phep|Da duyet
+NP160|GD002|2021-05-25|2021-05-27|Nghi phep nam|Co phep|Da duyet
+NP161|GD002|2021-08-09|2021-08-09|Kham benh|Co phep|Da duyet
+NP162|GD002|2021-11-22|2021-11-22|Kham benh|Co phep|Da duyet
+NP163|GD002|2022-02-23|2022-02-23|Nghi du lich|Co phep|Da duyet
+NP164|GD002|2022-04-27|2022-04-27|Viec gia dinh|Co phep|Da duyet
+NP165|GD002|2024-09-10|2024-09-10|Kham benh|Co phep|Da duyet
+NP166|GD002|2024-12-11|2024-12-11|Kham benh|Co phep|Da duyet
+NP167|GD002|2025-05-02|2025-05-05|Viec gia dinh|Co phep|Da duyet
+NP168|GD002|2025-07-22|2025-07-24|Kham benh|Co phep|Da duyet
+NP169|GD002|2025-10-28|2025-10-29|Kham benh|Co phep|Da duyet
+NP170|GD002|2026-04-09|2026-04-09|Nghi du lich|Co phep|Da duyet
+NP171|GD002|2026-06-24|2026-06-24|Viec rieng|Khong phep|Da duyet
+NP172|GD002|2026-09-15|2026-09-15|Nghi phep nam|Co phep|Da duyet
+NP173|GD003|2025-11-17|2025-11-19|Nghi phep nam|Co phep|Da duyet
+NP174|GD003|2026-01-07|2026-01-09|Viec rieng|Khong phep|Da duyet
+NP175|GD003|2026-07-28|2026-07-28|Kham benh|Co phep|Da duyet
