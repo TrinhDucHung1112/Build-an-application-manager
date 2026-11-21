@@ -128,10 +128,10 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
 //---hienthi---
     //in danh sach thuong/phat dang bang co STT
     public static void inBang(ThuongPhat[] ds) {
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (ThuongPhat tp : ds) {
             if (tp == null) continue;
-            dong.add(new String[]{tp.getMaTP(), tp.getMaNV(), tp.getLoai(), tp.getLyDo(),
+            dong = Mang.them(dong, new String[]{tp.getMaTP(), tp.getMaNV(), tp.getLoai(), tp.getLyDo(),
                     TepVanBan.soDep(tp.getSoLuong()), String.format("%,.0f", tp.getSoTien()),
                     String.valueOf(tp.getNgayApDung())});
         }
@@ -156,10 +156,10 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
     // Dinh dang moi dong: maTP|maNV|maQD|loai|lyDo|soLuong|soTien|ngayApDung
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             ThuongPhat tp = danhSach[i];
-            dong.add(TepVanBan.ghep(tp.getMaTP(), tp.getMaNV(), tp.getMaQD(), tp.getLoai(), tp.getLyDo(),
+            dong = Mang.them(dong, TepVanBan.ghep(tp.getMaTP(), tp.getMaNV(), tp.getMaQD(), tp.getLoai(), tp.getLyDo(),
                     tp.getSoLuong(), tp.getSoTien(), tp.getNgayApDung()));
         }
         try {
@@ -173,8 +173,8 @@ public class DanhSachThuongPhat implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            danhSach = new ThuongPhat[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new ThuongPhat[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 8) continue;

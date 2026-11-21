@@ -1,6 +1,4 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Lich su cong tac theo nam cua nhan vien (CLASS MOI), luu o data/lichsu.txt.
@@ -25,9 +23,9 @@ public class DanhSachLichSuCongTac implements IQuanLyDuLieu {
         }
     }
 
-    private final List<LichSuCongTac> ds = new ArrayList<>();
+    private LichSuCongTac[] ds = new LichSuCongTac[0];
 
-    public int getSoLuong() { return ds.size(); }
+    public int getSoLuong() { return ds.length; }
 
     public LichSuCongTac timChinhXac(String maNV, int nam) {
         for (LichSuCongTac x : ds)
@@ -35,26 +33,26 @@ public class DanhSachLichSuCongTac implements IQuanLyDuLieu {
         return null;
     }
 
-    public List<LichSuCongTac> timTheoMaNV(String maNV) {
-        List<LichSuCongTac> kq = new ArrayList<>();
-        for (LichSuCongTac x : ds) if (x.getMaNV().equalsIgnoreCase(maNV)) kq.add(x);
+    public LichSuCongTac[] timTheoMaNV(String maNV) {
+        LichSuCongTac[] kq = new LichSuCongTac[0];
+        for (LichSuCongTac x : ds) if (x.getMaNV().equalsIgnoreCase(maNV)) kq = Mang.them(kq, x);
         return kq;
     }
 
     //them moi hoac thay the ban ghi cung (maNV, nam)
     public void ghi(LichSuCongTac moi) {
-        for (int i = 0; i < ds.size(); i++) {
-            LichSuCongTac x = ds.get(i);
+        for (int i = 0; i < ds.length; i++) {
+            LichSuCongTac x = ds[i];
             if (x.getMaNV().equalsIgnoreCase(moi.getMaNV()) && x.getNam() == moi.getNam()) {
-                ds.set(i, moi);
+                ds[i] = moi;
                 return;
             }
         }
-        ds.add(moi);
+        ds = Mang.them(ds, moi);
     }
 
     public void xoaTheoMaNV(String maNV) {
-        ds.removeIf(x -> x.getMaNV().equalsIgnoreCase(maNV));
+        ds = Mang.loc(ds, x -> !x.getMaNV().equalsIgnoreCase(maNV));
     }
 
     //trang thai hien tai cua nhan vien duoi dang 1 dong lich su (nam = nam hien tai)
@@ -131,9 +129,9 @@ public class DanhSachLichSuCongTac implements IQuanLyDuLieu {
     // Dinh dang moi dong: maNV|nam|maPB|maCV|tenCV|heSoCV|luongCoBan|ghiChu
     @Override
     public void ghiFile() {
-        List<String> dong = new ArrayList<>();
+        String[] dong = new String[0];
         for (LichSuCongTac x : ds) {
-            dong.add(TepVanBan.ghep(x.getMaNV(), x.getNam(), x.getMaPB(), x.getMaCV(), x.getTenCV(),
+            dong = Mang.them(dong, TepVanBan.ghep(x.getMaNV(), x.getNam(), x.getMaPB(), x.getMaCV(), x.getTenCV(),
                     x.getHeSoCV(), x.getLuongCoBan(), x.getGhiChu()));
         }
         try {
@@ -147,8 +145,8 @@ public class DanhSachLichSuCongTac implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            ds.clear();
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            ds = new LichSuCongTac[0];
             for (String[] p : cacDong) {
                 if (p.length < 7) continue;
                 try {

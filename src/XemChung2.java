@@ -1,8 +1,4 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,7 +54,7 @@ public final class XemChung2 {
         private int[] rongNam = new int[0];
         private String[] canhNam = new String[0];
         private IntFunction<String[]> cotNam = n -> new String[0];
-        private IntFunction<List<Dong>> layDong = n -> new ArrayList<>();
+        private IntFunction<Dong[]> layDong = n -> new Dong[0];
         private Function<String, String> tenPB = s -> s;
         private boolean theoPhongBan = true;
         private boolean hienCotPB = true;
@@ -87,7 +83,7 @@ public final class XemChung2 {
         }
 
         /** Lay tat ca dong (da loc theo quyen) cua 1 nam (nam = 0 neu man hinh khong theo nam). */
-        public Cau layDong(IntFunction<List<Dong>> layDong) { this.layDong = layDong; return this; }
+        public Cau layDong(IntFunction<Dong[]> layDong) { this.layDong = layDong; return this; }
 
         public Cau tenPhongBan(Function<String, String> tenPB) { this.tenPB = tenPB; return this; }
         public Cau khongPhongBan() { this.theoPhongBan = false; this.hienCotPB = false; return this; }
@@ -115,9 +111,9 @@ public final class XemChung2 {
             }
             boolean tiep = true;
             while (tiep) {
-                List<Dong> tatCa = c.layDong.apply(nam);
+                Dong[] tatCa = c.layDong.apply(nam);
                 GiaoDien.in("");
-                GiaoDien.in("== " + c.tieuDe + (nam > 0 ? " - NAM " + nam : "") + ": " + tatCa.size() + " ban ghi ==");
+                GiaoDien.in("== " + c.tieuDe + (nam > 0 ? " - NAM " + nam : "") + ": " + tatCa.length + " ban ghi ==");
                 GiaoDien.in("1. " + c.nhan1);
                 GiaoDien.in(c.theoPhongBan ? "2. " + c.nhan2 : "2. " + c.nhan2 + " (khong ap dung cho muc nay)");
                 GiaoDien.in("3. " + c.nhan3);
@@ -141,7 +137,7 @@ public final class XemChung2 {
 
     //---- chon nam (Chung1): NAM | TRANG THAI | SO BAN GHI | cot them ----
     private static Integer chonNam(Cau c, Function<String, String> hoi) {
-        List<Integer> cacNam = ChonKy.cacNam(c.tuNgay, c.namCuoi);
+        int[] cacNam = ChonKy.cacNam(c.tuNgay, c.namCuoi);
         int n = 3 + c.tdNam.length;
         String[] td = new String[n];
         int[] rong = new int[n];
@@ -150,16 +146,16 @@ public final class XemChung2 {
         td[1] = "TRANG THAI"; rong[1] = 12; canh[1] = GiaoDien.TRAI;
         td[2] = "SO BAN GHI"; rong[2] = 11; canh[2] = GiaoDien.PHAI;
         for (int i = 0; i < c.tdNam.length; i++) { td[3 + i] = c.tdNam[i]; rong[3 + i] = c.rongNam[i]; canh[3 + i] = c.canhNam[i]; }
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (int nam : cacNam) {
             String[] them = c.cotNam.apply(nam);
             String[] r = new String[n];
             r[0] = String.valueOf(nam);
             r[1] = ChonKy.trangThaiNam(nam);
-            r[2] = String.valueOf(c.layDong.apply(nam).size());
+            r[2] = String.valueOf(c.layDong.apply(nam).length);
             for (int i = 0; i < them.length && 3 + i < n; i++) r[3 + i] = them[i];
             for (int i = 0; i < n; i++) if (r[i] == null) r[i] = "";
-            dong.add(r);
+            dong = Mang.them(dong, r);
         }
         GiaoDien.in("");
         GiaoDien.in(c.tieuDe + " - chon nam");
@@ -168,13 +164,13 @@ public final class XemChung2 {
     }
 
     //---- 1. tim theo ma ----
-    private static void timTheoMa(Cau c, int nam, List<Dong> tatCa, Function<String, String> hoi) {
+    private static void timTheoMa(Cau c, int nam, Dong[] tatCa, Function<String, String> hoi) {
         String tuKhoa = hoi.apply("Nhap " + c.goiYMa + " (co the nhap 1 phan): ").trim();
         if (tuKhoa.isEmpty()) return;
         String k = tuKhoa.toLowerCase();
-        List<Dong> kq = new ArrayList<>();
-        for (Dong d : tatCa) if (d.ma.toLowerCase().contains(k) || d.maNV.toLowerCase().contains(k)) kq.add(d);
-        if (kq.isEmpty()) {
+        Dong[] kq = new Dong[0];
+        for (Dong d : tatCa) if (d.ma.toLowerCase().contains(k) || d.maNV.toLowerCase().contains(k)) kq = Mang.them(kq, d);
+        if ((kq.length == 0)) {
             GiaoDien.in("Khong tim thay \"" + tuKhoa + "\"" + (nam > 0 ? " trong nam " + nam : "") + ".");
             return;
         }
@@ -182,19 +178,40 @@ public final class XemChung2 {
     }
 
     //---- 2. xem theo phong ban: chon 1 phong ban roi xem cac dong cua phong ban do ----
-    private static void xemTheoPhongBan(Cau c, int nam, List<Dong> tatCa, Function<String, String> hoi) {
-        Map<String, Integer> dem = new LinkedHashMap<>();
-        for (Dong d : tatCa) dem.merge(d.maPB, 1, Integer::sum);
-        if (dem.isEmpty()) {
+    private static void xemTheoPhongBan(Cau c, int nam, Dong[] tatCa, Function<String, String> hoi) {
+        String[] cacMa = new String[0];      //2 mang song song: cacMa[i] co soBanGhi[i] ban ghi
+        int[] soBanGhi = new int[0];
+        for (Dong d : tatCa) {
+            int vt = Mang.viTri(cacMa, d.maPB);
+            if (vt < 0) {
+                cacMa = Mang.them(cacMa, d.maPB);
+                soBanGhi = Mang.them(soBanGhi, 1);
+            } else {
+                soBanGhi[vt]++;
+            }
+        }
+        if (cacMa.length == 0) {
             GiaoDien.in("Khong co du lieu de chia theo phong ban.");
             return;
         }
-        List<String> cacMa = new ArrayList<>(dem.keySet());
-        java.util.Collections.sort(cacMa);
-        List<String[]> dong = new ArrayList<>();
-        for (String ma : cacMa) {
-            dong.add(new String[]{String.valueOf(dong.size() + 1), ma.isEmpty() ? "-" : ma,
-                    ma.isEmpty() ? "(chua phan phong ban)" : c.tenPB.apply(ma), String.valueOf(dem.get(ma))});
+        //sap xep ma phong ban tang dan (doi cho dong thoi so ban ghi tuong ung)
+        for (int i = 1; i < cacMa.length; i++) {
+            String khoaMa = cacMa[i];
+            int khoaSo = soBanGhi[i];
+            int j = i - 1;
+            while (j >= 0 && cacMa[j].compareTo(khoaMa) > 0) {
+                cacMa[j + 1] = cacMa[j];
+                soBanGhi[j + 1] = soBanGhi[j];
+                j--;
+            }
+            cacMa[j + 1] = khoaMa;
+            soBanGhi[j + 1] = khoaSo;
+        }
+        String[][] dong = new String[0][];
+        for (int i = 0; i < cacMa.length; i++) {
+            String ma = cacMa[i];
+            dong = Mang.them(dong, new String[]{String.valueOf(dong.length + 1), ma.isEmpty() ? "-" : ma,
+                    ma.isEmpty() ? "(chua phan phong ban)" : c.tenPB.apply(ma), String.valueOf(soBanGhi[i])});
         }
         GiaoDien.in("");
         GiaoDien.inBangKhongStt(new String[]{"STT", "MA PB", "TEN PHONG BAN", "SO BAN GHI"}, new int[]{5, 8, 26, 11},
@@ -202,7 +219,7 @@ public final class XemChung2 {
         String in = hoi.apply("Chon phong ban (STT hoac ma PB, 0 = quay lai): ").trim();
         if (in.isEmpty() || in.equals("0")) return;
         String maChon = null;
-        if (in.matches("\\d{1,3}") && Integer.parseInt(in) >= 1 && Integer.parseInt(in) <= cacMa.size()) maChon = cacMa.get(Integer.parseInt(in) - 1);
+        if (in.matches("\\d{1,3}") && Integer.parseInt(in) >= 1 && Integer.parseInt(in) <= cacMa.length) maChon = cacMa[Integer.parseInt(in) - 1];
         else for (String ma : cacMa) if (!ma.isEmpty() && ma.equalsIgnoreCase(in)) maChon = ma;
         if (maChon == null) {
             GiaoDien.in("Khong co phong ban \"" + in + "\" trong danh sach tren.");
@@ -212,26 +229,26 @@ public final class XemChung2 {
             c.xemTheoPB.accept(nam, maChon);
             return;
         }
-        List<Dong> kq = new ArrayList<>();
-        for (Dong d : tatCa) if (d.maPB.equals(maChon)) kq.add(d);
+        Dong[] kq = new Dong[0];
+        for (Dong d : tatCa) if (d.maPB.equals(maChon)) kq = Mang.them(kq, d);
         hienPhanTrang(c, "Phong ban " + (maChon.isEmpty() ? "(chua phan)" : c.tenPB.apply(maChon) + " (" + maChon + ")"), kq, hoi);
     }
 
     //---- 3. xem het (neu nhieu dong va co ngay thi hoi loc theo thang) ----
-    private static void xemHet(Cau c, List<Dong> tatCa, Function<String, String> hoi) {
-        List<Dong> ds = tatCa;
+    private static void xemHet(Cau c, Dong[] tatCa, Function<String, String> hoi) {
+        Dong[] ds = tatCa;
         String tieu = "Tat ca";
         boolean coNgay = false;
         for (Dong d : tatCa) if (d.ngay != null) { coNgay = true; break; }
-        if (coNgay && tatCa.size() >= NGUONG_LOC_THANG) {
-            GiaoDien.in("Co " + tatCa.size() + " ban ghi, de xem de hon ban co the loc theo thang.");
+        if (coNgay && tatCa.length >= NGUONG_LOC_THANG) {
+            GiaoDien.in("Co " + tatCa.length + " ban ghi, de xem de hon ban co the loc theo thang.");
             while (true) {
                 String t = hoi.apply("Nhap thang (1-12) de loc, Enter = xem het: ").trim();
                 if (t.isEmpty()) break;
                 if (t.matches("\\d{1,2}") && Integer.parseInt(t) >= 1 && Integer.parseInt(t) <= 12) {
                     int thang = Integer.parseInt(t);
-                    ds = new ArrayList<>();
-                    for (Dong d : tatCa) if (d.ngay != null && d.ngay.getMonthValue() == thang) ds.add(d);
+                    ds = new Dong[0];
+                    for (Dong d : tatCa) if (d.ngay != null && d.ngay.getMonthValue() == thang) ds = Mang.them(ds, d);
                     tieu = "Thang " + thang;
                     break;
                 }
@@ -243,8 +260,8 @@ public final class XemChung2 {
 
     //----------------------------------------------------------------------------------------------------
     /** In danh sach chia trang; chon STT de goi hanh dong (xem chi tiet / xu ly). */
-    public static void hienPhanTrang(Cau c, String tieu, List<Dong> ds, Function<String, String> hoi) {
-        int tong = ds.size();
+    public static void hienPhanTrang(Cau c, String tieu, Dong[] ds, Function<String, String> hoi) {
+        int tong = ds.length;
         if (tong == 0) {
             GiaoDien.in("(Khong co ban ghi nao)");
             return;
@@ -263,26 +280,26 @@ public final class XemChung2 {
         while (true) {
             int tu = (trang - 1) * DONG_MOI_TRANG;
             int den = Math.min(tong, tu + DONG_MOI_TRANG);
-            List<String[]> dong = new ArrayList<>();
+            String[][] dong = new String[0][];
             for (int i = tu; i < den; i++) {
-                Dong d = ds.get(i);
+                Dong d = ds[i];
                 String[] r = new String[soCot];
                 int k = 0;
                 r[k++] = String.valueOf(i + 1);
                 if (coPB) r[k++] = d.maPB.isEmpty() ? "-" : d.maPB;
                 for (int j = 0; j < c.td.length; j++) r[k++] = j < d.cot.length && d.cot[j] != null ? d.cot[j] : "";
-                dong.add(r);
+                dong = Mang.them(dong, r);
             }
             GiaoDien.in("");
             GiaoDien.in(tieu + ": " + tong + " ban ghi - trang " + trang + "/" + soTrang + " (dong " + (tu + 1) + "-" + den + ")");
             GiaoDien.inBangKhongStt(td, rong, canh, dong);
             if (soTrang == 1 && c.khiChon == null) return;
-            List<String> lenh = new ArrayList<>();
-            if (trang < soTrang) lenh.add("Enter = trang sau");
-            if (trang > 1) lenh.add("p = trang truoc");
-            if (soTrang > 2) lenh.add("t<so> = den trang");
-            if (c.khiChon != null) lenh.add("STT = " + c.tenKhiChon);
-            lenh.add("0 = quay lai");
+            String[] lenh = new String[0];
+            if (trang < soTrang) lenh = Mang.them(lenh, "Enter = trang sau");
+            if (trang > 1) lenh = Mang.them(lenh, "p = trang truoc");
+            if (soTrang > 2) lenh = Mang.them(lenh, "t<so> = den trang");
+            if (c.khiChon != null) lenh = Mang.them(lenh, "STT = " + c.tenKhiChon);
+            lenh = Mang.them(lenh, "0 = quay lai");
             String in = hoi.apply(String.join(" | ", lenh) + ": ").trim();
             if (in.equals("0")) return;
             if (in.isEmpty() || in.equalsIgnoreCase("n")) {
@@ -299,7 +316,7 @@ public final class XemChung2 {
                 int stt = Integer.parseInt(in);
                 if (stt >= 1 && stt <= tong) {
                     GiaoDien.in("");
-                    c.khiChon.accept(ds.get(stt - 1));
+                    c.khiChon.accept(ds[stt - 1]);
                     if (c.thoatSauKhiChon) return;
                     trang = (stt - 1) / DONG_MOI_TRANG + 1;       //quay lai dung trang vua xem
                 } else GiaoDien.in("STT chi tu 1 den " + tong + ".");

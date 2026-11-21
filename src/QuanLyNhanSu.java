@@ -174,10 +174,10 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
     //in danh sach nhan vien dang bang co STT (dung chung cho xem danh sach, tim kiem, bao cao)
     //muon xem day du thong tin 1 nhan vien thi goi nv.hienThiThongTin()
     public static void inBang(NhanVien[] ds) {
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (NhanVien nv : ds) {
             if (nv == null) continue;
-            dong.add(new String[]{
+            dong = Mang.them(dong, new String[]{
                 nv.getMaNV(),
                 nv.getHoTen(),
                 nv.getPhongBan() == null ? "(chua phan)" : nv.getPhongBan().getTenPB(),
@@ -407,10 +407,10 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             if(nv instanceof NhanVienHopDong)
                 nhanVienHD++;
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        dong.add(new String[]{"Nhan vien toan thoi gian", String.valueOf(nhanVienTTG)});
-        dong.add(new String[]{"Nhan vien ban thoi gian", String.valueOf(nhanVienBTG)});
-        dong.add(new String[]{"Nhan vien hop dong", String.valueOf(nhanVienHD)});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Nhan vien toan thoi gian", String.valueOf(nhanVienTTG)});
+        dong = Mang.them(dong, new String[]{"Nhan vien ban thoi gian", String.valueOf(nhanVienBTG)});
+        dong = Mang.them(dong, new String[]{"Nhan vien hop dong", String.valueOf(nhanVienHD)});
         GiaoDien.inBang(new String[]{"LOAI NHAN VIEN", "SO LUONG"}, new int[]{28, 10},
                 new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
         GiaoDien.in("Tong so nhan vien: " + soLuongNV);
@@ -445,9 +445,9 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             GiaoDien.in("Danh sach rong.");
             return;
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for(int i = 0; i < stt; i++){
-            dong.add(new String[]{tenTT[i], String.valueOf(demTT[i])});
+            dong = Mang.them(dong, new String[]{tenTT[i], String.valueOf(demTT[i])});
         }
         GiaoDien.inBang(new String[]{"TRANG THAI", "SO LUONG"}, new int[]{28, 10},
                 new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
@@ -469,11 +469,11 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             if(l < luongMin.tinhLuong())
                 luongMin = danhSachNV[i];
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        dong.add(new String[]{"Tong luong toan cong ty", String.format("%,.0f", tong) + " VND"});
-        dong.add(new String[]{"Luong trung binh 1 nhan vien", String.format("%,.0f", tong/soLuongNV) + " VND"});
-        dong.add(new String[]{"Luong cao nhat", luongMax.getMaNV() + " - " + luongMax.getHoTen() + ": " + String.format("%,.0f", luongMax.tinhLuong()) + " VND"});
-        dong.add(new String[]{"Luong thap nhat", luongMin.getMaNV() + " - " + luongMin.getHoTen() + ": " + String.format("%,.0f", luongMin.tinhLuong()) + " VND"});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Tong luong toan cong ty", String.format("%,.0f", tong) + " VND"});
+        dong = Mang.them(dong, new String[]{"Luong trung binh 1 nhan vien", String.format("%,.0f", tong/soLuongNV) + " VND"});
+        dong = Mang.them(dong, new String[]{"Luong cao nhat", luongMax.getMaNV() + " - " + luongMax.getHoTen() + ": " + String.format("%,.0f", luongMax.tinhLuong()) + " VND"});
+        dong = Mang.them(dong, new String[]{"Luong thap nhat", luongMin.getMaNV() + " - " + luongMin.getHoTen() + ": " + String.format("%,.0f", luongMin.tinhLuong()) + " VND"});
         GiaoDien.inThongKe(dong);
     }
 
@@ -491,7 +491,7 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
             GiaoDien.in("Chua co du lieu nhan vien (" + DUONG_DAN + "), bat dau moi.");
             return;
         }
-        java.util.List<String[]> cacDong;
+        String[][] cacDong;
         try {
             cacDong = TepVanBan.docDong(DUONG_DAN);
         } catch (IOException e) {
@@ -565,7 +565,7 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
 
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuongNV; i++) {
             NhanVien nv = danhSachNV[i];
             String loai;
@@ -590,7 +590,7 @@ public class QuanLyNhanSu implements IQuanLyDuLieu{
                     chucVuThanhChuoi(nv.getChucVu()), trinhDoThanhChuoi(nv.getTrinhDo())};
             Object[] tatCa = java.util.Arrays.copyOf(chung, chung.length + rieng.length);
             System.arraycopy(rieng, 0, tatCa, chung.length, rieng.length);
-            dong.add(TepVanBan.ghep(tatCa));
+            dong = Mang.them(dong, TepVanBan.ghep(tatCa));
         }
         try {
             TepVanBan.ghiDong(DUONG_DAN, "loai|maNV|hoTen|ngaySinh|gioiTinh|sdt|email|luongCoBan|ngayVaoLam|trangThai|maPB|chucVu|trinhDo|(truong rieng theo loai)", dong);

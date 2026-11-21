@@ -1,6 +1,4 @@
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Tong hop cac bao cao co ban cua he thong quan ly nhan su.
@@ -32,28 +30,35 @@ public class BaoCaoNhanSu {
             }
         }
         GiaoDien.tieuMuc("THONG KE BAO HIEM");
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        dong.add(new String[]{"Tong so ho so", String.valueOf(dsBaoHiem.getSoLuong())});
-        dong.add(new String[]{"So ho so BHXH", String.valueOf(soBHXH)});
-        dong.add(new String[]{"So ho so BHYT", String.valueOf(soBHYT)});
-        dong.add(new String[]{"So the BHYT het han", String.valueOf(soTheHetHan)});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Tong so ho so", String.valueOf(dsBaoHiem.getSoLuong())});
+        dong = Mang.them(dong, new String[]{"So ho so BHXH", String.valueOf(soBHXH)});
+        dong = Mang.them(dong, new String[]{"So ho so BHYT", String.valueOf(soBHYT)});
+        dong = Mang.them(dong, new String[]{"So the BHYT het han", String.valueOf(soTheHetHan)});
         GiaoDien.inThongKe(dong);
     }
 
     public void thongKeTheoPhongBan(QuanLyNhanSu ql) {
-        Map<String, Integer> dem = new LinkedHashMap<>();
+        String[] cacTen = new String[0];     //2 mang song song: cacTen[i] co soNV[i] nhan vien
+        int[] soNV = new int[0];
         for (NhanVien nv : ql.getDanhSachNV()) {
             String ten = nv.getPhongBan() == null ? "Chua phan phong" : nv.getPhongBan().getTenPB();
-            dem.put(ten, dem.getOrDefault(ten, 0) + 1);
+            int vt = Mang.viTri(cacTen, ten);
+            if (vt < 0) {
+                cacTen = Mang.them(cacTen, ten);
+                soNV = Mang.them(soNV, 1);
+            } else {
+                soNV[vt]++;
+            }
         }
         GiaoDien.tieuMuc("NHAN SU THEO PHONG BAN");
-        if (dem.isEmpty()) {
+        if (cacTen.length == 0) {
             GiaoDien.in("Chua co nhan vien.");
             return;
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        for (Map.Entry<String, Integer> e : dem.entrySet())
-            dong.add(new String[]{e.getKey(), String.valueOf(e.getValue())});
+        String[][] dong = new String[0][];
+        for (int i = 0; i < cacTen.length; i++)
+            dong = Mang.them(dong, new String[]{cacTen[i], String.valueOf(soNV[i])});
         GiaoDien.inBang(new String[]{"PHONG BAN", "SO NHAN VIEN"}, new int[]{28, 14},
                 new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
     }
@@ -66,11 +71,11 @@ public class BaoCaoNhanSu {
             GiaoDien.in("Chua co bang luong trong thang.");
             return;
         }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        dong.add(new String[]{"Tong quy luong", String.format("%,.0f VND", ds.tongQuyLuong(thang, nam))});
-        dong.add(new String[]{"Luong trung binh", String.format("%,.0f VND", ds.luongTrungBinh(thang, nam))});
-        dong.add(new String[]{"Luong cao nhat", String.format("%s - %,.0f VND", cao.getMaNV(), cao.getLuongThucNhan())});
-        dong.add(new String[]{"Luong thap nhat", String.format("%s - %,.0f VND", thap.getMaNV(), thap.getLuongThucNhan())});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Tong quy luong", String.format("%,.0f VND", ds.tongQuyLuong(thang, nam))});
+        dong = Mang.them(dong, new String[]{"Luong trung binh", String.format("%,.0f VND", ds.luongTrungBinh(thang, nam))});
+        dong = Mang.them(dong, new String[]{"Luong cao nhat", String.format("%s - %,.0f VND", cao.getMaNV(), cao.getLuongThucNhan())});
+        dong = Mang.them(dong, new String[]{"Luong thap nhat", String.format("%s - %,.0f VND", thap.getMaNV(), thap.getLuongThucNhan())});
         GiaoDien.inThongKe(dong);
     }
 
@@ -87,10 +92,10 @@ public class BaoCaoNhanSu {
             else nghi++;
         }
         GiaoDien.tieuMuc("TRANG THAI NHAN SU");
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
-        dong.add(new String[]{"Dang lam", String.valueOf(dangLam)});
-        dong.add(new String[]{"Tam nghi", String.valueOf(tamNghi)});
-        dong.add(new String[]{"Nghi / khac", String.valueOf(nghi)});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Dang lam", String.valueOf(dangLam)});
+        dong = Mang.them(dong, new String[]{"Tam nghi", String.valueOf(tamNghi)});
+        dong = Mang.them(dong, new String[]{"Nghi / khac", String.valueOf(nghi)});
         GiaoDien.inBang(new String[]{"TRANG THAI", "SO LUONG"}, new int[]{28, 10},
                 new String[]{GiaoDien.TRAI, GiaoDien.PHAI}, dong);
     }

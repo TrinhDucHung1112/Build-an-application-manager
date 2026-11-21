@@ -56,10 +56,10 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
 
     //in danh sach don nghi phep dang bang co STT
     public static void inBang(NghiPhep[] ds) {
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (NghiPhep np : ds) {
             if (np == null) continue;
-            dong.add(new String[]{np.getMaNP(), np.getMaNV(), String.valueOf(np.getNgayBatDau()),
+            dong = Mang.them(dong, new String[]{np.getMaNP(), np.getMaNV(), String.valueOf(np.getNgayBatDau()),
                     String.valueOf(np.getNgayKetThuc()), String.valueOf(np.tinhSoNgayNghi()),
                     np.getLoaiNghi(), np.getTrangThai(), np.getLyDo()});
         }
@@ -85,10 +85,10 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
     // Dinh dang moi dong: maNP|maNV|ngayBatDau|ngayKetThuc|lyDo|loaiNghi|trangThai
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             NghiPhep np = danhSach[i];
-            dong.add(TepVanBan.ghep(np.getMaNP(), np.getMaNV(), np.getNgayBatDau(), np.getNgayKetThuc(),
+            dong = Mang.them(dong, TepVanBan.ghep(np.getMaNP(), np.getMaNV(), np.getNgayBatDau(), np.getNgayKetThuc(),
                     np.getLyDo(), np.getLoaiNghi(), np.getTrangThai()));
         }
         try {
@@ -102,8 +102,8 @@ public class DanhSachNghiPhep implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE);
-            danhSach = new NghiPhep[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(FILE);
+            danhSach = new NghiPhep[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 7) continue;

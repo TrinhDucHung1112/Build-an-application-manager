@@ -34,10 +34,10 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
 
     public void xuatDanhSach() {
         if (soLuong == 0) { GiaoDien.in("Danh sach cham cong rong."); return; }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (int i = 0; i < soLuong; i++) {
             ChamCong cc = danhSach[i];
-            dong.add(new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
+            dong = Mang.them(dong, new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
                     String.valueOf(cc.getGioVao()), String.valueOf(cc.getGioRa()),
                     String.format("%.2f", cc.tinhGioLam()), String.format("%.2f", cc.tinhGioTangCa())});
         }
@@ -82,9 +82,9 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
 
     public static void inBang(ChamCong[] ds) {
         if (ds == null || ds.length == 0) { GiaoDien.in("Khong co ban ghi cham cong nao."); return; }
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (ChamCong cc : ds) {
-            dong.add(new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
+            dong = Mang.them(dong, new String[]{cc.getMaChamCong(), cc.getMaNV(), String.valueOf(cc.getNgay()),
                     String.valueOf(cc.getGioVao()), String.valueOf(cc.getGioRa()),
                     String.format("%.2f", cc.tinhGioLam()), String.format("%.2f", cc.tinhGioTangCa())});
         }
@@ -141,24 +141,24 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
     }
 
     public int thongKeSoNgayDiLam(String maNV, int thang, int nam) {
-        java.util.Set<LocalDate> ngayDiLam = new java.util.HashSet<>();
+        LocalDate[] ngayDiLam = new LocalDate[0];
         for (int i = 0; i < soLuong; i++) {
             ChamCong cc = danhSach[i];
             if (cc.getMaNV().equalsIgnoreCase(maNV)
                     && cc.getNgay().getMonthValue() == thang
                     && (nam < 0 || cc.getNgay().getYear() == nam))
-                ngayDiLam.add(cc.getNgay());
+                ngayDiLam = Mang.chua(ngayDiLam, cc.getNgay()) ? ngayDiLam : Mang.them(ngayDiLam, cc.getNgay());   //khong dem trung ngay
         }
-        return ngayDiLam.size();
+        return ngayDiLam.length;
     }
 
     // Dinh dang moi dong: maChamCong|maNV|ngay|gioVao|gioRa
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             ChamCong cc = danhSach[i];
-            dong.add(TepVanBan.ghep(cc.getMaChamCong(), cc.getMaNV(), cc.getNgay(), cc.getGioVao(), cc.getGioRa()));
+            dong = Mang.them(dong, TepVanBan.ghep(cc.getMaChamCong(), cc.getMaNV(), cc.getNgay(), cc.getGioVao(), cc.getGioRa()));
         }
         try {
             TepVanBan.ghiDong(TEN_FILE, "maChamCong|maNV|ngay(yyyy-MM-dd)|gioVao(HH:mm)|gioRa(HH:mm)", dong);
@@ -172,8 +172,8 @@ public class DanhSachChamCong implements IQuanLyDuLieu {
     public void docFile(){
         if (!new File(TEN_FILE).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(TEN_FILE);
-            danhSach = new ChamCong[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(TEN_FILE);
+            danhSach = new ChamCong[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 5) continue;

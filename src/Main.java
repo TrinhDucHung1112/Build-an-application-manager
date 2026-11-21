@@ -1,8 +1,6 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -159,17 +157,17 @@ public class Main {
     }
 
     //hien menu dong. Chon 0: chay khiThoat (neu co) roi thoat menu
-    private static void chayMenu(String tieuDe, List<Muc> cacMuc, String nhanThoat, Runnable khiThoat) {
+    private static void chayMenu(String tieuDe, Muc[] cacMuc, String nhanThoat, Runnable khiThoat) {
         int chon;
         do {
-            String[] nhan = new String[cacMuc.size() + 1];
-            for (int i = 0; i < cacMuc.size(); i++) nhan[i] = (i + 1) + ". " + cacMuc.get(i).ten;
-            nhan[cacMuc.size()] = "0. " + nhanThoat;
-            chon = menu(tieuDe, nhan, cacMuc.size());
+            String[] nhan = new String[cacMuc.length + 1];
+            for (int i = 0; i < cacMuc.length; i++) nhan[i] = (i + 1) + ". " + cacMuc[i].ten;
+            nhan[cacMuc.length] = "0. " + nhanThoat;
+            chon = menu(tieuDe, nhan, cacMuc.length);
             if (chon == 0) {
                 if (khiThoat != null) khiThoat.run();
             } else {
-                cacMuc.get(chon - 1).viec.run();
+                cacMuc[chon - 1].viec.run();
             }
         } while (chon != 0);
     }
@@ -181,44 +179,44 @@ public class Main {
             menuCaNhan(true);
             return;
         }
-        List<Muc> m = new ArrayList<>();
-        m.add(new Muc("Thong tin ca nhan cua toi (ho so, cham cong, nghi phep, luong...)", () -> menuCaNhan(false)));
-        if (laGiamDoc() && co(Quyen.XEM_PHONG_BAN)) m.add(new Muc("Phong ban quan li", Main::menuPhongBan));
-        if (co(Quyen.XEM_NHAN_VIEN)) m.add(new Muc("Quan ly nhan vien", Main::menuNhanVien));
-        if (co(Quyen.XEM_CHAM_CONG)) m.add(new Muc("Quan ly cham cong", Main::menuChamCong));
-        if (rongHon(Quyen.XEM_BAO_HIEM) || co(Quyen.QUAN_LY_BAO_HIEM)) m.add(new Muc("Quan ly bao hiem", Main::menuBaoHiem));
-        if (rongHon(Quyen.XEM_LUONG) || co(Quyen.LAP_BANG_LUONG)) m.add(new Muc("Bang luong", Main::menuBangLuong));
-        if (co(Quyen.XEM_BAO_CAO_CONG_TY) || co(Quyen.XEM_BAO_CAO_PHONG)) m.add(new Muc("Bao cao", Main::menuBaoCao));
-        if (rongHon(Quyen.XEM_THUONG_PHAT) || co(Quyen.THEM_THUONG_PHAT)) m.add(new Muc("Quan ly thuong phat", Main::menuThuongPhat));
-        if (rongHon(Quyen.XEM_NGHI_PHEP)) m.add(new Muc("Quan ly nghi phep", Main::menuNghiPhep));
-        if (co(Quyen.DUYET_YEU_CAU) || co(Quyen.DUYET_NGHI_PHEP)) m.add(new Muc("Duyet yeu cau (sua ho so, nghi phep)", Main::menuDuyetYeuCau));
-        m.add(new Muc("Quy dinh thuong phat", Main::menuQuyDinhThuongPhat));
-        if (co(Quyen.QUAN_LY_TAI_KHOAN)) m.add(new Muc("Quan ly tai khoan", Main::menuTaiKhoan));
-        if (co(Quyen.XEM_NHAT_KY)) m.add(new Muc("Nhat ky he thong", Main::menuNhatKy));
-        m.add(muc("Doi mat khau", "DOI MAT KHAU", Main::doiMatKhau));
-        m.add(muc("Luu toan bo du lieu", "LUU TOAN BO DU LIEU", Main::luuDuLieu));
-        if (co(Quyen.DOC_DU_LIEU)) m.add(muc("Doc du lieu tu file", "DOC DU LIEU TU FILE", Main::docDuLieu));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, new Muc("Thong tin ca nhan cua toi (ho so, cham cong, nghi phep, luong...)", () -> menuCaNhan(false)));
+        if (laGiamDoc() && co(Quyen.XEM_PHONG_BAN)) m = Mang.them(m, new Muc("Phong ban quan li", Main::menuPhongBan));
+        if (co(Quyen.XEM_NHAN_VIEN)) m = Mang.them(m, new Muc("Quan ly nhan vien", Main::menuNhanVien));
+        if (co(Quyen.XEM_CHAM_CONG)) m = Mang.them(m, new Muc("Quan ly cham cong", Main::menuChamCong));
+        if (rongHon(Quyen.XEM_BAO_HIEM) || co(Quyen.QUAN_LY_BAO_HIEM)) m = Mang.them(m, new Muc("Quan ly bao hiem", Main::menuBaoHiem));
+        if (rongHon(Quyen.XEM_LUONG) || co(Quyen.LAP_BANG_LUONG)) m = Mang.them(m, new Muc("Bang luong", Main::menuBangLuong));
+        if (co(Quyen.XEM_BAO_CAO_CONG_TY) || co(Quyen.XEM_BAO_CAO_PHONG)) m = Mang.them(m, new Muc("Bao cao", Main::menuBaoCao));
+        if (rongHon(Quyen.XEM_THUONG_PHAT) || co(Quyen.THEM_THUONG_PHAT)) m = Mang.them(m, new Muc("Quan ly thuong phat", Main::menuThuongPhat));
+        if (rongHon(Quyen.XEM_NGHI_PHEP)) m = Mang.them(m, new Muc("Quan ly nghi phep", Main::menuNghiPhep));
+        if (co(Quyen.DUYET_YEU_CAU) || co(Quyen.DUYET_NGHI_PHEP)) m = Mang.them(m, new Muc("Duyet yeu cau (sua ho so, nghi phep)", Main::menuDuyetYeuCau));
+        m = Mang.them(m, new Muc("Quy dinh thuong phat", Main::menuQuyDinhThuongPhat));
+        if (co(Quyen.QUAN_LY_TAI_KHOAN)) m = Mang.them(m, new Muc("Quan ly tai khoan", Main::menuTaiKhoan));
+        if (co(Quyen.XEM_NHAT_KY)) m = Mang.them(m, new Muc("Nhat ky he thong", Main::menuNhatKy));
+        m = Mang.them(m, muc("Doi mat khau", "DOI MAT KHAU", Main::doiMatKhau));
+        m = Mang.them(m, muc("Luu toan bo du lieu", "LUU TOAN BO DU LIEU", Main::luuDuLieu));
+        if (co(Quyen.DOC_DU_LIEU)) m = Mang.them(m, muc("Doc du lieu tu file", "DOC DU LIEU TU FILE", Main::docDuLieu));
         chayMenu("QUAN LY NHAN SU - " + phien.getVaiTro().ten().toUpperCase() + " (" + phien.getMaNV() + ")",
                 m, "Dang xuat (ve man hinh dang nhap)", () -> chay("DANG XUAT", Main::dangXuat));
     }
 
     //menu ca nhan: moi nguoi chi thay du lieu cua chinh minh. laMenuGoc=true (nhan vien): chon 0 la dang xuat
     private static void menuCaNhan(boolean laMenuGoc) {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Ho so cua toi (chon nam)", "HO SO CUA TOI", Main::cnHoSo));
-        if (co(Quyen.XEM_PHONG_BAN)) m.add(muc("Phong ban cua toi (chon nam)", "PHONG BAN CUA TOI", Main::cnPhongBan));
-        m.add(muc("Cham cong cua toi (chon nam)", "CHAM CONG CUA TOI", Main::cnChamCong));
-        if (co(Quyen.TU_CHAM_CONG)) m.add(muc("Cham cong hom nay (tu cham cong)", "TU CHAM CONG HOM NAY", Main::ccTuChamCong));
-        m.add(muc("Thong ke gio lam cua toi theo thang (chon nam, thang)", "THONG KE GIO LAM CUA TOI", () -> ccThongKeCho(nguoi())));
-        m.add(new Muc("Nghi phep cua toi", Main::menuNghiPhepCuaToi));
-        m.add(muc("Bang luong cua toi (chon nam, thang)", "BANG LUONG CUA TOI", Main::cnBangLuong));
-        m.add(muc("Bao hiem cua toi (chon nam)", "BAO HIEM CUA TOI", Main::cnBaoHiem));
-        m.add(muc("Thuong/phat cua toi (chon nam)", "THUONG PHAT CUA TOI", Main::cnThuongPhat));
-        if (co(Quyen.XEM_HOP_DONG)) m.add(muc("Hop dong lao dong cua toi (chon nam)", "HOP DONG CUA TOI", Main::cnHopDong));
-        if (!laGiamDoc()) m.add(muc("Yeu cau chinh sua ho so cua toi", "YEU CAU CHINH SUA HO SO CUA TOI", Main::yeuCauCuaToi));
-        m.add(muc("Quy dinh thuong phat", "QUY DINH THUONG PHAT", Main::qdDanhSachChung2));
-        m.add(muc("Doi mat khau", "DOI MAT KHAU", Main::doiMatKhau));
-        if (laMenuGoc) m.add(muc("Luu du lieu", "LUU DU LIEU", Main::luuDuLieu));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Ho so cua toi (chon nam)", "HO SO CUA TOI", Main::cnHoSo));
+        if (co(Quyen.XEM_PHONG_BAN)) m = Mang.them(m, muc("Phong ban cua toi (chon nam)", "PHONG BAN CUA TOI", Main::cnPhongBan));
+        m = Mang.them(m, muc("Cham cong cua toi (chon nam)", "CHAM CONG CUA TOI", Main::cnChamCong));
+        if (co(Quyen.TU_CHAM_CONG)) m = Mang.them(m, muc("Cham cong hom nay (tu cham cong)", "TU CHAM CONG HOM NAY", Main::ccTuChamCong));
+        m = Mang.them(m, muc("Thong ke gio lam cua toi theo thang (chon nam, thang)", "THONG KE GIO LAM CUA TOI", () -> ccThongKeCho(nguoi())));
+        m = Mang.them(m, new Muc("Nghi phep cua toi", Main::menuNghiPhepCuaToi));
+        m = Mang.them(m, muc("Bang luong cua toi (chon nam, thang)", "BANG LUONG CUA TOI", Main::cnBangLuong));
+        m = Mang.them(m, muc("Bao hiem cua toi (chon nam)", "BAO HIEM CUA TOI", Main::cnBaoHiem));
+        m = Mang.them(m, muc("Thuong/phat cua toi (chon nam)", "THUONG PHAT CUA TOI", Main::cnThuongPhat));
+        if (co(Quyen.XEM_HOP_DONG)) m = Mang.them(m, muc("Hop dong lao dong cua toi (chon nam)", "HOP DONG CUA TOI", Main::cnHopDong));
+        if (!laGiamDoc()) m = Mang.them(m, muc("Yeu cau chinh sua ho so cua toi", "YEU CAU CHINH SUA HO SO CUA TOI", Main::yeuCauCuaToi));
+        m = Mang.them(m, muc("Quy dinh thuong phat", "QUY DINH THUONG PHAT", Main::qdDanhSachChung2));
+        m = Mang.them(m, muc("Doi mat khau", "DOI MAT KHAU", Main::doiMatKhau));
+        if (laMenuGoc) m = Mang.them(m, muc("Luu du lieu", "LUU DU LIEU", Main::luuDuLieu));
         String tieuDe = laMenuGoc
                 ? "CONG THONG TIN NHAN VIEN - " + phien.getVaiTro().ten().toUpperCase() + " (" + phien.getMaNV() + ")"
                 : "THONG TIN CA NHAN (" + phien.getMaNV() + ")";
@@ -563,11 +561,11 @@ public class Main {
 
 //----------------- PHONG BAN -----------------
     private static void menuPhongBan() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Xem phong ban quan li (chon nam; tim ma / cac loai phong ban / xem het)", "DANH SACH PHONG BAN", Main::pbDanhSachChung2));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Xem phong ban quan li (chon nam; tim ma / cac loai phong ban / xem het)", "DANH SACH PHONG BAN", Main::pbDanhSachChung2));
         if (co(Quyen.QUAN_LY_PHONG_BAN)) {
-            m.add(muc("Them phong ban", "THEM PHONG BAN", Main::pbThem));
-            m.add(muc("Xoa phong ban", "XOA PHONG BAN", Main::pbXoa));
+            m = Mang.them(m, muc("Them phong ban", "THEM PHONG BAN", Main::pbThem));
+            m = Mang.them(m, muc("Xoa phong ban", "XOA PHONG BAN", Main::pbXoa));
         }
         chayMenu("PHONG BAN", m, "Quay lai", null);
     }
@@ -616,36 +614,36 @@ public class Main {
 
 //----------------- NHAN VIEN -----------------
     private static void menuNhanVien() {
-        List<Muc> m = new ArrayList<>();
+        Muc[] m = new Muc[0];
         if (co(Quyen.THEM_NHAN_VIEN)) {
-            m.add(muc("Them 1 nhan vien", "THEM NHAN VIEN", Main::themNhanVien));
-            m.add(muc("Nhap nhieu nhan vien", "NHAP NHIEU NHAN VIEN", Main::nvNhapNhieu));
+            m = Mang.them(m, muc("Them 1 nhan vien", "THEM NHAN VIEN", Main::themNhanVien));
+            m = Mang.them(m, muc("Nhap nhieu nhan vien", "NHAP NHIEU NHAN VIEN", Main::nvNhapNhieu));
         }
-        m.add(muc("Xem danh sach nhan vien (chon nam, tim ma, theo phong ban)", "DANH SACH NHAN VIEN", Main::nvDanhSachChung2));
-        m.add(muc("Tim kiem (ma, ten, SDT, email)", "TIM KIEM NHAN VIEN", Main::nvTimKiem));
-        m.add(muc("Xem chi tiet 1 nhan vien", "CHI TIET NHAN VIEN", Main::nvChiTiet));
-        if (rongHon(Quyen.XEM_LUONG)) m.add(muc("Tim theo khoang luong", "TIM THEO KHOANG LUONG", Main::nvTheoLuong));
+        m = Mang.them(m, muc("Xem danh sach nhan vien (chon nam, tim ma, theo phong ban)", "DANH SACH NHAN VIEN", Main::nvDanhSachChung2));
+        m = Mang.them(m, muc("Tim kiem (ma, ten, SDT, email)", "TIM KIEM NHAN VIEN", Main::nvTimKiem));
+        m = Mang.them(m, muc("Xem chi tiet 1 nhan vien", "CHI TIET NHAN VIEN", Main::nvChiTiet));
+        if (rongHon(Quyen.XEM_LUONG)) m = Mang.them(m, muc("Tim theo khoang luong", "TIM THEO KHOANG LUONG", Main::nvTheoLuong));
         if (co(Quyen.SUA_NHAN_VIEN) || co(Quyen.SUA_LIEN_HE)) {
-            m.add(muc("Sua thong tin nhan vien", "SUA NHAN VIEN", Main::suaNhanVienTuMenu));
+            m = Mang.them(m, muc("Sua thong tin nhan vien", "SUA NHAN VIEN", Main::suaNhanVienTuMenu));
         }
-        if (co(Quyen.CHO_NGHI_VIEC)) m.add(muc("Cho nhan vien nghi viec", "CHO NGHI VIEC", Main::nvChoNghiViec));
-        if (co(Quyen.XOA_NHAN_VIEN)) m.add(muc("Xoa nhan vien khoi he thong", "XOA NHAN VIEN", Main::nvXoa));
-        if (rongHon(Quyen.XEM_HOP_DONG)) m.add(muc("Xem hop dong lao dong", "HOP DONG LAO DONG", Main::nvHopDong));
+        if (co(Quyen.CHO_NGHI_VIEC)) m = Mang.them(m, muc("Cho nhan vien nghi viec", "CHO NGHI VIEC", Main::nvChoNghiViec));
+        if (co(Quyen.XOA_NHAN_VIEN)) m = Mang.them(m, muc("Xoa nhan vien khoi he thong", "XOA NHAN VIEN", Main::nvXoa));
+        if (rongHon(Quyen.XEM_HOP_DONG)) m = Mang.them(m, muc("Xem hop dong lao dong", "HOP DONG LAO DONG", Main::nvHopDong));
         if (co(Quyen.XEM_BAO_CAO_CONG_TY)) {
-            m.add(muc("Thong ke nhan vien theo loai", "THONG KE THEO LOAI", ql::thongKeTheoLoaiNv));
-            m.add(muc("Thong ke luong nhan vien", "THONG KE LUONG", ql::thongKeLuong));
+            m = Mang.them(m, muc("Thong ke nhan vien theo loai", "THONG KE THEO LOAI", ql::thongKeTheoLoaiNv));
+            m = Mang.them(m, muc("Thong ke luong nhan vien", "THONG KE LUONG", ql::thongKeLuong));
         }
         chayMenu("QUAN LY NHAN VIEN", m, "Quay lai", null);
     }
 
     //bang nhan vien: cot LUONG chi hien voi nguoi ma nguoi dang nhap duoc xem luong
     private static void inBangNhanVien(NhanVien[] ds) {
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (NhanVien nv : ds) {
             String phong = nv.getPhongBan() == null ? "-" : nv.getPhongBan().getTenPB();
             String chucVu = nv.getChucVu() == null ? "-" : nv.getChucVu().getTenCV();
             String luong = choPhep(Quyen.XEM_LUONG, nv) ? GiaoDien.tien(nv.tinhLuong()) : "***";
-            dong.add(new String[]{nv.getMaNV(), nv.getHoTen(), phong, chucVu,
+            dong = Mang.them(dong, new String[]{nv.getMaNV(), nv.getHoTen(), phong, chucVu,
                     PhanQuyen.xacDinhVaiTro(nv).ten(), luong, nv.getTrangThai()});
         }
         GiaoDien.inBang(
@@ -662,16 +660,16 @@ public class Main {
             if (!PhanQuyen.cungMa(nguoi(), nv)) ghiNhatKy("Xem ho so day du (co luong)", nv.getMaNV());
             return;
         }
-        List<String[]> cap = new ArrayList<>();
-        cap.add(new String[]{"Ma nhan vien", nv.getMaNV()});
-        cap.add(new String[]{"Ho ten", nv.getHoTen()});
-        cap.add(new String[]{"Gioi tinh", nv.getGioiTinh()});
-        cap.add(new String[]{"So dien thoai", nv.getSdt()});
-        cap.add(new String[]{"Email", nv.getEmail()});
-        cap.add(new String[]{"Phong ban", nv.getPhongBan() == null ? "-" : nv.getPhongBan().getTenPB()});
-        cap.add(new String[]{"Chuc vu", nv.getChucVu() == null ? "-" : nv.getChucVu().getTenCV()});
-        cap.add(new String[]{"Loai nhan vien", PhanQuyen.xacDinhVaiTro(nv).ten()});
-        cap.add(new String[]{"Trang thai", nv.getTrangThai()});
+        String[][] cap = new String[0][];
+        cap = Mang.them(cap, new String[]{"Ma nhan vien", nv.getMaNV()});
+        cap = Mang.them(cap, new String[]{"Ho ten", nv.getHoTen()});
+        cap = Mang.them(cap, new String[]{"Gioi tinh", nv.getGioiTinh()});
+        cap = Mang.them(cap, new String[]{"So dien thoai", nv.getSdt()});
+        cap = Mang.them(cap, new String[]{"Email", nv.getEmail()});
+        cap = Mang.them(cap, new String[]{"Phong ban", nv.getPhongBan() == null ? "-" : nv.getPhongBan().getTenPB()});
+        cap = Mang.them(cap, new String[]{"Chuc vu", nv.getChucVu() == null ? "-" : nv.getChucVu().getTenCV()});
+        cap = Mang.them(cap, new String[]{"Loai nhan vien", PhanQuyen.xacDinhVaiTro(nv).ten()});
+        cap = Mang.them(cap, new String[]{"Trang thai", nv.getTrangThai()});
         GiaoDien.inThongTin(cap);
         GiaoDien.in("(Thong tin luong, hop dong cua nguoi nay khong thuoc quyen cua ban.)");
     }
@@ -734,7 +732,7 @@ public class Main {
 
     //hop dong lao dong cua cac nhan vien hop dong trong pham vi duoc xem, co danh dau hop dong sap het han
     private static void nvHopDong() {
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         int sapHet = 0;
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_HOP_DONG)) {
             long ngayCon = soNgayConHopDong(nv);
@@ -744,10 +742,10 @@ public class Main {
             if (ngayCon < 0) tinhTrang = "DA HET HAN";
             else if (ngayCon <= SO_NGAY_CANH_BAO_HOP_DONG) { tinhTrang = "SAP HET HAN (con " + ngayCon + " ngay)"; sapHet++; }
             else tinhTrang = "Con " + ngayCon + " ngay";
-            dong.add(new String[]{nv.getMaNV(), nv.getHoTen(), hd.getmaHD(), String.valueOf(hd.getngayKy()),
+            dong = Mang.them(dong, new String[]{nv.getMaNV(), nv.getHoTen(), hd.getmaHD(), String.valueOf(hd.getngayKy()),
                     String.valueOf(hd.getngayHetHan()), tinhTrang});
         }
-        if (dong.isEmpty()) {
+        if ((dong.length == 0)) {
             GiaoDien.in("Khong co hop dong lao dong nao trong pham vi cua ban.");
             return;
         }
@@ -756,7 +754,7 @@ public class Main {
                 new int[]{8, 22, 10, 10, 10, 26},
                 new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI},
                 dong);
-        GiaoDien.in("Tong " + dong.size() + " hop dong, trong do " + sapHet + " hop dong sap het han.");
+        GiaoDien.in("Tong " + dong.length + " hop dong, trong do " + sapHet + " hop dong sap het han.");
     }
 
     //them nhan vien: giam doc nhap day du; truong phong chi them nhan vien thuong vao phong cua minh (luong/hop dong de mac dinh)
@@ -1015,11 +1013,11 @@ public class Main {
 
 //----------------- CHAM CONG -----------------
     private static void menuChamCong() {
-        List<Muc> m = new ArrayList<>();
-        if (co(Quyen.THEM_CHAM_CONG)) m.add(muc("Them cham cong cho nhan vien", "CHAM CONG - THEM MOI", Main::ccThem));
-        m.add(muc("Xem danh sach cham cong (chon nam, tim ma, theo phong ban)", "CHAM CONG - DANH SACH", Main::ccDanhSachChung2));
-        if (co(Quyen.XOA_CHAM_CONG)) m.add(muc("Xoa cham cong", "CHAM CONG - XOA", Main::ccXoa));
-        m.add(muc("Thong ke gio theo nhan vien/thang", "CHAM CONG - THONG KE THEO THANG", Main::ccThongKe));
+        Muc[] m = new Muc[0];
+        if (co(Quyen.THEM_CHAM_CONG)) m = Mang.them(m, muc("Them cham cong cho nhan vien", "CHAM CONG - THEM MOI", Main::ccThem));
+        m = Mang.them(m, muc("Xem danh sach cham cong (chon nam, tim ma, theo phong ban)", "CHAM CONG - DANH SACH", Main::ccDanhSachChung2));
+        if (co(Quyen.XOA_CHAM_CONG)) m = Mang.them(m, muc("Xoa cham cong", "CHAM CONG - XOA", Main::ccXoa));
+        m = Mang.them(m, muc("Thong ke gio theo nhan vien/thang", "CHAM CONG - THONG KE THEO THANG", Main::ccThongKe));
         chayMenu("CHAM CONG", m, "Quay lai", null);
     }
 
@@ -1051,11 +1049,11 @@ public class Main {
             dsCC.xuatDanhSach();
             return;
         }
-        List<ChamCong> gop = new ArrayList<>();
+        ChamCong[] gop = new ChamCong[0];
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_CHAM_CONG)) {
-            for (ChamCong cc : dsCC.timTheoMaNV(nv.getMaNV())) gop.add(cc);
+            for (ChamCong cc : dsCC.timTheoMaNV(nv.getMaNV())) gop = Mang.them(gop, cc);
         }
-        DanhSachChamCong.inBang(gop.toArray(new ChamCong[0]));
+        DanhSachChamCong.inBang(gop);
     }
 
     private static void ccXoa() {
@@ -1105,14 +1103,14 @@ public class Main {
 
 //----------------- BAO HIEM -----------------
     private static void menuBaoHiem() {
-        List<Muc> m = new ArrayList<>();
+        Muc[] m = new Muc[0];
         if (co(Quyen.QUAN_LY_BAO_HIEM)) {
-            m.add(muc("Them BHXH", "BAO HIEM - THEM BHXH", Main::bhThemXH));
-            m.add(muc("Them BHYT", "BAO HIEM - THEM BHYT", Main::bhThemYT));
+            m = Mang.them(m, muc("Them BHXH", "BAO HIEM - THEM BHXH", Main::bhThemXH));
+            m = Mang.them(m, muc("Them BHYT", "BAO HIEM - THEM BHYT", Main::bhThemYT));
         }
-        m.add(muc("Xem danh sach bao hiem (chon nam, tim ma, theo phong ban)", "BAO HIEM - DANH SACH", Main::bhDanhSachChung2));
-        if (co(Quyen.QUAN_LY_BAO_HIEM)) m.add(muc("Xoa theo ma BH", "BAO HIEM - XOA", Main::bhXoa));
-        m.add(muc("Tinh tien dong", "BAO HIEM - TINH TIEN DONG", Main::bhTinhTien));
+        m = Mang.them(m, muc("Xem danh sach bao hiem (chon nam, tim ma, theo phong ban)", "BAO HIEM - DANH SACH", Main::bhDanhSachChung2));
+        if (co(Quyen.QUAN_LY_BAO_HIEM)) m = Mang.them(m, muc("Xoa theo ma BH", "BAO HIEM - XOA", Main::bhXoa));
+        m = Mang.them(m, muc("Tinh tien dong", "BAO HIEM - TINH TIEN DONG", Main::bhTinhTien));
         chayMenu("BAO HIEM", m, "Quay lai", null);
     }
 
@@ -1143,12 +1141,12 @@ public class Main {
             dsBH.xuatDanhSach();
             return;
         }
-        List<BaoHiem> gop = new ArrayList<>();
+        BaoHiem[] gop = new BaoHiem[0];
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_BAO_HIEM)) {
-            for (BaoHiem bh : dsBH.timTheoMaNV(nv.getMaNV())) gop.add(bh);
+            for (BaoHiem bh : dsBH.timTheoMaNV(nv.getMaNV())) gop = Mang.them(gop, bh);
         }
-        if (gop.isEmpty()) GiaoDien.in("Khong co du lieu.");
-        else DanhSachBaoHiem.inBang(gop.toArray(new BaoHiem[0]));
+        if ((gop.length == 0)) GiaoDien.in("Khong co du lieu.");
+        else DanhSachBaoHiem.inBang(gop);
     }
 
     private static void bhTim() {
@@ -1175,20 +1173,20 @@ public class Main {
         yeuCau(Quyen.XEM_BAO_HIEM, nv);
         String maNV = nv.getMaNV();
         double mucLuong = docDouble("Luong dong bao hiem: ", 0);
-        List<String[]> dong = new ArrayList<>();
-        dong.add(new String[]{"Luong dong bao hiem", GiaoDien.tien(mucLuong) + " VND"});
-        dong.add(new String[]{"Nhan vien dong", GiaoDien.tien(dsBH.tongTienNhanVienDong(maNV, mucLuong)) + " VND"});
-        dong.add(new String[]{"Doanh nghiep dong", GiaoDien.tien(dsBH.tongTienDoanhNghiepDong(maNV, mucLuong)) + " VND"});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Luong dong bao hiem", GiaoDien.tien(mucLuong) + " VND"});
+        dong = Mang.them(dong, new String[]{"Nhan vien dong", GiaoDien.tien(dsBH.tongTienNhanVienDong(maNV, mucLuong)) + " VND"});
+        dong = Mang.them(dong, new String[]{"Doanh nghiep dong", GiaoDien.tien(dsBH.tongTienDoanhNghiepDong(maNV, mucLuong)) + " VND"});
         GiaoDien.in("");
         GiaoDien.inThongKe(dong);
     }
 
 //----------------- BANG LUONG -----------------
     private static void menuBangLuong() {
-        List<Muc> m = new ArrayList<>();
-        if (co(Quyen.LAP_BANG_LUONG)) m.add(muc("Lap bang luong cho tat ca nhan vien", "BANG LUONG - LAP CHO TAT CA", Main::blLap));
-        m.add(muc("Xem bang luong (chon nam, tim ma, theo phong ban)", "BANG LUONG - DANH SACH", Main::blDanhSachChung2));
-        if (co(Quyen.LAP_BANG_LUONG)) m.add(muc("Thong ke quy luong", "BANG LUONG - THONG KE QUY LUONG", Main::blThongKe));
+        Muc[] m = new Muc[0];
+        if (co(Quyen.LAP_BANG_LUONG)) m = Mang.them(m, muc("Lap bang luong cho tat ca nhan vien", "BANG LUONG - LAP CHO TAT CA", Main::blLap));
+        m = Mang.them(m, muc("Xem bang luong (chon nam, tim ma, theo phong ban)", "BANG LUONG - DANH SACH", Main::blDanhSachChung2));
+        if (co(Quyen.LAP_BANG_LUONG)) m = Mang.them(m, muc("Thong ke quy luong", "BANG LUONG - THONG KE QUY LUONG", Main::blThongKe));
         chayMenu("BANG LUONG", m, "Quay lai", null);
     }
 
@@ -1225,22 +1223,22 @@ public class Main {
             dsBL.xuatBangLuongCongTy(thang, nam);
             return;
         }
-        List<BangLuong> gop = new ArrayList<>();
+        BangLuong[] gop = new BangLuong[0];
         double tong = 0;
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_LUONG)) {
             BangLuong bl = dsBL.timTheoMaNV(nv.getMaNV(), thang, nam);
             if (bl != null) {
-                gop.add(bl);
+                gop = Mang.them(gop, bl);
                 tong += bl.getLuongThucNhan();
             }
         }
-        if (gop.isEmpty()) {
+        if ((gop.length == 0)) {
             GiaoDien.in("Chua co bang luong thang " + thang + "/" + nam + " trong pham vi cua ban.");
             return;
         }
         ghiNhatKy("Xem bang luong thang " + thang + "/" + nam + " (pham vi phong)", "PHONG");
-        DanhSachBangLuong.inBang(gop.toArray(new BangLuong[0]));
-        GiaoDien.in("Tong luong thuc nhan (" + gop.size() + " nhan vien): " + GiaoDien.tien(tong) + " VND");
+        DanhSachBangLuong.inBang(gop);
+        GiaoDien.in("Tong luong thuc nhan (" + gop.length + " nhan vien): " + GiaoDien.tien(tong) + " VND");
     }
 
     private static void blThongKe() {
@@ -1249,24 +1247,24 @@ public class Main {
         if (thangNam == null) return;
         int thang = thangNam[0];
         int nam = thangNam[1];
-        List<String[]> dong = new ArrayList<>();
-        dong.add(new String[]{"Thang / nam", thang + "/" + nam});
-        dong.add(new String[]{"Tong quy luong", GiaoDien.tien(dsBL.tongQuyLuong(thang, nam)) + " VND"});
-        dong.add(new String[]{"Luong trung binh", GiaoDien.tien(dsBL.luongTrungBinh(thang, nam)) + " VND"});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Thang / nam", thang + "/" + nam});
+        dong = Mang.them(dong, new String[]{"Tong quy luong", GiaoDien.tien(dsBL.tongQuyLuong(thang, nam)) + " VND"});
+        dong = Mang.them(dong, new String[]{"Luong trung binh", GiaoDien.tien(dsBL.luongTrungBinh(thang, nam)) + " VND"});
         GiaoDien.in("");
         GiaoDien.inThongKe(dong);
     }
 
 //----------------- BAO CAO -----------------
     private static void menuBaoCao() {
-        List<Muc> m = new ArrayList<>();
+        Muc[] m = new Muc[0];
         if (co(Quyen.XEM_BAO_CAO_CONG_TY)) {
-            m.add(muc("Bao cao toan cong ty", "BAO CAO - TOAN CONG TY", Main::bcCongTy));
-            m.add(muc("Bao cao theo phong ban (chon nam, tim ma, theo phong ban)", "BAO CAO - THEO PHONG BAN", Main::bcPhongBanChung2));
-            m.add(muc("Thong ke nhan su", "BAO CAO - THONG KE NHAN SU", () -> baoCao.thongKeNhanSu(ql, dsBL)));
-            m.add(muc("Thong ke bao hiem", "BAO CAO - THONG KE BAO HIEM", baoCao::thongKeBaoHiem));
+            m = Mang.them(m, muc("Bao cao toan cong ty", "BAO CAO - TOAN CONG TY", Main::bcCongTy));
+            m = Mang.them(m, muc("Bao cao theo phong ban (chon nam, tim ma, theo phong ban)", "BAO CAO - THEO PHONG BAN", Main::bcPhongBanChung2));
+            m = Mang.them(m, muc("Thong ke nhan su", "BAO CAO - THONG KE NHAN SU", () -> baoCao.thongKeNhanSu(ql, dsBL)));
+            m = Mang.them(m, muc("Thong ke bao hiem", "BAO CAO - THONG KE BAO HIEM", baoCao::thongKeBaoHiem));
         } else {
-            m.add(muc("Bao cao phong ban cua toi", "BAO CAO - PHONG BAN CUA TOI", Main::bcPhongToi));
+            m = Mang.them(m, muc("Bao cao phong ban cua toi", "BAO CAO - PHONG BAN CUA TOI", Main::bcPhongToi));
         }
         chayMenu("BAO CAO", m, "Quay lai", null);
     }
@@ -1306,7 +1304,7 @@ public class Main {
         int thang = thangNam[0];
         int nam = thangNam[1];
         NhanVien[] nhanSu = nvTrongQuyen(Quyen.XEM_NHAN_VIEN);
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         double tongLuong = 0;
         int coBangLuong = 0;
         boolean xemLuong = rongHon(Quyen.XEM_LUONG);
@@ -1314,7 +1312,7 @@ public class Main {
             String ma = nv.getMaNV();
             int donCho = 0;
             for (NghiPhep np : dsNP.timTheoMaNV(ma)) if ("Cho duyet".equals(np.getTrangThai())) donCho++;
-            dong.add(new String[]{ma, nv.getHoTen(), PhanQuyen.xacDinhVaiTro(nv).ten(),
+            dong = Mang.them(dong, new String[]{ma, nv.getHoTen(), PhanQuyen.xacDinhVaiTro(nv).ten(),
                     String.valueOf(dsCC.thongKeSoNgayDiLam(ma, thang, nam)),
                     String.format("%.1f", dsCC.thongKeGioLam(ma, thang, nam)),
                     String.format("%.1f", dsCC.thongKeGioTangCa(ma, thang, nam)),
@@ -1342,13 +1340,13 @@ public class Main {
 
 //----------------- THUONG PHAT -----------------
     private static void menuThuongPhat() {
-        List<Muc> m = new ArrayList<>();
-        if (co(Quyen.THEM_THUONG_PHAT)) m.add(muc("Them thuong/phat thu cong", "THUONG PHAT - THEM THU CONG", Main::tpThem));
-        m.add(muc("Xem danh sach thuong/phat (chon nam, tim ma, theo phong ban)", "THUONG PHAT - DANH SACH", Main::tpDanhSachChung2));
-        if (co(Quyen.XOA_THUONG_PHAT)) m.add(muc("Xoa theo ma thuong/phat", "THUONG PHAT - XOA", Main::tpXoa));
-        m.add(muc("Thong ke thuong/phat theo thang", "THUONG PHAT - THONG KE THEO THANG", Main::tpThongKe));
+        Muc[] m = new Muc[0];
+        if (co(Quyen.THEM_THUONG_PHAT)) m = Mang.them(m, muc("Them thuong/phat thu cong", "THUONG PHAT - THEM THU CONG", Main::tpThem));
+        m = Mang.them(m, muc("Xem danh sach thuong/phat (chon nam, tim ma, theo phong ban)", "THUONG PHAT - DANH SACH", Main::tpDanhSachChung2));
+        if (co(Quyen.XOA_THUONG_PHAT)) m = Mang.them(m, muc("Xoa theo ma thuong/phat", "THUONG PHAT - XOA", Main::tpXoa));
+        m = Mang.them(m, muc("Thong ke thuong/phat theo thang", "THUONG PHAT - THONG KE THEO THANG", Main::tpThongKe));
         if (co(Quyen.TU_DONG_XET_THUONG_PHAT)) {
-            m.add(muc("Tu dong xet thuong/phat theo quy dinh", "THUONG PHAT - TU DONG XET", Main::tpTuDongXet));
+            m = Mang.them(m, muc("Tu dong xet thuong/phat theo quy dinh", "THUONG PHAT - TU DONG XET", Main::tpTuDongXet));
         }
         chayMenu("QUAN LY THUONG PHAT", m, "Quay lai", null);
     }
@@ -1381,12 +1379,12 @@ public class Main {
             dsTP.xuatDanhSach();
             return;
         }
-        List<ThuongPhat> gop = new ArrayList<>();
+        ThuongPhat[] gop = new ThuongPhat[0];
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_THUONG_PHAT)) {
-            for (ThuongPhat tp : dsTP.timTheoMaNV(nv.getMaNV())) gop.add(tp);
+            for (ThuongPhat tp : dsTP.timTheoMaNV(nv.getMaNV())) gop = Mang.them(gop, tp);
         }
-        if (gop.isEmpty()) GiaoDien.in("Khong co du lieu.");
-        else DanhSachThuongPhat.inBang(gop.toArray(new ThuongPhat[0]));
+        if ((gop.length == 0)) GiaoDien.in("Khong co du lieu.");
+        else DanhSachThuongPhat.inBang(gop);
     }
 
     private static void tpTheoNV() {
@@ -1416,11 +1414,11 @@ public class Main {
         if (thangNam == null) return;
         int thang = thangNam[0];
         int nam = thangNam[1];
-        List<String[]> dong = new ArrayList<>();
-        dong.add(new String[]{"Nhan vien", maNV});
-        dong.add(new String[]{"Thang / nam", thang + "/" + nam});
-        dong.add(new String[]{"Tong thuong", GiaoDien.tien(dsTP.tongThuong(maNV, thang, nam)) + " VND"});
-        dong.add(new String[]{"Tong phat", GiaoDien.tien(dsTP.tongPhat(maNV, thang, nam)) + " VND"});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Nhan vien", maNV});
+        dong = Mang.them(dong, new String[]{"Thang / nam", thang + "/" + nam});
+        dong = Mang.them(dong, new String[]{"Tong thuong", GiaoDien.tien(dsTP.tongThuong(maNV, thang, nam)) + " VND"});
+        dong = Mang.them(dong, new String[]{"Tong phat", GiaoDien.tien(dsTP.tongPhat(maNV, thang, nam)) + " VND"});
         GiaoDien.in("");
         GiaoDien.inThongKe(dong);
     }
@@ -1440,11 +1438,11 @@ public class Main {
 
 //----------------- NGHI PHEP -----------------
     private static void menuNghiPhep() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Tao don nghi phep", "NGHI PHEP - TAO DON", Main::npTao));
-        m.add(muc("Xem don nghi phep (chon nam, tim ma, theo phong ban)", "NGHI PHEP - DANH SACH", Main::npDanhSachChung2));
-        if (co(Quyen.DUYET_NGHI_PHEP)) m.add(muc("Duyet don (danh sach don dang cho)", "NGHI PHEP - DUYET DON", Main::npDuyetCoDanhSach));
-        m.add(muc("Xoa don", "NGHI PHEP - XOA DON", Main::npXoa));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Tao don nghi phep", "NGHI PHEP - TAO DON", Main::npTao));
+        m = Mang.them(m, muc("Xem don nghi phep (chon nam, tim ma, theo phong ban)", "NGHI PHEP - DANH SACH", Main::npDanhSachChung2));
+        if (co(Quyen.DUYET_NGHI_PHEP)) m = Mang.them(m, muc("Duyet don (danh sach don dang cho)", "NGHI PHEP - DUYET DON", Main::npDuyetCoDanhSach));
+        m = Mang.them(m, muc("Xoa don", "NGHI PHEP - XOA DON", Main::npXoa));
         chayMenu("QUAN LY NGHI PHEP", m, "Quay lai", null);
     }
 
@@ -1486,12 +1484,12 @@ public class Main {
             dsNP.xuatDanhSach();
             return;
         }
-        List<NghiPhep> gop = new ArrayList<>();
+        NghiPhep[] gop = new NghiPhep[0];
         for (NhanVien nv : nvTrongQuyen(Quyen.XEM_NGHI_PHEP)) {
-            for (NghiPhep np : dsNP.timTheoMaNV(nv.getMaNV())) gop.add(np);
+            for (NghiPhep np : dsNP.timTheoMaNV(nv.getMaNV())) gop = Mang.them(gop, np);
         }
-        if (gop.isEmpty()) GiaoDien.in("Khong co don.");
-        else DanhSachNghiPhep.inBang(gop.toArray(new NghiPhep[0]));
+        if ((gop.length == 0)) GiaoDien.in("Khong co don.");
+        else DanhSachNghiPhep.inBang(gop);
     }
 
     private static void npTheoNV() {
@@ -1546,11 +1544,11 @@ public class Main {
 
 //----------------- QUY DINH THUONG PHAT -----------------
     private static void menuQuyDinhThuongPhat() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Xem danh sach quy dinh (tim ma, xem het)", "QUY DINH - DANH SACH", Main::qdDanhSachChung2));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Xem danh sach quy dinh (tim ma, xem het)", "QUY DINH - DANH SACH", Main::qdDanhSachChung2));
         if (co(Quyen.QUAN_LY_QUY_DINH)) {
-            m.add(muc("Them quy dinh", "QUY DINH - THEM MOI", Main::qdThem));
-            m.add(muc("Xoa quy dinh", "QUY DINH - XOA", Main::qdXoa));
+            m = Mang.them(m, muc("Them quy dinh", "QUY DINH - THEM MOI", Main::qdThem));
+            m = Mang.them(m, muc("Xoa quy dinh", "QUY DINH - XOA", Main::qdXoa));
         }
         chayMenu("QUY DINH THUONG PHAT", m, "Quay lai", null);
     }
@@ -1601,26 +1599,26 @@ public class Main {
 
 //----------------- QUAN LY TAI KHOAN (giam doc) -----------------
     private static void menuTaiKhoan() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Danh sach tai khoan (tim ma, theo phong ban, xem het)", "TAI KHOAN - DANH SACH", Main::tkDanhSach));
-        m.add(muc("Duyet tai khoan dang ky moi (va xep phong ban)", "TAI KHOAN - DUYET", Main::tkDuyet));
-        m.add(muc("Dat lai mat khau ve mac dinh", "TAI KHOAN - DAT LAI MAT KHAU", Main::tkDatLai));
-        m.add(muc("Khoa tai khoan", "TAI KHOAN - KHOA", Main::tkKhoa));
-        m.add(muc("Mo khoa tai khoan", "TAI KHOAN - MO KHOA", Main::tkMoKhoa));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Danh sach tai khoan (tim ma, theo phong ban, xem het)", "TAI KHOAN - DANH SACH", Main::tkDanhSach));
+        m = Mang.them(m, muc("Duyet tai khoan dang ky moi (va xep phong ban)", "TAI KHOAN - DUYET", Main::tkDuyet));
+        m = Mang.them(m, muc("Dat lai mat khau ve mac dinh", "TAI KHOAN - DAT LAI MAT KHAU", Main::tkDatLai));
+        m = Mang.them(m, muc("Khoa tai khoan", "TAI KHOAN - KHOA", Main::tkKhoa));
+        m = Mang.them(m, muc("Mo khoa tai khoan", "TAI KHOAN - MO KHOA", Main::tkMoKhoa));
         chayMenu("QUAN LY TAI KHOAN", m, "Quay lai", null);
     }
 
 
     private static void tkDuyet() {
         yeuCau(Quyen.QUAN_LY_TAI_KHOAN);
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (TaiKhoan tk : dsTK.getDanhSach()) {
             if (!tk.choDuyet()) continue;
             NhanVien nv = ql.timTheoMa(tk.getTenDangNhap());
-            dong.add(new String[]{tk.getTenDangNhap(), nv == null ? "-" : nv.getHoTen(),
+            dong = Mang.them(dong, new String[]{tk.getTenDangNhap(), nv == null ? "-" : nv.getHoTen(),
                     nv == null ? "-" : PhanQuyen.xacDinhVaiTro(nv).ten()});
         }
-        if (dong.isEmpty()) {
+        if ((dong.length == 0)) {
             GiaoDien.in("Khong co tai khoan nao dang cho duyet.");
             return;
         }
@@ -1711,13 +1709,13 @@ public class Main {
 
 //----------------- NHAT KY HE THONG (giam doc) -----------------
     private static void menuNhatKy() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Xem 30 hoat dong gan nhat", "NHAT KY - GAN DAY", () -> {
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Xem 30 hoat dong gan nhat", "NHAT KY - GAN DAY", () -> {
             yeuCau(Quyen.XEM_NHAT_KY);
             DanhSachNhatKy.inBang(dsNK.ganDay(30));
         }));
-        m.add(muc("Xem nhat ky (chon nam, tim ma, theo phong ban)", "NHAT KY - DANH SACH", Main::nkChung2));
-        m.add(muc("Xem cac lan bi tu choi / that bai", "NHAT KY - BAT THUONG", () -> {
+        m = Mang.them(m, muc("Xem nhat ky (chon nam, tim ma, theo phong ban)", "NHAT KY - DANH SACH", Main::nkChung2));
+        m = Mang.them(m, muc("Xem cac lan bi tu choi / that bai", "NHAT KY - BAT THUONG", () -> {
             yeuCau(Quyen.XEM_NHAT_KY);
             DanhSachNhatKy.inBang(dsNK.timBatThuong());
         }));
@@ -1792,11 +1790,11 @@ public class Main {
         if (nam <= nv.getNgayVaoLam().getYear()) return "Vao lam";
         LichSuCongTac a = dsLS.xacDinh(nv, nam - 1).ls;
         LichSuCongTac b = dsLS.xacDinh(nv, nam).ls;
-        List<String> d = new ArrayList<>();
-        if (!a.getMaPB().equalsIgnoreCase(b.getMaPB())) d.add("Doi phong ban");
-        if (!a.getMaCV().equalsIgnoreCase(b.getMaCV())) d.add("Doi chuc vu");
-        if (a.getLuongCoBan() != b.getLuongCoBan()) d.add("Doi luong");
-        return d.isEmpty() ? "Giu nguyen" : String.join(", ", d);
+        String[] d = new String[0];
+        if (!a.getMaPB().equalsIgnoreCase(b.getMaPB())) d = Mang.them(d, "Doi phong ban");
+        if (!a.getMaCV().equalsIgnoreCase(b.getMaCV())) d = Mang.them(d, "Doi chuc vu");
+        if (a.getLuongCoBan() != b.getLuongCoBan()) d = Mang.them(d, "Doi luong");
+        return (d.length == 0) ? "Giu nguyen" : String.join(", ", d);
     }
 
     //---- chon nam: moi nam 1 dong (NAM | TRANG THAI | cac cot them) ----
@@ -1805,7 +1803,7 @@ public class Main {
         return chonTrongCacNam(ChonKy.cacNam(nv.getNgayVaoLam(), namCuoi), nv.getNgayVaoLam(), cotThem, rongThem, canhThem, cot);
     }
 
-    private static ChonKy.KetQua chonTrongCacNam(List<Integer> cacNam, LocalDate tuNgay, String[] cotThem, int[] rongThem,
+    private static ChonKy.KetQua chonTrongCacNam(int[] cacNam, LocalDate tuNgay, String[] cotThem, int[] rongThem,
                                                  String[] canhThem, java.util.function.IntFunction<String[]> cot) {
         int n = 2 + cotThem.length;
         String[] td = new String[n];
@@ -1818,14 +1816,14 @@ public class Main {
             rong[2 + i] = rongThem[i];
             canh[2 + i] = canhThem[i];
         }
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (int nam : cacNam) {
             String[] them = cot.apply(nam);
             String[] r = new String[n];
             r[0] = String.valueOf(nam);
             r[1] = ChonKy.trangThaiNam(nam);
             System.arraycopy(them, 0, r, 2, them.length);
-            dong.add(r);
+            dong = Mang.them(dong, r);
         }
         return ChonKy.chonNam(cacNam, td, rong, canh, dong, tuNgay, Main::docChuoi);
     }
@@ -1843,7 +1841,7 @@ public class Main {
             rong[1 + i] = rongThem[i];
             canh[1 + i] = canhThem[i];
         }
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         String[] lyDo = new String[12];
         for (int t = 1; t <= 12; t++) {
             lyDo[t - 1] = ChonKy.lyDoThangKhongHopLe(nam, t, tuNgay);
@@ -1852,7 +1850,7 @@ public class Main {
             r[0] = t + "/" + nam;
             if (lyDo[t - 1] != null) r[1] = lyDo[t - 1];
             else System.arraycopy(cot.apply(t), 0, r, 1, cotThem.length);
-            dong.add(r);
+            dong = Mang.them(dong, r);
         }
         return ChonKy.chonThang(nam, td, rong, canh, dong, lyDo, tuNgay, Main::docChuoi);
     }
@@ -1888,18 +1886,18 @@ public class Main {
         }
         DanhSachLichSuCongTac.KetQua kq = dsLS.xacDinh(nv, nam);
         LichSuCongTac ls = kq.ls;
-        List<String[]> cap = new ArrayList<>();
-        cap.add(new String[]{"Ma nhan vien", nv.getMaNV()});
-        cap.add(new String[]{"Ho ten", nv.getHoTen()});
-        cap.add(new String[]{"Ngay sinh", String.valueOf(nv.getNgaySinh())});
-        cap.add(new String[]{"Gioi tinh", nv.getGioiTinh()});
-        cap.add(new String[]{"So dien thoai", nv.getSdt()});
-        cap.add(new String[]{"Email", nv.getEmail()});
-        cap.add(new String[]{"Ngay vao lam", String.valueOf(nv.getNgayVaoLam())});
-        cap.add(new String[]{"Phong ban nam " + nam, ls.getMaPB().isEmpty() ? "(chua phan)" : tenPB(ls.getMaPB()) + " (" + ls.getMaPB() + ")"});
-        cap.add(new String[]{"Chuc vu nam " + nam, ls.getTenCV().isEmpty() ? "(chua co)" : ls.getTenCV() + " (he so " + TepVanBan.soDep(ls.getHeSoCV()) + ")"});
-        cap.add(new String[]{"Luong co ban nam " + nam, GiaoDien.tien(ls.getLuongCoBan())});
-        cap.add(new String[]{"Nguon so lieu nam " + nam, kq.nguon + (ls.getGhiChu().isEmpty() ? "" : " - " + ls.getGhiChu())});
+        String[][] cap = new String[0][];
+        cap = Mang.them(cap, new String[]{"Ma nhan vien", nv.getMaNV()});
+        cap = Mang.them(cap, new String[]{"Ho ten", nv.getHoTen()});
+        cap = Mang.them(cap, new String[]{"Ngay sinh", String.valueOf(nv.getNgaySinh())});
+        cap = Mang.them(cap, new String[]{"Gioi tinh", nv.getGioiTinh()});
+        cap = Mang.them(cap, new String[]{"So dien thoai", nv.getSdt()});
+        cap = Mang.them(cap, new String[]{"Email", nv.getEmail()});
+        cap = Mang.them(cap, new String[]{"Ngay vao lam", String.valueOf(nv.getNgayVaoLam())});
+        cap = Mang.them(cap, new String[]{"Phong ban nam " + nam, ls.getMaPB().isEmpty() ? "(chua phan)" : tenPB(ls.getMaPB()) + " (" + ls.getMaPB() + ")"});
+        cap = Mang.them(cap, new String[]{"Chuc vu nam " + nam, ls.getTenCV().isEmpty() ? "(chua co)" : ls.getTenCV() + " (he so " + TepVanBan.soDep(ls.getHeSoCV()) + ")"});
+        cap = Mang.them(cap, new String[]{"Luong co ban nam " + nam, GiaoDien.tien(ls.getLuongCoBan())});
+        cap = Mang.them(cap, new String[]{"Nguon so lieu nam " + nam, kq.nguon + (ls.getGhiChu().isEmpty() ? "" : " - " + ls.getGhiChu())});
         GiaoDien.inThongTin(cap);
         GiaoDien.in("(Phong ban, chuc vu, luong lay theo nam " + nam + "; cac muc con lai la thong tin hien tai.)");
     }
@@ -2121,40 +2119,40 @@ public class Main {
 
 //----------------- YEU CAU SUA HO SO (nhan vien / truong phong / pho phong gui len cap tren) -----------------
     //nhan vien gui cho TRUONG PHONG (tuy chon), truong phong / pho phong gui cho GIAM DOC (tuy chon)
-    private static List<NhanVien> cacNguoiNhanYeuCau(NhanVien gui) {
+    private static NhanVien[] cacNguoiNhanYeuCau(NhanVien gui) {
         VaiTro canTim = PhanQuyen.xacDinhVaiTro(gui).laQuanLy() ? VaiTro.GIAM_DOC : VaiTro.TRUONG_PHONG;
-        List<NhanVien> kq = new ArrayList<>();
+        NhanVien[] kq = new NhanVien[0];
         for (NhanVien x : ql.getDanhSachNV()) {
             if (x == null || PhanQuyen.cungMa(x, gui) || PhanQuyen.xacDinhVaiTro(x) != canTim) continue;
             if (x.getTrangThai().toLowerCase().startsWith("nghi")) continue;
             TaiKhoan tk = dsTK.timTheoTen(x.getMaNV());
             if (tk == null || !tk.dangHoatDong()) continue;
-            kq.add(x);
+            kq = Mang.them(kq, x);
         }
-        kq.sort((a, b) -> Boolean.compare(PhanQuyen.cungPhong(b, gui), PhanQuyen.cungPhong(a, gui)));
+        Mang.sapXep(kq, (a, b) -> Boolean.compare(PhanQuyen.cungPhong(b, gui), PhanQuyen.cungPhong(a, gui)));
         return kq;
     }
 
     private static void guiYeuCauSuaHoSo(NhanVien nv, int nam) {
         if (laGiamDoc()) throw new IllegalStateException("Giam doc tu sua ho so, khong can gui yeu cau.");
-        List<NhanVien> nhan = cacNguoiNhanYeuCau(nv);
+        NhanVien[] nhan = cacNguoiNhanYeuCau(nv);
         boolean denGiamDoc = PhanQuyen.xacDinhVaiTro(nv).laQuanLy();
-        if (nhan.isEmpty()) {
+        if ((nhan.length == 0)) {
             GiaoDien.in("Hien khong co " + (denGiamDoc ? "giam doc" : "truong phong") + " nao dang hoat dong de nhan yeu cau.");
             return;
         }
         GiaoDien.in("");
         GiaoDien.in("Chon " + (denGiamDoc ? "GIAM DOC" : "TRUONG PHONG") + " de gui yeu cau:");
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (NhanVien x : nhan) {
-            dong.add(new String[]{x.getMaNV(), x.getHoTen(), x.getPhongBan() == null ? "(chua phan)" : x.getPhongBan().getTenPB(),
+            dong = Mang.them(dong, new String[]{x.getMaNV(), x.getHoTen(), x.getPhongBan() == null ? "(chua phan)" : x.getPhongBan().getTenPB(),
                     PhanQuyen.cungPhong(x, nv) ? "Cung phong ban" : ""});
         }
         GiaoDien.inBang(new String[]{"MA NV", "HO TEN", "PHONG BAN", "GHI CHU"}, new int[]{8, 24, 14, 16},
                 new String[]{GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI, GiaoDien.TRAI}, dong);
-        int c = docInt("Chon nguoi nhan (0 = huy): ", 0, nhan.size());
+        int c = docInt("Chon nguoi nhan (0 = huy): ", 0, nhan.length);
         if (c == 0) return;
-        NhanVien nguoiNhan = nhan.get(c - 1);
+        NhanVien nguoiNhan = nhan[c - 1];
 
         //giam doc duoc xin sua moi muc; truong phong chi duoc xin sua cac muc an toan (khong phai luong/chuc vu/phong ban/ngay vao lam)
         String[] choPhep = denGiamDoc ? TRUONG_DAY_DU : TRUONG_AN_TOAN;
@@ -2199,10 +2197,10 @@ public class Main {
         GiaoDien.in("Da gui yeu cau " + yc.getMaYC() + ". Chi khi " + nguoiNhan.getHoTen() + " dong y thi ho so moi duoc sua.");
     }
 
-    private static void inBangYeuCau(List<YeuCau> cac, boolean hienNguoiGui) {
-        List<String[]> dong = new ArrayList<>();
+    private static void inBangYeuCau(YeuCau[] cac, boolean hienNguoiGui) {
+        String[][] dong = new String[0][];
         for (YeuCau y : cac) {
-            dong.add(new String[]{y.getMaYC(), hienNguoiGui ? y.getNguoiGui() : y.getNguoiNhan(), String.valueOf(y.getNam()),
+            dong = Mang.them(dong, new String[]{y.getMaYC(), hienNguoiGui ? y.getNguoiGui() : y.getNguoiNhan(), String.valueOf(y.getNam()),
                     YeuCau.tenTruong(y.getTruong()), hienGiaTri(y.getTruong(), y.getGiaTriCu()),
                     hienGiaTri(y.getTruong(), y.getGiaTriMoi()), y.getNgayGui().format(YeuCau.DINH_DANG), y.tenTrangThai()});
         }
@@ -2216,18 +2214,18 @@ public class Main {
     //cac yeu cau minh da gui + huy yeu cau dang cho
     private static void yeuCauCuaToi() {
         String ma = phien.getMaNV();
-        List<YeuCau> ds = dsYC.timDaGui(ma);
-        if (ds.isEmpty()) {
+        YeuCau[] ds = dsYC.timDaGui(ma);
+        if ((ds.length == 0)) {
             GiaoDien.in("Ban chua gui yeu cau nao.");
             return;
         }
         inBangYeuCau(ds, false);
-        long cho = ds.stream().filter(YeuCau::dangCho).count();
-        GiaoDien.in("Tong " + ds.size() + " yeu cau, con " + cho + " yeu cau dang cho duyet (yeu cau da duyet / tu choi se khong con o trang thai cho).");
+        long cho = Mang.dem(ds, YeuCau::dangCho);
+        GiaoDien.in("Tong " + ds.length + " yeu cau, con " + cho + " yeu cau dang cho duyet (yeu cau da duyet / tu choi se khong con o trang thai cho).");
         if (cho == 0) return;
-        int c = docInt("Nhap STT yeu cau muon HUY (0 = khong huy): ", 0, ds.size());
+        int c = docInt("Nhap STT yeu cau muon HUY (0 = khong huy): ", 0, ds.length);
         if (c == 0) return;
-        YeuCau yc = ds.get(c - 1);
+        YeuCau yc = ds[c - 1];
         if (!yc.dangCho()) {
             GiaoDien.in("Yeu cau nay da duoc xu ly (" + yc.tenTrangThai() + "), khong the huy.");
             return;
@@ -2239,9 +2237,9 @@ public class Main {
 
     //---- nguoi nhan duyet ----
     private static void menuDuyetYeuCau() {
-        List<Muc> m = new ArrayList<>();
-        if (co(Quyen.DUYET_YEU_CAU)) m.add(muc("Duyet yeu cau chinh sua ho so", "DUYET YEU CAU SUA HO SO", Main::ycDuyet));
-        if (co(Quyen.DUYET_NGHI_PHEP)) m.add(muc("Duyet don nghi phep", "DUYET DON NGHI PHEP", Main::npDuyetCoDanhSach));
+        Muc[] m = new Muc[0];
+        if (co(Quyen.DUYET_YEU_CAU)) m = Mang.them(m, muc("Duyet yeu cau chinh sua ho so", "DUYET YEU CAU SUA HO SO", Main::ycDuyet));
+        if (co(Quyen.DUYET_NGHI_PHEP)) m = Mang.them(m, muc("Duyet don nghi phep", "DUYET DON NGHI PHEP", Main::npDuyetCoDanhSach));
         chayMenu("DUYET YEU CAU", m, "Quay lai", null);
     }
 
@@ -2263,14 +2261,14 @@ public class Main {
             ghiNhatKy("Duyet yeu cau " + yc.getMaYC(), gui.getMaNV(), NhatKyHeThong.TU_CHOI);
             throw new KhongCoQuyenException("Ban chi duyet yeu cau cua nguoi co cap bac thap hon.");
         }
-        List<String[]> cap = new ArrayList<>();
-        cap.add(new String[]{"Ma yeu cau", yc.getMaYC()});
-        cap.add(new String[]{"Nguoi gui", gui.getMaNV() + " - " + gui.getHoTen() + " (" + PhanQuyen.xacDinhVaiTro(gui).ten() + ")"});
-        cap.add(new String[]{"Ngay gui", yc.getNgayGui().format(YeuCau.DINH_DANG)});
-        cap.add(new String[]{"Muc can sua", YeuCau.tenTruong(yc.getTruong()) + " (ho so nam " + yc.getNam() + ")"});
-        cap.add(new String[]{"Gia tri luc gui", hienGiaTri(yc.getTruong(), yc.getGiaTriCu())});
-        cap.add(new String[]{"Gia tri hien tai", hienGiaTri(yc.getTruong(), giaTriHienTai(gui, Math.max(yc.getNam(), gui.getNgayVaoLam().getYear()), yc.getTruong()))});
-        cap.add(new String[]{"Gia tri de nghi", hienGiaTri(yc.getTruong(), yc.getGiaTriMoi())});
+        String[][] cap = new String[0][];
+        cap = Mang.them(cap, new String[]{"Ma yeu cau", yc.getMaYC()});
+        cap = Mang.them(cap, new String[]{"Nguoi gui", gui.getMaNV() + " - " + gui.getHoTen() + " (" + PhanQuyen.xacDinhVaiTro(gui).ten() + ")"});
+        cap = Mang.them(cap, new String[]{"Ngay gui", yc.getNgayGui().format(YeuCau.DINH_DANG)});
+        cap = Mang.them(cap, new String[]{"Muc can sua", YeuCau.tenTruong(yc.getTruong()) + " (ho so nam " + yc.getNam() + ")"});
+        cap = Mang.them(cap, new String[]{"Gia tri luc gui", hienGiaTri(yc.getTruong(), yc.getGiaTriCu())});
+        cap = Mang.them(cap, new String[]{"Gia tri hien tai", hienGiaTri(yc.getTruong(), giaTriHienTai(gui, Math.max(yc.getNam(), gui.getNgayVaoLam().getYear()), yc.getTruong()))});
+        cap = Mang.them(cap, new String[]{"Gia tri de nghi", hienGiaTri(yc.getTruong(), yc.getGiaTriMoi())});
         GiaoDien.in("");
         GiaoDien.inThongTin(cap);
         GiaoDien.in("1. Dong y (sua ho so ngay)  |  2. Tu choi  |  0. De sau");
@@ -2318,13 +2316,13 @@ public class Main {
         while (true) {
             DanhSachLichSuCongTac.KetQua kq = dsLS.xacDinh(nv, nam);
             PhongBan pb = dsPB.timTheoMa(kq.ls.getMaPB());
-            List<String[]> cap = new ArrayList<>();
-            cap.add(new String[]{"Nam", nam + " (" + ChonKy.trangThaiNam(nam) + ")"});
-            cap.add(new String[]{"Phong ban", pb == null ? "(chua phan phong ban)" : pb.getTenPB() + " (" + pb.getMaPB() + ")"});
-            if (pb != null) cap.add(new String[]{"Mo ta", pb.getMoTa()});
-            cap.add(new String[]{"Chuc vu trong nam", kq.ls.getTenCV().isEmpty() ? "(chua co)" : kq.ls.getTenCV()});
-            if (hienTai && pb != null) cap.add(new String[]{"So nhan vien hien tai", String.valueOf(pb.demNhanVien())});
-            cap.add(new String[]{"Nguon so lieu", kq.nguon});
+            String[][] cap = new String[0][];
+            cap = Mang.them(cap, new String[]{"Nam", nam + " (" + ChonKy.trangThaiNam(nam) + ")"});
+            cap = Mang.them(cap, new String[]{"Phong ban", pb == null ? "(chua phan phong ban)" : pb.getTenPB() + " (" + pb.getMaPB() + ")"});
+            if (pb != null) cap = Mang.them(cap, new String[]{"Mo ta", pb.getMoTa()});
+            cap = Mang.them(cap, new String[]{"Chuc vu trong nam", kq.ls.getTenCV().isEmpty() ? "(chua co)" : kq.ls.getTenCV()});
+            if (hienTai && pb != null) cap = Mang.them(cap, new String[]{"So nhan vien hien tai", String.valueOf(pb.demNhanVien())});
+            cap = Mang.them(cap, new String[]{"Nguon so lieu", kq.nguon});
             GiaoDien.in("");
             GiaoDien.inThongTin(cap);
             VaiTro vt = PhanQuyen.xacDinhVaiTro(nv);
@@ -2426,13 +2424,13 @@ public class Main {
                         });
                 if (thang == null) break;
             }
-            List<ChamCong> thangNay = new ArrayList<>();
+            ChamCong[] thangNay = new ChamCong[0];
             for (ChamCong cc : dsCC.timTheoMaNV(id))
-                if (cc.getNgay().getYear() == nam && cc.getNgay().getMonthValue() == thang) thangNay.add(cc);
-            thangNay.sort((a, b) -> a.getNgay().compareTo(b.getNgay()));
+                if (cc.getNgay().getYear() == nam && cc.getNgay().getMonthValue() == thang) thangNay = Mang.them(thangNay, cc);
+            Mang.sapXep(thangNay, (a, b) -> a.getNgay().compareTo(b.getNgay()));
             GiaoDien.in("");
             GiaoDien.in("CHI TIET CHAM CONG THANG " + thang + "/" + nam);
-            DanhSachChamCong.inBang(thangNay.toArray(new ChamCong[0]));
+            DanhSachChamCong.inBang(thangNay);
             thang = null;
         }
         if (nam == namNay() && laGiamDoc()) ccGiamDocSua(nv);
@@ -2574,15 +2572,15 @@ public class Main {
             if (thang == null) return;
         }
         LichSuCongTac ls = dsLS.xacDinh(nv, nam).ls;
-        List<String[]> dong = new ArrayList<>();
-        dong.add(new String[]{"Nhan vien", id + " - " + nv.getHoTen()});
-        dong.add(new String[]{"Thang / nam", thang + "/" + nam});
-        dong.add(new String[]{"Chuc vu nam " + nam, ls.getTenCV().isEmpty() ? "(chua co)" : ls.getTenCV()});
-        dong.add(new String[]{"Phong ban nam " + nam, tenPB(ls.getMaPB())});
-        dong.add(new String[]{"Luong co ban nam " + nam, GiaoDien.tien(ls.getLuongCoBan()) + " VND"});
-        dong.add(new String[]{"So ngay di lam", String.valueOf(dsCC.thongKeSoNgayDiLam(id, thang, nam))});
-        dong.add(new String[]{"Gio lam thuong", String.format("%.2f", dsCC.thongKeGioLam(id, thang, nam))});
-        dong.add(new String[]{"Gio tang ca", String.format("%.2f", dsCC.thongKeGioTangCa(id, thang, nam))});
+        String[][] dong = new String[0][];
+        dong = Mang.them(dong, new String[]{"Nhan vien", id + " - " + nv.getHoTen()});
+        dong = Mang.them(dong, new String[]{"Thang / nam", thang + "/" + nam});
+        dong = Mang.them(dong, new String[]{"Chuc vu nam " + nam, ls.getTenCV().isEmpty() ? "(chua co)" : ls.getTenCV()});
+        dong = Mang.them(dong, new String[]{"Phong ban nam " + nam, tenPB(ls.getMaPB())});
+        dong = Mang.them(dong, new String[]{"Luong co ban nam " + nam, GiaoDien.tien(ls.getLuongCoBan()) + " VND"});
+        dong = Mang.them(dong, new String[]{"So ngay di lam", String.valueOf(dsCC.thongKeSoNgayDiLam(id, thang, nam))});
+        dong = Mang.them(dong, new String[]{"Gio lam thuong", String.format("%.2f", dsCC.thongKeGioLam(id, thang, nam))});
+        dong = Mang.them(dong, new String[]{"Gio tang ca", String.format("%.2f", dsCC.thongKeGioTangCa(id, thang, nam))});
         GiaoDien.in("");
         GiaoDien.inThongKe(dong);
     }
@@ -2590,11 +2588,11 @@ public class Main {
 //----------------- NGHI PHEP CUA TOI -----------------
     //menu nghi phep trong cong thong tin ca nhan: chi don cua chinh minh
     private static void menuNghiPhepCuaToi() {
-        List<Muc> m = new ArrayList<>();
-        m.add(muc("Tao don nghi phep cua toi", "NGHI PHEP - TAO DON CUA TOI", () -> npTaoCho(nguoi())));
-        m.add(muc("Xem don nghi phep cua toi (chon nam)", "NGHI PHEP - DON CUA TOI", Main::cnNghiPhep));
+        Muc[] m = new Muc[0];
+        m = Mang.them(m, muc("Tao don nghi phep cua toi", "NGHI PHEP - TAO DON CUA TOI", () -> npTaoCho(nguoi())));
+        m = Mang.them(m, muc("Xem don nghi phep cua toi (chon nam)", "NGHI PHEP - DON CUA TOI", Main::cnNghiPhep));
         //giam doc khong co don cho duyet nen khong co chuc nang nay
-        if (!laGiamDoc()) m.add(muc("Xoa don dang cho duyet cua toi", "NGHI PHEP - XOA DON CHO DUYET", Main::npXoaChoDuyetCuaToi));
+        if (!laGiamDoc()) m = Mang.them(m, muc("Xoa don dang cho duyet cua toi", "NGHI PHEP - XOA DON CHO DUYET", Main::npXoaChoDuyetCuaToi));
         chayMenu("NGHI PHEP CUA TOI", m, "Quay lai", null);
     }
 
@@ -2624,14 +2622,14 @@ public class Main {
         if (k == null) return;
         int nam = k.nam;
         while (true) {
-            List<NghiPhep> ds = new ArrayList<>();
-            for (NghiPhep np : dsNP.timTheoMaNV(id)) if (namDon(np) == nam) ds.add(np);
-            ds.sort((a, b) -> a.getNgayBatDau().compareTo(b.getNgayBatDau()));
+            NghiPhep[] ds = new NghiPhep[0];
+            for (NghiPhep np : dsNP.timTheoMaNV(id)) if (namDon(np) == nam) ds = Mang.them(ds, np);
+            Mang.sapXep(ds, (a, b) -> a.getNgayBatDau().compareTo(b.getNgayBatDau()));
             GiaoDien.in("");
             GiaoDien.in("DON NGHI PHEP NAM " + nam);
-            if (ds.isEmpty()) GiaoDien.in("Khong co don nao trong nam " + nam + ".");
-            else DanhSachNghiPhep.inBang(ds.toArray(new NghiPhep[0]));
-            long cho = ds.stream().filter(d -> !"Da duyet".equals(d.getTrangThai())).count();
+            if ((ds.length == 0)) GiaoDien.in("Khong co don nao trong nam " + nam + ".");
+            else DanhSachNghiPhep.inBang(ds);
+            long cho = Mang.dem(ds, d -> !"Da duyet".equals(d.getTrangThai()));
             if (cho > 0) GiaoDien.in("Con " + cho + " don chua duoc duyet.");
             if (nam != namNay() || !laGiamDoc()) {
                 if (nam == namNay() && !laGiamDoc() && cho > 0) GiaoDien.in("(Muon xoa don dang cho duyet: Nghi phep cua toi > Xoa don dang cho duyet cua toi.)");
@@ -2642,9 +2640,9 @@ public class Main {
             GiaoDien.in("2. Xoa don nghi phep");
             GiaoDien.in("0. Xong");
             int c = docInt("Chon: ", 0, 2);
-            if (c == 0 || ds.isEmpty()) return;
+            if (c == 0 || (ds.length == 0)) return;
             try {
-                NghiPhep np = ds.get(docInt("Chon STT don: ", 1, ds.size()) - 1);
+                NghiPhep np = ds[docInt("Chon STT don: ", 1, ds.length) - 1];
                 if (c == 2) {
                     if (!docChuoi("Xoa don " + np.getMaNP() + "? (y/n): ").equalsIgnoreCase("y")) continue;
                     dsNP.xoaTheoMa(np.getMaNP());
@@ -2679,18 +2677,18 @@ public class Main {
         yeuCau(Quyen.XOA_NGHI_PHEP);
         NhanVien nv = nguoi();
         String id = nv.getMaNV();
-        List<Integer> cacNam = new ArrayList<>();
+        int[] cacNam = new int[0];
         int tong = 0;
         for (NghiPhep np : dsNP.timTheoMaNV(id)) {
             if ("Da duyet".equals(np.getTrangThai())) continue;
             tong++;
-            if (!cacNam.contains(namDon(np))) cacNam.add(namDon(np));
+            if (!Mang.chua(cacNam, namDon(np))) cacNam = Mang.them(cacNam, namDon(np));
         }
         if (tong == 0) {
             GiaoDien.in("Ban khong co don nao dang cho duyet. (Don da duoc duyet se tu roi khoi danh sach cho nay.)");
             return;
         }
-        java.util.Collections.sort(cacNam);
+        Mang.sapXep(cacNam);
         GiaoDien.in("Ban con " + tong + " don chua duoc duyet:");
         ChonKy.KetQua k = chonTrongCacNam(cacNam, nv.getNgayVaoLam(),
                 new String[]{"DON CHUA DUYET"}, new int[]{14}, new String[]{GiaoDien.PHAI},
@@ -2701,16 +2699,16 @@ public class Main {
                 });
         if (k == null) return;
         while (true) {
-            List<NghiPhep> cho = new ArrayList<>();
-            for (NghiPhep np : dsNP.timTheoMaNV(id)) if (namDon(np) == k.nam && !"Da duyet".equals(np.getTrangThai())) cho.add(np);
-            if (cho.isEmpty()) {
+            NghiPhep[] cho = new NghiPhep[0];
+            for (NghiPhep np : dsNP.timTheoMaNV(id)) if (namDon(np) == k.nam && !"Da duyet".equals(np.getTrangThai())) cho = Mang.them(cho, np);
+            if ((cho.length == 0)) {
                 GiaoDien.in("Nam " + k.nam + " khong con don nao cho duyet.");
                 return;
             }
-            DanhSachNghiPhep.inBang(cho.toArray(new NghiPhep[0]));
-            int c = docInt("Chon STT don can xoa (0 = quay lai): ", 0, cho.size());
+            DanhSachNghiPhep.inBang(cho);
+            int c = docInt("Chon STT don can xoa (0 = quay lai): ", 0, cho.length);
             if (c == 0) return;
-            NghiPhep np = cho.get(c - 1);
+            NghiPhep np = cho[c - 1];
             yeuCauTheoMaNV(Quyen.XOA_NGHI_PHEP, np.getMaNV());
             if (!docChuoi("Xoa don " + np.getMaNP() + " (" + np.getNgayBatDau() + " - " + np.getNgayKetThuc() + ")? (y/n): ").equalsIgnoreCase("y")) continue;
             dsNP.xoaTheoMa(np.getMaNP());
@@ -2771,10 +2769,10 @@ public class Main {
         return "HieuLuc".equalsIgnoreCase(bh.getTrangThai()) || namTG == nam;                       //BHXH da het hieu luc: chi nam tham gia
     }
 
-    private static List<BaoHiem> baoHiemCuaNam(String id, int nam) {
-        List<BaoHiem> kq = new ArrayList<>();
-        for (BaoHiem bh : dsBH.timTheoMaNV(id)) if (baoHiemTrongNam(bh, nam)) kq.add(bh);
-        kq.sort((a, b) -> a.getNgayThamGia().compareTo(b.getNgayThamGia()));
+    private static BaoHiem[] baoHiemCuaNam(String id, int nam) {
+        BaoHiem[] kq = new BaoHiem[0];
+        for (BaoHiem bh : dsBH.timTheoMaNV(id)) if (baoHiemTrongNam(bh, nam)) kq = Mang.them(kq, bh);
+        Mang.sapXep(kq, (a, b) -> a.getNgayThamGia().compareTo(b.getNgayThamGia()));
         return kq;
     }
 
@@ -2787,19 +2785,19 @@ public class Main {
                 new int[]{9, 12, 12},
                 new String[]{GiaoDien.PHAI, GiaoDien.TRAI, GiaoDien.TRAI},
                 n -> {
-                    List<BaoHiem> ds = baoHiemCuaNam(id, n);
+                    BaoHiem[] ds = baoHiemCuaNam(id, n);
                     boolean xh = false, yt = false;
                     for (BaoHiem b : ds) { if (b instanceof BaoHiemYTe) yt = true; else xh = true; }
-                    return new String[]{String.valueOf(ds.size()), xh ? "Co" : "Khong", yt ? "Co" : "Khong"};
+                    return new String[]{String.valueOf(ds.length), xh ? "Co" : "Khong", yt ? "Co" : "Khong"};
                 });
         if (k == null) return;
         int nam = k.nam;
         while (true) {
-            List<BaoHiem> ds = baoHiemCuaNam(id, nam);
+            BaoHiem[] ds = baoHiemCuaNam(id, nam);
             GiaoDien.in("");
             GiaoDien.in("BAO HIEM NAM " + nam);
-            if (ds.isEmpty()) GiaoDien.in("Khong co ho so bao hiem nao hieu luc trong nam " + nam + ".");
-            else DanhSachBaoHiem.inBang(ds.toArray(new BaoHiem[0]));
+            if ((ds.length == 0)) GiaoDien.in("Khong co ho so bao hiem nao hieu luc trong nam " + nam + ".");
+            else DanhSachBaoHiem.inBang(ds);
             if (nam != namNay() || !laGiamDoc()) {
                 if (nam != namNay()) GiaoDien.in("(Nam da qua chi de xem.)");
                 return;
@@ -2833,7 +2831,7 @@ public class Main {
         }
     }
 
-    private static void bhGiamDocSua(NhanVien nv, List<BaoHiem> ds, int c) {
+    private static void bhGiamDocSua(NhanVien nv, BaoHiem[] ds, int c) {
         yeuCauLaGiamDoc();
         String id = nv.getMaNV();
         LocalDate homNay = LocalDate.now();
@@ -2864,8 +2862,8 @@ public class Main {
             ghiNhatKy("Them BHYT " + ma + " (bao hiem cua toi)", id);
             GiaoDien.in("Da them BHYT " + ma + ".");
         } else {
-            if (ds.isEmpty()) { GiaoDien.in("Khong co ho so nao de chon."); return; }
-            BaoHiem bh = ds.get(docInt("Chon STT ho so: ", 1, ds.size()) - 1);
+            if ((ds.length == 0)) { GiaoDien.in("Khong co ho so nao de chon."); return; }
+            BaoHiem bh = ds[docInt("Chon STT ho so: ", 1, ds.length) - 1];
             if (c == 4) {
                 if (!docChuoi("Xoa ho so " + bh.getMaBH() + "? (y/n): ").equalsIgnoreCase("y")) return;
                 dsBH.xoaTheoMa(bh.getMaBH());
@@ -2889,10 +2887,10 @@ public class Main {
     }
 
 //----------------- THUONG / PHAT CUA TOI -----------------
-    private static List<ThuongPhat> thuongPhatCuaNam(String id, int nam) {
-        List<ThuongPhat> kq = new ArrayList<>();
-        for (ThuongPhat tp : dsTP.timTheoMaNV(id)) if (tp.getNgayApDung().getYear() == nam) kq.add(tp);
-        kq.sort((a, b) -> a.getNgayApDung().compareTo(b.getNgayApDung()));
+    private static ThuongPhat[] thuongPhatCuaNam(String id, int nam) {
+        ThuongPhat[] kq = new ThuongPhat[0];
+        for (ThuongPhat tp : dsTP.timTheoMaNV(id)) if (tp.getNgayApDung().getYear() == nam) kq = Mang.them(kq, tp);
+        Mang.sapXep(kq, (a, b) -> a.getNgayApDung().compareTo(b.getNgayApDung()));
         return kq;
     }
 
@@ -2906,18 +2904,18 @@ public class Main {
                 new String[]{GiaoDien.PHAI, GiaoDien.PHAI, GiaoDien.PHAI},
                 n -> {
                     double thuong = 0, phat = 0;
-                    List<ThuongPhat> ds = thuongPhatCuaNam(id, n);
+                    ThuongPhat[] ds = thuongPhatCuaNam(id, n);
                     for (ThuongPhat tp : ds) { if ("PHAT".equalsIgnoreCase(tp.getLoai())) phat += tp.getSoTien(); else thuong += tp.getSoTien(); }
-                    return new String[]{String.valueOf(ds.size()), GiaoDien.tien(thuong), GiaoDien.tien(phat)};
+                    return new String[]{String.valueOf(ds.length), GiaoDien.tien(thuong), GiaoDien.tien(phat)};
                 });
         if (k == null) return;
         int nam = k.nam;
         while (true) {
-            List<ThuongPhat> ds = thuongPhatCuaNam(id, nam);
+            ThuongPhat[] ds = thuongPhatCuaNam(id, nam);
             GiaoDien.in("");
             GiaoDien.in("THUONG / PHAT NAM " + nam);
-            if (ds.isEmpty()) GiaoDien.in("Khong co khoan thuong/phat nao trong nam " + nam + ".");
-            else DanhSachThuongPhat.inBang(ds.toArray(new ThuongPhat[0]));
+            if ((ds.length == 0)) GiaoDien.in("Khong co khoan thuong/phat nao trong nam " + nam + ".");
+            else DanhSachThuongPhat.inBang(ds);
             if (nam != namNay() || !laGiamDoc()) {
                 if (nam != namNay()) GiaoDien.in("(Nam da qua chi de xem.)");
                 return;
@@ -2938,12 +2936,12 @@ public class Main {
         }
     }
 
-    private static void tpGiamDocSua(NhanVien nv, List<ThuongPhat> ds, int c) {
+    private static void tpGiamDocSua(NhanVien nv, ThuongPhat[] ds, int c) {
         yeuCauLaGiamDoc();
         String id = nv.getMaNV();
         if (c == 2) {
-            if (ds.isEmpty()) { GiaoDien.in("Khong co khoan nao de xoa."); return; }
-            ThuongPhat tp = ds.get(docInt("Chon STT khoan can xoa: ", 1, ds.size()) - 1);
+            if ((ds.length == 0)) { GiaoDien.in("Khong co khoan nao de xoa."); return; }
+            ThuongPhat tp = ds[docInt("Chon STT khoan can xoa: ", 1, ds.length) - 1];
             if (!docChuoi("Xoa khoan " + tp.getMaTP() + "? (y/n): ").equalsIgnoreCase("y")) return;
             dsTP.xoaTheoMa(tp.getMaTP());
             ghiNhatKy("Xoa thuong/phat " + tp.getMaTP() + " (thuong phat cua toi)", id);
@@ -2976,13 +2974,13 @@ public class Main {
 
 //----------------- HOP DONG LAO DONG CUA TOI -----------------
     //hop dong cua nhan vien: uu tien danh sach hop dong (data/hopdong.txt); khong co thi dung hop dong gan voi nhan vien hop dong
-    private static List<LichSuHopDong> hopDongCuaToi(NhanVien nv) {
-        List<LichSuHopDong> ds = dsHDLD.timTheoMaNV(nv.getMaNV());
-        if (!ds.isEmpty() || !(nv instanceof NhanVienHopDong)) return ds;
+    private static LichSuHopDong[] hopDongCuaToi(NhanVien nv) {
+        LichSuHopDong[] ds = dsHDLD.timTheoMaNV(nv.getMaNV());
+        if (!(ds.length == 0) || !(nv instanceof NhanVienHopDong)) return ds;
         HopDongLaoDong hd = ((NhanVienHopDong) nv).gethopDong();
         if (hd == null) return ds;
         try {
-            ds.add(new LichSuHopDong(hd.getmaHD(), nv.getMaNV(), hd.getloaiHopDong(), hd.getngayKy(), hd.getngayHetHan(), ""));
+            ds = Mang.them(ds, new LichSuHopDong(hd.getmaHD(), nv.getMaNV(), hd.getloaiHopDong(), hd.getngayKy(), hd.getngayHetHan(), ""));
         } catch (RuntimeException ignored) { }
         return ds;
     }
@@ -2991,11 +2989,11 @@ public class Main {
         NhanVien nv = nguoi();
         yeuCau(Quyen.XEM_HOP_DONG, nv);
         String id = nv.getMaNV();
-        List<LichSuHopDong> tat = hopDongCuaToi(nv);
-        if (tat.isEmpty()) {
+        LichSuHopDong[] tat = hopDongCuaToi(nv);
+        if ((tat.length == 0)) {
             GiaoDien.in("Ban chua co hop dong lao dong nao.");
             if (!laGiamDoc()) return;
-            if (docChuoi("Them hop dong lao dong cho ban? (y/n): ").equalsIgnoreCase("y")) hdGiamDocSua(nv, 3, new ArrayList<>());
+            if (docChuoi("Them hop dong lao dong cho ban? (y/n): ").equalsIgnoreCase("y")) hdGiamDocSua(nv, 3, new LichSuHopDong[0]);
             return;
         }
         ChonKy.KetQua k = chonNam(nv, namNay(),
@@ -3003,18 +3001,18 @@ public class Main {
                 new int[]{11, 40},
                 new String[]{GiaoDien.PHAI, GiaoDien.TRAI},
                 n -> {
-                    List<String> loai = new ArrayList<>();
-                    for (LichSuHopDong h : hopDongCuaToi(nv)) if (h.hieuLucTrongNam(n)) loai.add(h.getLoai());
-                    return new String[]{String.valueOf(loai.size()), loai.isEmpty() ? "(khong co hop dong)" : String.join(", ", loai)};
+                    String[] loai = new String[0];
+                    for (LichSuHopDong h : hopDongCuaToi(nv)) if (h.hieuLucTrongNam(n)) loai = Mang.them(loai, h.getLoai());
+                    return new String[]{String.valueOf(loai.length), (loai.length == 0) ? "(khong co hop dong)" : String.join(", ", loai)};
                 });
         if (k == null) return;
         int nam = k.nam;
         while (true) {
-            List<LichSuHopDong> ds = new ArrayList<>();
-            for (LichSuHopDong h : hopDongCuaToi(nv)) if (h.hieuLucTrongNam(nam)) ds.add(h);
+            LichSuHopDong[] ds = new LichSuHopDong[0];
+            for (LichSuHopDong h : hopDongCuaToi(nv)) if (h.hieuLucTrongNam(nam)) ds = Mang.them(ds, h);
             GiaoDien.in("");
             GiaoDien.in("HOP DONG LAO DONG NAM " + nam);
-            if (ds.isEmpty()) GiaoDien.in("Khong co hop dong nao hieu luc trong nam " + nam + ".");
+            if ((ds.length == 0)) GiaoDien.in("Khong co hop dong nao hieu luc trong nam " + nam + ".");
             else DanhSachLichSuHopDong.inBang(ds);
             if (nam != namNay() || !laGiamDoc()) {
                 if (nam != namNay()) GiaoDien.in("(Nam da qua chi de xem.)");
@@ -3049,7 +3047,7 @@ public class Main {
         }
     }
 
-    private static void hdGiamDocSua(NhanVien nv, int c, List<LichSuHopDong> ds) {
+    private static void hdGiamDocSua(NhanVien nv, int c, LichSuHopDong[] ds) {
         yeuCauLaGiamDoc();
         String id = nv.getMaNV();
         if (c == 3) {
@@ -3067,13 +3065,13 @@ public class Main {
             GiaoDien.in("Da them hop dong " + ma + ".");
             return;
         }
-        List<LichSuHopDong> thatSu = new ArrayList<>();       //chi sua duoc hop dong trong danh sach hop dong (khong sua hop dong gan voi nhan vien hop dong)
-        for (LichSuHopDong h : ds) if (dsHDLD.timTheoMa(h.getMaHD()) != null) thatSu.add(h);
-        if (thatSu.isEmpty()) {
+        LichSuHopDong[] thatSu = new LichSuHopDong[0];       //chi sua duoc hop dong trong danh sach hop dong (khong sua hop dong gan voi nhan vien hop dong)
+        for (LichSuHopDong h : ds) if (dsHDLD.timTheoMa(h.getMaHD()) != null) thatSu = Mang.them(thatSu, h);
+        if ((thatSu.length == 0)) {
             GiaoDien.in("Khong co hop dong nao co the chon.");
             return;
         }
-        LichSuHopDong hd = ds.get(docInt("Chon STT hop dong: ", 1, ds.size()) - 1);
+        LichSuHopDong hd = ds[docInt("Chon STT hop dong: ", 1, ds.length) - 1];
         if (dsHDLD.timTheoMa(hd.getMaHD()) == null) throw new IllegalArgumentException("Hop dong nay gan voi ho so nhan vien, khong sua o day.");
         if (c == 4) {
             if (!docChuoi("Xoa hop dong " + hd.getMaHD() + "? (y/n): ").equalsIgnoreCase("y")) return;
@@ -3115,10 +3113,11 @@ public class Main {
 
     //nhan vien (ma) nam trong pham vi cua quyen q; du lieu cua nhan vien da xoa chi giam doc (toan cong ty) moi thay
     private static java.util.function.Predicate<String> trongQuyen(Quyen q) {
-        java.util.Set<String> ok = new java.util.HashSet<>();
-        for (NhanVien nv : nvTrongQuyen(q)) ok.add(nv.getMaNV().toUpperCase());
+        String[] tam = new String[0];
+        for (NhanVien nv : nvTrongQuyen(q)) tam = Mang.them(tam, nv.getMaNV().toUpperCase());
+        final String[] ok = tam;      //final de dung duoc trong lambda ben duoi
         boolean tatCa = phamVi(q) == PhamVi.TAT_CA;
-        return ma -> ok.contains(ma.toUpperCase()) || (tatCa && ql.timTheoMa(ma) == null);
+        return ma -> Mang.chua(ok, ma.toUpperCase()) || (tatCa && ql.timTheoMa(ma) == null);
     }
 
     //ngay vao lam som nhat trong pham vi (de lam moc cho danh sach nam)
@@ -3153,18 +3152,18 @@ public class Main {
     }
 
     //cac nhan vien thuoc 1 phong ban trong 1 nam
-    private static List<NhanVien> thanhVienPB(String maPB, int nam) {
-        List<NhanVien> kq = new ArrayList<>();
+    private static NhanVien[] thanhVienPB(String maPB, int nam) {
+        NhanVien[] kq = new NhanVien[0];
         for (NhanVien nv : ql.getDanhSachNV()) {
             if (nv == null || nv.getNgayVaoLam().getYear() > nam) continue;
             if (nam >= namNay() && nv.getTrangThai().toLowerCase().startsWith("nghi")) continue;
-            if (maPBNam(nv, nam).equalsIgnoreCase(maPB)) kq.add(nv);
+            if (maPBNam(nv, nam).equalsIgnoreCase(maPB)) kq = Mang.them(kq, nv);
         }
         return kq;
     }
 
-    private static void sapXepDong(List<XemChung2.Dong> ds) {
-        ds.sort((a, b) -> {
+    private static void sapXepDong(XemChung2.Dong[] ds) {
+        Mang.sapXep(ds, (a, b) -> {
             int c = a.maPB.compareToIgnoreCase(b.maPB);
             if (c != 0) return c;
             if (a.ngay != null && b.ngay != null && !a.ngay.equals(b.ngay)) return a.ngay.compareTo(b.ngay);
@@ -3201,16 +3200,16 @@ public class Main {
 
     //phong ban ma nguoi dang nhap quan ly, sap theo ten tang dan (tu dien):
     //giam doc: cac phong co ma giam doc trung minh + cac phong chua phan cong; nguoi khac: chi phong cua minh
-    private static List<PhongBan> phongBanQuanLy() {
-        List<PhongBan> kq = new ArrayList<>();
+    private static PhongBan[] phongBanQuanLy() {
+        PhongBan[] kq = new PhongBan[0];
         if (laGiamDoc()) {
             String me = phien.getMaNV();
             for (PhongBan pb : dsPB.getDanhSach())
-                if (pb != null && (pb.getMaGiamDoc().isEmpty() || pb.getMaGiamDoc().equalsIgnoreCase(me))) kq.add(pb);
+                if (pb != null && (pb.getMaGiamDoc().isEmpty() || pb.getMaGiamDoc().equalsIgnoreCase(me))) kq = Mang.them(kq, pb);
         } else if (nguoi().getPhongBan() != null) {
-            kq.add(nguoi().getPhongBan());
+            kq = Mang.them(kq, nguoi().getPhongBan());
         }
-        kq.sort((a, b) -> {
+        Mang.sapXep(kq, (a, b) -> {
             int c = a.getTenPB().compareToIgnoreCase(b.getTenPB());
             return c != 0 ? c : a.getMaPB().compareToIgnoreCase(b.getMaPB());
         });
@@ -3219,12 +3218,12 @@ public class Main {
 
     private static void pbDanhSachChung2() {
         yeuCau(Quyen.XEM_PHONG_BAN);
-        List<PhongBan> trongQ = phongBanQuanLy();
-        if (trongQ.isEmpty()) {
+        PhongBan[] trongQ = phongBanQuanLy();
+        if ((trongQ.length == 0)) {
             GiaoDien.in("Ban chua quan ly phong ban nao.");
             return;
         }
-        GiaoDien.in("Ban dang quan ly " + trongQ.size() + " phong ban (xep theo ten A-Z).");
+        GiaoDien.in("Ban dang quan ly " + trongQ.length + " phong ban (xep theo ten A-Z).");
         XemChung2.Cau c = new XemChung2.Cau("PHONG BAN")
                 .cot(new String[]{"MA PB", "TEN PHONG BAN", "MO TA", "SO NV", "TRUONG PHONG"}, new int[]{7, 20, 30, 6, 18}, new String[]{T, T, T, P, T})
                 .khongCotPB()
@@ -3233,16 +3232,16 @@ public class Main {
                 .goiYMa("ma phong ban hoac ten")
                 .tenPhongBan(Main::tenPB)
                 .layDong(nam -> {
-                    List<XemChung2.Dong> kq = new ArrayList<>();
+                    XemChung2.Dong[] kq = new XemChung2.Dong[0];
                     for (PhongBan pb : trongQ) {
-                        List<NhanVien> tv = thanhVienPB(pb.getMaPB(), nam);
+                        NhanVien[] tv = thanhVienPB(pb.getMaPB(), nam);
                         String tp = "-";
                         for (NhanVien nv : tv) {
                             String maCV = nam >= namNay() ? (nv.getChucVu() == null ? "" : nv.getChucVu().getMaCV()) : dsLS.xacDinh(nv, nam).ls.getMaCV();
                             if ("CV02".equals(maCV)) { tp = nv.getHoTen(); break; }
                         }
-                        kq.add(new XemChung2.Dong(pb.getMaPB(), pb.getTenPB(), pb.getMaPB(), null,
-                                new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(tv.size()), tp},
+                        kq = Mang.them(kq, new XemChung2.Dong(pb.getMaPB(), pb.getTenPB(), pb.getMaPB(), null,
+                                new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(tv.length), tp},
                                 new Object[]{pb, nam}));
                     }
                     return kq;            //da theo thu tu ten tang dan
@@ -3253,18 +3252,18 @@ public class Main {
     }
 
     //lua chon 2: moi phong ban quan ly 1 hang kem so nhan vien; chon theo STT hoac ma de vao phong do
-    private static void pbChonLoai(List<PhongBan> trongQ, int nam) {
-        List<String[]> dong = new ArrayList<>();
+    private static void pbChonLoai(PhongBan[] trongQ, int nam) {
+        String[][] dong = new String[0][];
         for (PhongBan pb : trongQ)
-            dong.add(new String[]{String.valueOf(dong.size() + 1), pb.getMaPB(), pb.getTenPB(), String.valueOf(thanhVienPB(pb.getMaPB(), nam).size())});
+            dong = Mang.them(dong, new String[]{String.valueOf(dong.length + 1), pb.getMaPB(), pb.getTenPB(), String.valueOf(thanhVienPB(pb.getMaPB(), nam).length)});
         GiaoDien.in("");
-        GiaoDien.in("CAC PHONG BAN BAN QUAN LI - NAM " + nam + " (" + trongQ.size() + " phong, xep theo ten A-Z)");
+        GiaoDien.in("CAC PHONG BAN BAN QUAN LI - NAM " + nam + " (" + trongQ.length + " phong, xep theo ten A-Z)");
         GiaoDien.inBangKhongStt(new String[]{"STT", "MA PB", "TEN PHONG BAN", "SO NHAN VIEN"}, new int[]{5, 8, 26, 13},
                 new String[]{G, T, T, P}, dong);
         String in = docChuoi("Chon phong ban (STT hoac ma PB, 0 = quay lai): ");
         if (in.isEmpty() || in.equals("0")) return;
         PhongBan chon = null;
-        if (in.matches("\\d{1,3}") && Integer.parseInt(in) >= 1 && Integer.parseInt(in) <= trongQ.size()) chon = trongQ.get(Integer.parseInt(in) - 1);
+        if (in.matches("\\d{1,3}") && Integer.parseInt(in) >= 1 && Integer.parseInt(in) <= trongQ.length) chon = trongQ[Integer.parseInt(in) - 1];
         else for (PhongBan pb : trongQ) if (pb.getMaPB().equalsIgnoreCase(in)) chon = pb;
         if (chon == null) {
             GiaoDien.in("Khong co phong ban \"" + in + "\" trong danh sach tren.");
@@ -3303,21 +3302,21 @@ public class Main {
             GiaoDien.in("Ban chua thuoc phong ban nao.");
             return;
         }
-        List<NhanVien> nhan = cacNguoiNhanYeuCau(nv);
-        if (nhan.isEmpty()) {
+        NhanVien[] nhan = cacNguoiNhanYeuCau(nv);
+        if ((nhan.length == 0)) {
             GiaoDien.in("Hien khong co giam doc nao dang hoat dong de nhan yeu cau.");
             return;
         }
-        nhan.sort((a, b) -> Boolean.compare(pb.getMaGiamDoc().equalsIgnoreCase(b.getMaNV()), pb.getMaGiamDoc().equalsIgnoreCase(a.getMaNV())));
+        Mang.sapXep(nhan, (a, b) -> Boolean.compare(pb.getMaGiamDoc().equalsIgnoreCase(b.getMaNV()), pb.getMaGiamDoc().equalsIgnoreCase(a.getMaNV())));
         GiaoDien.in("");
         GiaoDien.in("Chon GIAM DOC de gui yeu cau:");
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for (NhanVien x : nhan)
-            dong.add(new String[]{x.getMaNV(), x.getHoTen(), pb.getMaGiamDoc().equalsIgnoreCase(x.getMaNV()) ? "Quan ly phong " + pb.getTenPB() : ""});
+            dong = Mang.them(dong, new String[]{x.getMaNV(), x.getHoTen(), pb.getMaGiamDoc().equalsIgnoreCase(x.getMaNV()) ? "Quan ly phong " + pb.getTenPB() : ""});
         GiaoDien.inBang(new String[]{"MA NV", "HO TEN", "GHI CHU"}, new int[]{8, 24, 30}, new String[]{T, T, T}, dong);
-        int c = docInt("Chon nguoi nhan (0 = huy): ", 0, nhan.size());
+        int c = docInt("Chon nguoi nhan (0 = huy): ", 0, nhan.length);
         if (c == 0) return;
-        NhanVien nguoiNhan = nhan.get(c - 1);
+        NhanVien nguoiNhan = nhan[c - 1];
         GiaoDien.in("");
         GiaoDien.in("1. Sua ten phong ban (hien tai: " + pb.getTenPB() + ")");
         GiaoDien.in("2. Sua mo ta phong ban (hien tai: " + (pb.getMoTa().isEmpty() ? "(trong)" : pb.getMoTa()) + ")");
@@ -3378,8 +3377,8 @@ public class Main {
             throw new KhongCoQuyenException("Ban chi duoc xem phong ban cua minh.");
         }
         XemChung2.Cau c = cauNhanVien(Quyen.XEM_NHAN_VIEN).khongCotPB();
-        List<XemChung2.Dong> ds = new ArrayList<>();
-        for (XemChung2.Dong d : dongNhanVien(Quyen.XEM_NHAN_VIEN, nam)) if (d.maPB.equalsIgnoreCase(maPB)) ds.add(d);
+        XemChung2.Dong[] ds = new XemChung2.Dong[0];
+        for (XemChung2.Dong d : dongNhanVien(Quyen.XEM_NHAN_VIEN, nam)) if (d.maPB.equalsIgnoreCase(maPB)) ds = Mang.them(ds, d);
         XemChung2.hienPhanTrang(c, "Nhan vien phong " + tenPB(maPB) + " nam " + nam, ds, Main::docChuoi);
     }
 
@@ -3401,13 +3400,13 @@ public class Main {
                 .layDong(nam -> dongNhanVien(q, nam));
     }
 
-    private static List<XemChung2.Dong> dongNhanVien(Quyen q, int nam) {
-        List<XemChung2.Dong> kq = new ArrayList<>();
+    private static XemChung2.Dong[] dongNhanVien(Quyen q, int nam) {
+        XemChung2.Dong[] kq = new XemChung2.Dong[0];
         for (NhanVien nv : nvTrongQuyen(q)) {
             if (nv.getNgayVaoLam().getYear() > nam) continue;
             LichSuCongTac ls = dsLS.xacDinh(nv, nam).ls;
             String luong = choPhep(Quyen.XEM_LUONG, nv) ? GiaoDien.tien(ls.getLuongCoBan()) : "***";
-            kq.add(new XemChung2.Dong(nv.getMaNV(), nv.getMaNV() + " " + nv.getHoTen(), ls.getMaPB(), null,
+            kq = Mang.them(kq, new XemChung2.Dong(nv.getMaNV(), nv.getMaNV() + " " + nv.getHoTen(), ls.getMaPB(), null,
                     new String[]{nv.getMaNV(), nv.getHoTen(), ls.getTenCV().isEmpty() ? "-" : ls.getTenCV(),
                             PhanQuyen.xacDinhVaiTro(nv).ten().replace("Nhan vien ", "NV "), luong, nam >= namNay() ? nv.getTrangThai() : "-"},
                     new Object[]{nv, nam}));
@@ -3425,13 +3424,13 @@ public class Main {
     private static void ccDanhSachChung2() {
         yeuCau(Quyen.XEM_CHAM_CONG);
         java.util.function.Predicate<String> ok = trongQuyen(Quyen.XEM_CHAM_CONG);
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NhanVien nv : nvTrongQuyen(Quyen.XEM_CHAM_CONG)) {
                 String pb = maPBNam(nv, nam);
                 for (ChamCong cc : dsCC.timTheoMaNV(nv.getMaNV())) {
                     if (cc.getNgay().getYear() != nam) continue;
-                    kq.add(new XemChung2.Dong(cc.getMaChamCong(), nv.getMaNV() + " " + nv.getHoTen(), pb, cc.getNgay(),
+                    kq = Mang.them(kq, new XemChung2.Dong(cc.getMaChamCong(), nv.getMaNV() + " " + nv.getHoTen(), pb, cc.getNgay(),
                             new String[]{cc.getMaChamCong(), nv.getMaNV(), nv.getHoTen(), String.valueOf(cc.getNgay()),
                                     String.valueOf(cc.getGioVao()), String.valueOf(cc.getGioRa()),
                                     so1(Math.min(cc.tinhGioLam(), 8)), so1(cc.tinhGioTangCa())}, cc));
@@ -3458,13 +3457,13 @@ public class Main {
                 .layDong(lay)
                 .khiChon("xem chi tiet", d -> {
                     ChamCong cc = (ChamCong) d.goc;
-                    List<String[]> cap = new ArrayList<>();
-                    cap.add(new String[]{"Ma cham cong", cc.getMaChamCong()});
-                    cap.add(new String[]{"Nhan vien", cc.getMaNV() + " - " + hoTenNV(cc.getMaNV())});
-                    cap.add(new String[]{"Ngay", String.valueOf(cc.getNgay())});
-                    cap.add(new String[]{"Gio vao - ra", cc.getGioVao() + " - " + cc.getGioRa()});
-                    cap.add(new String[]{"Gio lam thuong", so1(Math.min(cc.tinhGioLam(), 8))});
-                    cap.add(new String[]{"Gio tang ca", so1(cc.tinhGioTangCa())});
+                    String[][] cap = new String[0][];
+                    cap = Mang.them(cap, new String[]{"Ma cham cong", cc.getMaChamCong()});
+                    cap = Mang.them(cap, new String[]{"Nhan vien", cc.getMaNV() + " - " + hoTenNV(cc.getMaNV())});
+                    cap = Mang.them(cap, new String[]{"Ngay", String.valueOf(cc.getNgay())});
+                    cap = Mang.them(cap, new String[]{"Gio vao - ra", cc.getGioVao() + " - " + cc.getGioRa()});
+                    cap = Mang.them(cap, new String[]{"Gio lam thuong", so1(Math.min(cc.tinhGioLam(), 8))});
+                    cap = Mang.them(cap, new String[]{"Gio tang ca", so1(cc.tinhGioTangCa())});
                     GiaoDien.inThongTin(cap);
                 });
         XemChung2.chay(c, Main::docChuoi);
@@ -3473,14 +3472,14 @@ public class Main {
 //----------------- 5. BAO HIEM -----------------
     private static void bhDanhSachChung2() {
         yeuCau(Quyen.XEM_BAO_HIEM);
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NhanVien nv : nvTrongQuyen(Quyen.XEM_BAO_HIEM)) {
                 String pb = maPBNam(nv, nam);
                 for (BaoHiem bh : dsBH.timTheoMaNV(nv.getMaNV())) {
                     if (!baoHiemTrongNam(bh, nam)) continue;
                     boolean yt = bh instanceof BaoHiemYTe;
-                    kq.add(new XemChung2.Dong(bh.getMaBH(), nv.getMaNV() + " " + nv.getHoTen(), pb, null,
+                    kq = Mang.them(kq, new XemChung2.Dong(bh.getMaBH(), nv.getMaNV() + " " + nv.getHoTen(), pb, null,
                             new String[]{bh.getMaBH(), nv.getMaNV(), nv.getHoTen(), yt ? "BHYT" : "BHXH", bh.getSoSo(),
                                     String.valueOf(bh.getNgayThamGia()), bh.getTrangThai(),
                                     yt ? String.valueOf(((BaoHiemYTe) bh).getHanTheDen()) : "-"}, bh));
@@ -3509,20 +3508,20 @@ public class Main {
     private static void blDanhSachChung2() {
         yeuCau(Quyen.XEM_LUONG);
         ghiNhatKy("Xem danh sach bang luong", phamVi(Quyen.XEM_LUONG) == PhamVi.TAT_CA ? "TAT CA" : "PHONG");
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NhanVien nv : nvTrongQuyen(Quyen.XEM_LUONG)) {
                 String pb = maPBNam(nv, nam);
                 for (int t = 1; t <= 12; t++) {
                     BangLuong bl = dsBL.timTheoMaNV(nv.getMaNV(), t, nam);
                     if (bl == null) continue;
-                    kq.add(new XemChung2.Dong(bl.getMaBangLuong(), nv.getMaNV() + " " + nv.getHoTen(), pb, LocalDate.of(nam, t, 1),
+                    kq = Mang.them(kq, new XemChung2.Dong(bl.getMaBangLuong(), nv.getMaNV() + " " + nv.getHoTen(), pb, LocalDate.of(nam, t, 1),
                             new String[]{t + "/" + nam, nv.getMaNV(), nv.getHoTen(), GiaoDien.tien(bl.getLuongNhanVien()),
                                     GiaoDien.tien(bl.getTienThuong()), GiaoDien.tien(bl.getTienPhat()),
                                     GiaoDien.tien(bl.getLuongThucNhan())}, bl));
                 }
             }
-            kq.sort((a, b) -> {
+            Mang.sapXep(kq, (a, b) -> {
                 int c = a.ngay.compareTo(b.ngay);
                 if (c != 0) return c;
                 c = a.maPB.compareToIgnoreCase(b.maPB);
@@ -3549,9 +3548,10 @@ public class Main {
 //----------------- 7. BAO CAO THEO PHONG BAN -----------------
     private static void bcPhongBanChung2() {
         yeuCau(Quyen.XEM_BAO_CAO_CONG_TY);
-        List<PhongBan> cacPB = new ArrayList<>();
-        for (PhongBan pb : dsPB.getDanhSach()) if (pb != null) cacPB.add(pb);
-        if (cacPB.isEmpty()) {
+        PhongBan[] tamPB = new PhongBan[0];
+        for (PhongBan pb : dsPB.getDanhSach()) if (pb != null) tamPB = Mang.them(tamPB, pb);
+        final PhongBan[] cacPB = tamPB;      //final de dung duoc trong lambda ben duoi
+        if ((cacPB.length == 0)) {
             GiaoDien.in("Chua co phong ban nao.");
             return;
         }
@@ -3572,9 +3572,9 @@ public class Main {
                 .tenPhongBan(Main::tenPB)
                 .nam(tu, namNay())
                 .layDong(nam -> {
-                    List<XemChung2.Dong> kq = new ArrayList<>();
+                    XemChung2.Dong[] kq = new XemChung2.Dong[0];
                     for (PhongBan pb : cacPB) {
-                        List<NhanVien> tv = thanhVienPB(pb.getMaPB(), nam);
+                        NhanVien[] tv = thanhVienPB(pb.getMaPB(), nam);
                         double thucNhan = 0, thuong = 0, phat = 0;
                         for (NhanVien nv : tv)
                             for (int t = 1; t <= 12; t++) {
@@ -3584,8 +3584,8 @@ public class Main {
                                 thuong += bl.getTienThuong();
                                 phat += bl.getTienPhat();
                             }
-                        kq.add(new XemChung2.Dong(pb.getMaPB(), "", pb.getMaPB(), null,
-                                new String[]{pb.getMaPB(), pb.getTenPB(), String.valueOf(tv.size()), GiaoDien.tien(thucNhan),
+                        kq = Mang.them(kq, new XemChung2.Dong(pb.getMaPB(), "", pb.getMaPB(), null,
+                                new String[]{pb.getMaPB(), pb.getTenPB(), String.valueOf(tv.length), GiaoDien.tien(thucNhan),
                                         GiaoDien.tien(thuong), GiaoDien.tien(phat)}, new Object[]{pb, nam}));
                     }
                     sapXepDong(kq);
@@ -3605,13 +3605,13 @@ public class Main {
 //----------------- 8. THUONG PHAT -----------------
     private static void tpDanhSachChung2() {
         yeuCau(Quyen.XEM_THUONG_PHAT);
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NhanVien nv : nvTrongQuyen(Quyen.XEM_THUONG_PHAT)) {
                 String pb = maPBNam(nv, nam);
                 for (ThuongPhat tp : dsTP.timTheoMaNV(nv.getMaNV())) {
                     if (tp.getNgayApDung().getYear() != nam) continue;
-                    kq.add(new XemChung2.Dong(tp.getMaTP(), nv.getMaNV() + " " + nv.getHoTen(), pb, tp.getNgayApDung(),
+                    kq = Mang.them(kq, new XemChung2.Dong(tp.getMaTP(), nv.getMaNV() + " " + nv.getHoTen(), pb, tp.getNgayApDung(),
                             new String[]{String.valueOf(tp.getNgayApDung()), nv.getMaNV(), nv.getHoTen(), tp.getLoai(),
                                     tp.getLyDo(), GiaoDien.tien(tp.getSoTien())}, tp));
                 }
@@ -3662,13 +3662,13 @@ public class Main {
 
     //chi tiet 1 don; neu duoc quyen duyet va don dang cho thi hoi duyet luon
     private static void npChiTietVaDuyet(NghiPhep np) {
-        List<String[]> cap = new ArrayList<>();
-        cap.add(new String[]{"Ma don", np.getMaNP()});
-        cap.add(new String[]{"Nhan vien", np.getMaNV() + " - " + hoTenNV(np.getMaNV())});
-        cap.add(new String[]{"Thoi gian", np.getNgayBatDau() + " den " + np.getNgayKetThuc() + " (" + np.tinhSoNgayNghi() + " ngay)"});
-        cap.add(new String[]{"Loai nghi", np.getLoaiNghi()});
-        cap.add(new String[]{"Ly do", np.getLyDo()});
-        cap.add(new String[]{"Trang thai", np.getTrangThai()});
+        String[][] cap = new String[0][];
+        cap = Mang.them(cap, new String[]{"Ma don", np.getMaNP()});
+        cap = Mang.them(cap, new String[]{"Nhan vien", np.getMaNV() + " - " + hoTenNV(np.getMaNV())});
+        cap = Mang.them(cap, new String[]{"Thoi gian", np.getNgayBatDau() + " den " + np.getNgayKetThuc() + " (" + np.tinhSoNgayNghi() + " ngay)"});
+        cap = Mang.them(cap, new String[]{"Loai nghi", np.getLoaiNghi()});
+        cap = Mang.them(cap, new String[]{"Ly do", np.getLyDo()});
+        cap = Mang.them(cap, new String[]{"Trang thai", np.getTrangThai()});
         GiaoDien.inThongTin(cap);
         if ("Da duyet".equals(np.getTrangThai()) || !co(Quyen.DUYET_NGHI_PHEP)) return;
         NhanVien chu = ql.timTheoMa(np.getMaNV());
@@ -3678,11 +3678,11 @@ public class Main {
 
     private static void npDanhSachChung2() {
         yeuCau(Quyen.XEM_NGHI_PHEP);
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NhanVien nv : nvTrongQuyen(Quyen.XEM_NGHI_PHEP))
                 for (NghiPhep np : dsNP.timTheoMaNV(nv.getMaNV()))
-                    if (np.getNgayBatDau().getYear() == nam) kq.add(dongNghiPhep(np, nv, nam));
+                    if (np.getNgayBatDau().getYear() == nam) kq = Mang.them(kq, dongNghiPhep(np, nv, nam));
             sapXepDong(kq);
             return kq;
         };
@@ -3708,13 +3708,13 @@ public class Main {
     //don dang cho duyet ma minh duoc duyet (dung cho menu "Duyet don" va "Duyet yeu cau")
     private static void npDuyetCoDanhSach() {
         yeuCau(Quyen.DUYET_NGHI_PHEP);
-        java.util.function.IntFunction<List<XemChung2.Dong>> lay = nam -> {
-            List<XemChung2.Dong> kq = new ArrayList<>();
+        java.util.function.IntFunction<XemChung2.Dong[]> lay = nam -> {
+            XemChung2.Dong[] kq = new XemChung2.Dong[0];
             for (NghiPhep np : dsNP.getDanhSach()) {
                 if ("Da duyet".equals(np.getTrangThai()) || np.getNgayBatDau().getYear() != nam) continue;
                 NhanVien chu = ql.timTheoMa(np.getMaNV());
                 if (chu == null ? phamVi(Quyen.DUYET_NGHI_PHEP) != PhamVi.TAT_CA : !choPhep(Quyen.DUYET_NGHI_PHEP, chu)) continue;
-                kq.add(chu == null ? new XemChung2.Dong(np.getMaNP(), np.getMaNV(), "", np.getNgayBatDau(),
+                kq = Mang.them(kq, chu == null ? new XemChung2.Dong(np.getMaNP(), np.getMaNV(), "", np.getNgayBatDau(),
                         new String[]{np.getMaNP(), np.getMaNV(), "(da xoa)", khoangNgay(np),
                                 String.valueOf(np.tinhSoNgayNghi()), np.getLoaiNghi(), np.getTrangThai()}, np)
                         : dongNghiPhep(np, chu, nam));
@@ -3764,7 +3764,7 @@ public class Main {
     private static void ycDuyet() {
         yeuCau(Quyen.DUYET_YEU_CAU);
         String me = phien.getMaNV();
-        if (dsYC.timCanDuyet(me).isEmpty()) {
+        if (dsYC.timCanDuyet(me).length == 0) {
             GiaoDien.in("Khong co yeu cau nao dang cho ban duyet.");
             return;
         }
@@ -3778,11 +3778,11 @@ public class Main {
                 .tenPhongBan(Main::tenPB)
                 .nam(tu, namNay())
                 .layDong(nam -> {
-                    List<XemChung2.Dong> kq = new ArrayList<>();
+                    XemChung2.Dong[] kq = new XemChung2.Dong[0];
                     for (YeuCau y : dsYC.timCanDuyet(me)) {
                         if (y.getNgayGui().getYear() != nam) continue;
                         NhanVien gui = ql.timTheoMa(y.getNguoiGui());
-                        kq.add(new XemChung2.Dong(y.getMaYC(), y.getNguoiGui(), maPBNam(gui, nam), y.getNgayGui().toLocalDate(),
+                        kq = Mang.them(kq, new XemChung2.Dong(y.getMaYC(), y.getNguoiGui(), maPBNam(gui, nam), y.getNgayGui().toLocalDate(),
                                 new String[]{y.getMaYC(), y.getNguoiGui(), hoTenNV(y.getNguoiGui()),
                                         YeuCau.tenTruong(y.getTruong()), hienGiaTri(y.getTruong(), y.getGiaTriCu()),
                                         hienGiaTri(y.getTruong(), y.getGiaTriMoi()), String.valueOf(y.getNgayGui().toLocalDate())}, y));
@@ -3797,40 +3797,42 @@ public class Main {
 
 //----------------- 11. QUY DINH THUONG PHAT -----------------
     private static void qdDanhSachChung2() {
-        List<XemChung2.Dong> ds = new ArrayList<>();
+        XemChung2.Dong[] ds = new XemChung2.Dong[0];
         for (QuyDinhThuongPhat qd : dsQD.getDanhSach()) {
             if (qd == null) continue;
-            ds.add(new XemChung2.Dong(qd.getMaQD(), "", "", null,
+            ds = Mang.them(ds, new XemChung2.Dong(qd.getMaQD(), "", "", null,
                     new String[]{qd.getMaQD(), qd.getTenQD(), qd.getLoai(), qd.getDieuKien() + " " + TepVanBan.soDep(qd.getNguong()),
                             GiaoDien.tien(qd.getMucTien()), qd.getDonVi()}, qd));
         }
+        final XemChung2.Dong[] dsCuoi = ds;      //final de dung duoc trong lambda
         XemChung2.Cau c = new XemChung2.Cau("QUY DINH THUONG PHAT")
                 .cot(new String[]{"MA QD", "TEN QUY DINH", "LOAI", "DIEU KIEN", "MUC TIEN", "DON VI"},
                         new int[]{7, 30, 7, 10, 12, 22}, new String[]{T, T, T, T, P, T})
                 .khongPhongBan()
                 .goiYMa("ma quy dinh")
-                .layDong(nam -> ds);
+                .layDong(nam -> dsCuoi);
         XemChung2.chay(c, Main::docChuoi);
     }
 
 //----------------- 12. TAI KHOAN -----------------
     private static void tkDanhSach() {
         yeuCau(Quyen.QUAN_LY_TAI_KHOAN);
-        List<XemChung2.Dong> ds = new ArrayList<>();
+        XemChung2.Dong[] ds = new XemChung2.Dong[0];
         for (TaiKhoan tk : dsTK.getDanhSach()) {
             NhanVien nv = ql.timTheoMa(tk.getTenDangNhap());
-            ds.add(new XemChung2.Dong(tk.getTenDangNhap(), tk.getTenDangNhap(), maPBNam(nv, 0), null,
+            ds = Mang.them(ds, new XemChung2.Dong(tk.getTenDangNhap(), tk.getTenDangNhap(), maPBNam(nv, 0), null,
                     new String[]{tk.getTenDangNhap(), nv == null ? "(khong con nhan vien)" : nv.getHoTen(),
                             nv == null ? "-" : PhanQuyen.xacDinhVaiTro(nv).ten().replace("Nhan vien ", "NV "), tk.getTrangThai(),
                             tk.isPhaiDoiMatKhau() ? "Co" : "Khong"}, tk));
         }
         sapXepDong(ds);
+        final XemChung2.Dong[] dsCuoi = ds;      //final de dung duoc trong lambda
         XemChung2.Cau c = new XemChung2.Cau("TAI KHOAN")
                 .cot(new String[]{"TAI KHOAN", "HO TEN", "VAI TRO", "TRANG THAI", "DOI MK"},
                         new int[]{10, 22, 22, 11, 7}, new String[]{T, T, T, T, G})
                 .goiYMa("ten dang nhap / ma nhan vien")
                 .tenPhongBan(Main::tenPB)
-                .layDong(nam -> ds);
+                .layDong(nam -> dsCuoi);
         XemChung2.chay(c, Main::docChuoi);
     }
 
@@ -3853,15 +3855,15 @@ public class Main {
                             return new String[]{String.valueOf(dem)};
                         })
                 .layDong(nam -> {
-                    List<XemChung2.Dong> kq = new ArrayList<>();
+                    XemChung2.Dong[] kq = new XemChung2.Dong[0];
                     for (NhatKyHeThong n : tatCa) {
                         if (n.getThoiDiem().getYear() != nam) continue;
                         NhanVien nv = ql.timTheoMa(n.getNguoiThucHien());
-                        kq.add(new XemChung2.Dong(n.getDoiTuong(), n.getNguoiThucHien(), maPBNam(nv, nam), n.getThoiDiem().toLocalDate(),
+                        kq = Mang.them(kq, new XemChung2.Dong(n.getDoiTuong(), n.getNguoiThucHien(), maPBNam(nv, nam), n.getThoiDiem().toLocalDate(),
                                 new String[]{n.getThoiDiem().format(GIO_PHUT), n.getNguoiThucHien(), nv == null ? "-" : nv.getHoTen(),
                                         n.getHanhDong(), n.getDoiTuong(), n.getKetQua()}, n));
                     }
-                    kq.sort((a, b) -> ((NhatKyHeThong) b.goc).getThoiDiem().compareTo(((NhatKyHeThong) a.goc).getThoiDiem()));     //moi nhat truoc
+                    Mang.sapXep(kq, (a, b) -> ((NhatKyHeThong) b.goc).getThoiDiem().compareTo(((NhatKyHeThong) a.goc).getThoiDiem()));     //moi nhat truoc
                     return kq;
                 });
         XemChung2.chay(c, Main::docChuoi);

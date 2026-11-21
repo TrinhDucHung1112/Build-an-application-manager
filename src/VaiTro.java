@@ -1,5 +1,3 @@
-import java.util.EnumMap;
-
 /**
  * Vai tro trong he thong (CLASS MOI - phan quyen).
  * Vai tro KHONG luu rieng ma suy ra tu chuc vu + loai nhan vien (xem PhanQuyen.xacDinhVaiTro),
@@ -17,7 +15,7 @@ public enum VaiTro {
 
     private final String ten;
     private final int capBac;
-    private final EnumMap<Quyen, PhamVi> bangQuyen = new EnumMap<>(Quyen.class);
+    private final PhamVi[] bangQuyen = new PhamVi[Quyen.values().length];   //chi so = Quyen.ordinal(), null = khong co quyen
 
     VaiTro(String ten, int capBac) {
         this.ten = ten;
@@ -25,13 +23,13 @@ public enum VaiTro {
     }
 
     private void cap(PhamVi phamVi, Quyen... cacQuyen) {
-        for (Quyen q : cacQuyen) bangQuyen.put(q, phamVi);
+        for (Quyen q : cacQuyen) bangQuyen[q.ordinal()] = phamVi;
     }
 
     //bang phan quyen cua toan he thong nam gon o day: muon doi quyen chi can sua o day
     static {
         //Giam doc: tat ca quyen, toan cong ty
-        for (Quyen q : Quyen.values()) GIAM_DOC.bangQuyen.put(q, PhamVi.TAT_CA);
+        for (Quyen q : Quyen.values()) GIAM_DOC.bangQuyen[q.ordinal()] = PhamVi.TAT_CA;
 
         //Truong phong: quan ly trong phong cua minh, chi tac dong len cap duoi (pho phong, nhan vien)
         TRUONG_PHONG.cap(PhamVi.PHONG_BAN,
@@ -76,7 +74,7 @@ public enum VaiTro {
 
     /** Pham vi ap dung cua quyen (PhamVi.KHONG neu vai tro khong co quyen nay). */
     public PhamVi phamVi(Quyen q) {
-        PhamVi pv = bangQuyen.get(q);
+        PhamVi pv = bangQuyen[q.ordinal()];
         return pv == null ? PhamVi.KHONG : pv;
     }
 

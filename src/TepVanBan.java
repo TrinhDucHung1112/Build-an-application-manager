@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Tien ich doc/ghi file van ban (text) dung chung cho moi lop danh sach.
@@ -18,8 +16,8 @@ public final class TepVanBan {
     private TepVanBan() {}
 
     /** Doc file, tra ve moi dong du lieu thanh mang cac truong (da trim). */
-    public static List<String[]> docDong(String duongDan) throws IOException {
-        List<String[]> ketQua = new ArrayList<>();
+    public static String[][] docDong(String duongDan) throws IOException {
+        String[][] ketQua = new String[0][];
         try (BufferedReader br = Files.newBufferedReader(new File(duongDan).toPath(), StandardCharsets.UTF_8)) {
             String dong;
             while ((dong = br.readLine()) != null) {
@@ -27,14 +25,14 @@ public final class TepVanBan {
                 if (dong.isBlank() || dong.trim().startsWith("#")) continue;
                 String[] p = dong.split("\\|", -1);
                 for (int i = 0; i < p.length; i++) p[i] = p[i].trim();
-                ketQua.add(p);
+                ketQua = Mang.them(ketQua, p);
             }
         }
         return ketQua;
     }
 
     /** Ghi de toan bo file: 1 dong tieu de (ghi chu) roi cac dong du lieu. */
-    public static void ghiDong(String duongDan, String tieuDe, List<String> cacDong) throws IOException {
+    public static void ghiDong(String duongDan, String tieuDe, String[] cacDong) throws IOException {
         try (BufferedWriter bw = Files.newBufferedWriter(new File(duongDan).toPath(), StandardCharsets.UTF_8)) {
             bw.write("# " + tieuDe);
             bw.newLine();

@@ -106,7 +106,7 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
 
     //in danh sach bao hiem dang bang co STT (dung chung cho xem danh sach va tim theo ma NV)
     public static void inBang(BaoHiem[] ds) {
-        java.util.List<String[]> dong = new java.util.ArrayList<>();
+        String[][] dong = new String[0][];
         for (BaoHiem bh : ds) {
             if (bh == null) continue;
             String loai;
@@ -121,7 +121,7 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
                 chiTiet = String.format("NV dong %.1f%% - DN dong %.1f%%",
                         BaoHiemXaHoi.getTyLeNV() * 100, BaoHiemXaHoi.getTyLeDN() * 100);
             }
-            dong.add(new String[]{bh.getMaBH(), bh.getMaNV(), bh.getSoSo(),
+            dong = Mang.them(dong, new String[]{bh.getMaBH(), bh.getMaNV(), bh.getSoSo(),
                     String.valueOf(bh.getNgayThamGia()), bh.getTrangThai(), loai, chiTiet});
         }
         GiaoDien.inBang(
@@ -138,15 +138,15 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
     //   BHYT|maBH|maNV|soSo|ngayThamGia|trangThai|noiKhamChuaBenh|hanTheDen
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             BaoHiem bh = danhSach[i];
             if (bh instanceof BaoHiemYTe) {
                 BaoHiemYTe yt = (BaoHiemYTe) bh;
-                dong.add(TepVanBan.ghep("BHYT", yt.getMaBH(), yt.getMaNV(), yt.getSoSo(), yt.getNgayThamGia(),
+                dong = Mang.them(dong, TepVanBan.ghep("BHYT", yt.getMaBH(), yt.getMaNV(), yt.getSoSo(), yt.getNgayThamGia(),
                         yt.getTrangThai(), yt.getNoiKhamChuaBenh(), yt.getHanTheDen()));
             } else {
-                dong.add(TepVanBan.ghep("BHXH", bh.getMaBH(), bh.getMaNV(), bh.getSoSo(), bh.getNgayThamGia(),
+                dong = Mang.them(dong, TepVanBan.ghep("BHXH", bh.getMaBH(), bh.getMaNV(), bh.getSoSo(), bh.getNgayThamGia(),
                         bh.getTrangThai()));
             }
         }
@@ -162,8 +162,8 @@ public class DanhSachBaoHiem implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            danhSach = new BaoHiem[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new BaoHiem[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 try {

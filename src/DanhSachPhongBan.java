@@ -1,8 +1,6 @@
 import java.util.Scanner;
 import java.io.*;
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DanhSachPhongBan implements IQuanLyDuLieu {
 //-----thuoc tinh-----
@@ -94,10 +92,10 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
 //---xuatdanhsach---
     //in danh sach phong ban dang bang co STT (dung chung cho xem danh sach, tim kiem...)
     public static void inBang(PhongBan[] ds){
-        List<String[]> dong = new ArrayList<>();
+        String[][] dong = new String[0][];
         for(PhongBan pb : ds){
             if(pb == null) continue;
-            dong.add(new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(pb.demNhanVien())});
+            dong = Mang.them(dong, new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(pb.demNhanVien())});
         }
         GiaoDien.inBang(
             new String[]{"MA PB", "TEN PHONG BAN", "MO TA", "SO NV"},
@@ -190,10 +188,10 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
     // Dinh dang moi dong: maPB|tenPB|moTa|maGiamDocQuanLy (cot cuoi co the bo trong)
     @Override
     public void ghiFile() {
-        java.util.List<String> dong = new java.util.ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             PhongBan pb = danhSach[i];
-            dong.add(TepVanBan.ghep(pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), pb.getMaGiamDoc()));
+            dong = Mang.them(dong, TepVanBan.ghep(pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), pb.getMaGiamDoc()));
         }
         try {
             TepVanBan.ghiDong(FILE_TEXT, "maPB|tenPB|moTa|maGiamDocQuanLy (de trong = moi giam doc deu quan ly)", dong);
@@ -206,8 +204,8 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            java.util.List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            danhSach = new PhongBan[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            danhSach = new PhongBan[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 3) continue;

@@ -5,9 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Nhat ky he thong, doc/ghi file data/nhatky.txt (CLASS MOI - phan quyen).
@@ -53,7 +51,7 @@ public class DanhSachNhatKy implements IQuanLyDuLieu {
     private void noiVaoFile(NhatKyHeThong nk) {
         try {
             Path p = Paths.get(DUONG_DAN);
-            if (!Files.exists(p)) TepVanBan.ghiDong(DUONG_DAN, TIEU_DE, new ArrayList<>());
+            if (!Files.exists(p)) TepVanBan.ghiDong(DUONG_DAN, TIEU_DE, new String[0]);
             Files.write(p, (thanhDong(nk) + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
         } catch (IOException e) {
@@ -68,20 +66,20 @@ public class DanhSachNhatKy implements IQuanLyDuLieu {
     }
 
     public NhatKyHeThong[] timTheoNguoi(String ma) {
-        List<NhatKyHeThong> kq = new ArrayList<>();
+        NhatKyHeThong[] kq = new NhatKyHeThong[0];
         for (int i = 0; i < soLuong; i++) {
-            if (danhSach[i].getNguoiThucHien().equalsIgnoreCase(ma == null ? "" : ma.trim())) kq.add(danhSach[i]);
+            if (danhSach[i].getNguoiThucHien().equalsIgnoreCase(ma == null ? "" : ma.trim())) kq = Mang.them(kq, danhSach[i]);
         }
-        return kq.toArray(new NhatKyHeThong[0]);
+        return kq;
     }
 
     /** Cac su kien khong thanh cong (bi tu choi hoac that bai). */
     public NhatKyHeThong[] timBatThuong() {
-        List<NhatKyHeThong> kq = new ArrayList<>();
+        NhatKyHeThong[] kq = new NhatKyHeThong[0];
         for (int i = 0; i < soLuong; i++) {
-            if (!danhSach[i].getKetQua().equals(NhatKyHeThong.THANH_CONG)) kq.add(danhSach[i]);
+            if (!danhSach[i].getKetQua().equals(NhatKyHeThong.THANH_CONG)) kq = Mang.them(kq, danhSach[i]);
         }
-        return kq.toArray(new NhatKyHeThong[0]);
+        return kq;
     }
 
     public static void inBang(NhatKyHeThong[] ds) {
@@ -89,8 +87,8 @@ public class DanhSachNhatKy implements IQuanLyDuLieu {
             GiaoDien.in("Khong co dong nhat ky nao.");
             return;
         }
-        List<String[]> dong = new ArrayList<>();
-        for (NhatKyHeThong nk : ds) dong.add(nk.thanhDong());
+        String[][] dong = new String[0][];
+        for (NhatKyHeThong nk : ds) dong = Mang.them(dong, nk.thanhDong());
         GiaoDien.inBang(
                 new String[]{"THOI DIEM", "NGUOI LAM", "HANH DONG", "DOI TUONG", "KET QUA"},
                 new int[]{19, 10, 40, 10, 10},
@@ -108,8 +106,8 @@ public class DanhSachNhatKy implements IQuanLyDuLieu {
             return;
         }
         try {
-            List<String[]> cacDong = TepVanBan.docDong(DUONG_DAN);
-            danhSach = new NhatKyHeThong[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(DUONG_DAN);
+            danhSach = new NhatKyHeThong[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 5) continue;
@@ -127,8 +125,8 @@ public class DanhSachNhatKy implements IQuanLyDuLieu {
 
     @Override
     public void ghiFile() {
-        List<String> dong = new ArrayList<>();
-        for (int i = 0; i < soLuong; i++) dong.add(thanhDong(danhSach[i]));
+        String[] dong = new String[0];
+        for (int i = 0; i < soLuong; i++) dong = Mang.them(dong, thanhDong(danhSach[i]));
         try {
             TepVanBan.ghiDong(DUONG_DAN, TIEU_DE, dong);
             GiaoDien.in("Da ghi " + soLuong + " dong nhat ky vao file " + DUONG_DAN);

@@ -1,17 +1,15 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Danh sach hop dong lao dong theo nhan vien (CLASS MOI), luu o data/hopdong.txt. */
 public class DanhSachLichSuHopDong implements IQuanLyDuLieu {
     private static final String FILE_TEXT = DuongDanDuLieu.file("hopdong.txt");
-    private final List<LichSuHopDong> ds = new ArrayList<>();
+    private LichSuHopDong[] ds = new LichSuHopDong[0];
 
-    public int getSoLuong() { return ds.size(); }
+    public int getSoLuong() { return ds.length; }
 
     public boolean them(LichSuHopDong hd) {
         if (hd == null || timTheoMa(hd.getMaHD()) != null) return false;
-        ds.add(hd);
+        ds = Mang.them(ds, hd);
         return true;
     }
 
@@ -22,26 +20,28 @@ public class DanhSachLichSuHopDong implements IQuanLyDuLieu {
     }
 
     //cac hop dong cua 1 nhan vien, xep theo ngay ky
-    public List<LichSuHopDong> timTheoMaNV(String maNV) {
-        List<LichSuHopDong> kq = new ArrayList<>();
-        for (LichSuHopDong x : ds) if (x.getMaNV().equalsIgnoreCase(maNV)) kq.add(x);
-        kq.sort((a, b) -> a.getNgayKy().compareTo(b.getNgayKy()));
+    public LichSuHopDong[] timTheoMaNV(String maNV) {
+        LichSuHopDong[] kq = new LichSuHopDong[0];
+        for (LichSuHopDong x : ds) if (x.getMaNV().equalsIgnoreCase(maNV)) kq = Mang.them(kq, x);
+        Mang.sapXep(kq, (a, b) -> a.getNgayKy().compareTo(b.getNgayKy()));
         return kq;
     }
 
-    public List<LichSuHopDong> timTheoNam(String maNV, int nam) {
-        List<LichSuHopDong> kq = new ArrayList<>();
-        for (LichSuHopDong x : timTheoMaNV(maNV)) if (x.hieuLucTrongNam(nam)) kq.add(x);
+    public LichSuHopDong[] timTheoNam(String maNV, int nam) {
+        LichSuHopDong[] kq = new LichSuHopDong[0];
+        for (LichSuHopDong x : timTheoMaNV(maNV)) if (x.hieuLucTrongNam(nam)) kq = Mang.them(kq, x);
         return kq;
     }
 
     public boolean xoaTheoMa(String ma) {
         LichSuHopDong x = timTheoMa(ma);
-        return x != null && ds.remove(x);
+        if (x == null) return false;
+        ds = Mang.xoa(ds, x);
+        return true;
     }
 
     public void xoaTheoMaNV(String maNV) {
-        ds.removeIf(x -> x.getMaNV().equalsIgnoreCase(maNV));
+        ds = Mang.loc(ds, x -> !x.getMaNV().equalsIgnoreCase(maNV));
     }
 
     //khoang [ky, het] co trung voi hop dong khac cua cung nhan vien khong (bo qua hop dong boQuaMa)
@@ -54,16 +54,16 @@ public class DanhSachLichSuHopDong implements IQuanLyDuLieu {
     }
 
     public String taoMaMoi(String maNV) {
-        int so = timTheoMaNV(maNV).size() + 1;
+        int so = timTheoMaNV(maNV).length + 1;
         String ma = "HD_" + maNV.toUpperCase() + "_" + so;
         while (timTheoMa(ma) != null) ma = "HD_" + maNV.toUpperCase() + "_" + (++so);
         return ma;
     }
 
-    public static void inBang(List<LichSuHopDong> cac) {
-        List<String[]> dong = new ArrayList<>();
+    public static void inBang(LichSuHopDong[] cac) {
+        String[][] dong = new String[0][];
         for (LichSuHopDong h : cac) {
-            dong.add(new String[]{h.getMaHD(), h.getLoai(), String.valueOf(h.getNgayKy()),
+            dong = Mang.them(dong, new String[]{h.getMaHD(), h.getLoai(), String.valueOf(h.getNgayKy()),
                     h.khongThoiHan() ? "(khong thoi han)" : String.valueOf(h.getNgayHetHan()),
                     h.tinhTrang(), h.getGhiChu()});
         }
@@ -78,9 +78,9 @@ public class DanhSachLichSuHopDong implements IQuanLyDuLieu {
     // Dinh dang moi dong: maHD|maNV|loai|ngayKy|ngayHetHan|ghiChu     (ngayHetHan de trong = khong thoi han)
     @Override
     public void ghiFile() {
-        List<String> dong = new ArrayList<>();
+        String[] dong = new String[0];
         for (LichSuHopDong x : ds) {
-            dong.add(TepVanBan.ghep(x.getMaHD(), x.getMaNV(), x.getLoai(), x.getNgayKy(),
+            dong = Mang.them(dong, TepVanBan.ghep(x.getMaHD(), x.getMaNV(), x.getLoai(), x.getNgayKy(),
                     x.getNgayHetHan() == null ? "" : x.getNgayHetHan(), x.getGhiChu()));
         }
         try {
@@ -94,8 +94,8 @@ public class DanhSachLichSuHopDong implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            ds.clear();
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            ds = new LichSuHopDong[0];
             for (String[] p : cacDong) {
                 if (p.length < 5) continue;
                 try {

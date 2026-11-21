@@ -1,7 +1,5 @@
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -34,31 +32,31 @@ public final class ChonKy {
      * @param dong      moi nam 1 dong, cung thu tu voi cacNam (cot dau tien = nam)
      * @param tuNgay    ngay som nhat duoc nhap (thuong la ngay vao lam)
      */
-    public static KetQua chonNam(List<Integer> cacNam, String[] tieuDeCot, int[] rong, String[] canh,
-                                 List<String[]> dong, LocalDate tuNgay, Function<String, String> hoi) {
-        if (cacNam.isEmpty()) {
+    public static KetQua chonNam(int[] cacNam, String[] tieuDeCot, int[] rong, String[] canh,
+                                 String[][] dong, LocalDate tuNgay, Function<String, String> hoi) {
+        if ((cacNam.length == 0)) {
             GiaoDien.in("Khong co nam nao de chon.");
             return null;
         }
         LocalDate homNay = LocalDate.now();
         GiaoDien.inBang(tieuDeCot, rong, canh, dong);
-        GiaoDien.in("Nhap SO THU TU (1-" + cacNam.size() + ") hoac NGAY THANG (yyyy-MM-dd hoac yyyy-MM) de chon, 0 de quay lai.");
+        GiaoDien.in("Nhap SO THU TU (1-" + cacNam.length + ") hoac NGAY THANG (yyyy-MM-dd hoac yyyy-MM) de chon, 0 de quay lai.");
         GiaoDien.in("(Chi nhap tu " + tuNgay + " den hom nay " + homNay + ")");
-        int namMin = cacNam.get(0);
-        int namMax = cacNam.get(cacNam.size() - 1);
+        int namMin = cacNam[0];
+        int namMax = cacNam[cacNam.length - 1];
         while (true) {
             String nhap = hoi.apply("Chon: ").trim();
             if (nhap.isEmpty() || nhap.equals("0")) return null;
 
             if (nhap.matches("\\d{1,3}")) {                                     //so thu tu
                 int stt = Integer.parseInt(nhap);
-                if (stt >= 1 && stt <= cacNam.size()) return new KetQua(cacNam.get(stt - 1), 0);
-                GiaoDien.in("Sai: so thu tu chi tu 1 den " + cacNam.size() + ".");
+                if (stt >= 1 && stt <= cacNam.length) return new KetQua(cacNam[stt - 1], 0);
+                GiaoDien.in("Sai: so thu tu chi tu 1 den " + cacNam.length + ".");
                 continue;
             }
             if (nhap.matches("\\d{4}")) {                                       //nhap thang nam
                 int nam = Integer.parseInt(nhap);
-                if (cacNam.contains(nam)) return new KetQua(nam, 0);
+                if (Mang.chua(cacNam, nam)) return new KetQua(nam, 0);
                 GiaoDien.in("Sai: nam " + nam + " ngoai khoang cho phep. Nhap nam tu " + namMin + " den " + namMax
                         + " (tu ngay vao lam " + tuNgay + " den hom nay " + homNay + ").");
                 continue;
@@ -83,7 +81,7 @@ public final class ChonKy {
                 GiaoDien.in("Sai: chi nhap tu ngay vao lam " + tuNgay + " den ngay hom nay " + homNay + " (khong nhap ngay trong tuong lai).");
                 continue;
             }
-            if (!cacNam.contains(ym.getYear())) {
+            if (!Mang.chua(cacNam, ym.getYear())) {
                 GiaoDien.in("Sai: nam " + ym.getYear() + " ngoai khoang cho phep (" + namMin + " - " + namMax + ").");
                 continue;
             }
@@ -99,7 +97,7 @@ public final class ChonKy {
      * @param lyDoKhong lyDoKhong[t-1] = null neu thang t chon duoc, nguoc lai la ly do khong chon duoc
      */
     public static Integer chonThang(int nam, String[] tieuDeCot, int[] rong, String[] canh,
-                                    List<String[]> dong, String[] lyDoKhong, LocalDate tuNgay,
+                                    String[][] dong, String[] lyDoKhong, LocalDate tuNgay,
                                     Function<String, String> hoi) {
         LocalDate homNay = LocalDate.now();
         GiaoDien.inBang(tieuDeCot, rong, canh, dong);
@@ -147,9 +145,9 @@ public final class ChonKy {
 
     //----------------- ham phu -----------------
     /** Cac nam tu nam cua tuNgay den nam cuoiNam (bao gom). */
-    public static List<Integer> cacNam(LocalDate tuNgay, int cuoiNam) {
-        List<Integer> kq = new ArrayList<>();
-        for (int n = tuNgay.getYear(); n <= cuoiNam; n++) kq.add(n);
+    public static int[] cacNam(LocalDate tuNgay, int cuoiNam) {
+        int[] kq = new int[0];
+        for (int n = tuNgay.getYear(); n <= cuoiNam; n++) kq = Mang.them(kq, n);
         return kq;
     }
 

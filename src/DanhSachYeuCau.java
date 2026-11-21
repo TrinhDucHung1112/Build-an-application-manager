@@ -1,17 +1,15 @@
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Danh sach cac yeu cau da gui (CLASS MOI), luu o data/yeucau.txt. */
 public class DanhSachYeuCau implements IQuanLyDuLieu {
     private static final String FILE_TEXT = DuongDanDuLieu.file("yeucau.txt");
-    private final List<YeuCau> ds = new ArrayList<>();
+    private YeuCau[] ds = new YeuCau[0];
 
-    public int getSoLuong() { return ds.size(); }
+    public int getSoLuong() { return ds.length; }
 
     public boolean them(YeuCau yc) {
         if (yc == null || timTheoMa(yc.getMaYC()) != null) return false;
-        ds.add(yc);
+        ds = Mang.them(ds, yc);
         return true;
     }
 
@@ -22,30 +20,30 @@ public class DanhSachYeuCau implements IQuanLyDuLieu {
     }
 
     public String taoMaMoi() {
-        int so = ds.size() + 1;
+        int so = ds.length + 1;
         String ma = String.format("YC%03d", so);
         while (timTheoMa(ma) != null) ma = String.format("YC%03d", ++so);
         return ma;
     }
 
     //cac yeu cau DA GUI boi 1 nguoi (moi nhat truoc)
-    public List<YeuCau> timDaGui(String maNV) {
-        List<YeuCau> kq = new ArrayList<>();
-        for (YeuCau x : ds) if (x.getNguoiGui().equalsIgnoreCase(maNV)) kq.add(x);
-        kq.sort((a, b) -> b.getNgayGui().compareTo(a.getNgayGui()));
+    public YeuCau[] timDaGui(String maNV) {
+        YeuCau[] kq = new YeuCau[0];
+        for (YeuCau x : ds) if (x.getNguoiGui().equalsIgnoreCase(maNV)) kq = Mang.them(kq, x);
+        Mang.sapXep(kq, (a, b) -> b.getNgayGui().compareTo(a.getNgayGui()));
         return kq;
     }
 
     //cac yeu cau DANG CHO nguoi nay duyet
-    public List<YeuCau> timCanDuyet(String maNguoiNhan) {
-        List<YeuCau> kq = new ArrayList<>();
-        for (YeuCau x : ds) if (x.dangCho() && x.getNguoiNhan().equalsIgnoreCase(maNguoiNhan)) kq.add(x);
-        kq.sort((a, b) -> a.getNgayGui().compareTo(b.getNgayGui()));
+    public YeuCau[] timCanDuyet(String maNguoiNhan) {
+        YeuCau[] kq = new YeuCau[0];
+        for (YeuCau x : ds) if (x.dangCho() && x.getNguoiNhan().equalsIgnoreCase(maNguoiNhan)) kq = Mang.them(kq, x);
+        Mang.sapXep(kq, (a, b) -> a.getNgayGui().compareTo(b.getNgayGui()));
         return kq;
     }
 
     public int demChoDuyet(String maNguoiNhan) {
-        return timCanDuyet(maNguoiNhan).size();
+        return timCanDuyet(maNguoiNhan).length;
     }
 
     //da co yeu cau dang cho cung muc, cung nam cua nguoi nay chua
@@ -57,16 +55,16 @@ public class DanhSachYeuCau implements IQuanLyDuLieu {
     }
 
     public void xoaTheoMaNV(String maNV) {
-        ds.removeIf(x -> x.getNguoiGui().equalsIgnoreCase(maNV) || x.getNguoiNhan().equalsIgnoreCase(maNV));
+        ds = Mang.loc(ds, x -> !(x.getNguoiGui().equalsIgnoreCase(maNV) || x.getNguoiNhan().equalsIgnoreCase(maNV)));
     }
 
 //---doc, ghi file---
     // Dinh dang moi dong: maYC|nguoiGui|nguoiNhan|loai|nam|truong|giaTriCu|giaTriMoi|ngayGui|trangThai|ngayXuLy|ghiChuXuLy
     @Override
     public void ghiFile() {
-        List<String> dong = new ArrayList<>();
+        String[] dong = new String[0];
         for (YeuCau y : ds) {
-            dong.add(TepVanBan.ghep(y.getMaYC(), y.getNguoiGui(), y.getNguoiNhan(), y.getLoai(), y.getNam(),
+            dong = Mang.them(dong, TepVanBan.ghep(y.getMaYC(), y.getNguoiGui(), y.getNguoiNhan(), y.getLoai(), y.getNam(),
                     y.getTruong(), y.getGiaTriCu(), y.getGiaTriMoi(), y.getNgayGui().format(YeuCau.DINH_DANG),
                     y.getTrangThai(), y.getNgayXuLy() == null ? "" : y.getNgayXuLy().format(YeuCau.DINH_DANG),
                     y.getGhiChuXuLy()));
@@ -82,8 +80,8 @@ public class DanhSachYeuCau implements IQuanLyDuLieu {
     public void docFile() {
         if (!new java.io.File(FILE_TEXT).exists()) return;
         try {
-            List<String[]> cacDong = TepVanBan.docDong(FILE_TEXT);
-            ds.clear();
+            String[][] cacDong = TepVanBan.docDong(FILE_TEXT);
+            ds = new YeuCau[0];
             for (String[] p : cacDong) {
                 if (p.length < 10) continue;
                 try {

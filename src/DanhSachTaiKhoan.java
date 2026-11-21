@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Danh sach tai khoan dang nhap, doc/ghi file data/taikhoan.txt
@@ -142,8 +140,8 @@ public class DanhSachTaiKhoan implements IQuanLyDuLieu {
             return;
         }
         try {
-            List<String[]> cacDong = TepVanBan.docDong(DUONG_DAN);
-            danhSach = new TaiKhoan[Math.max(10, cacDong.size())];
+            String[][] cacDong = TepVanBan.docDong(DUONG_DAN);
+            danhSach = new TaiKhoan[Math.max(10, cacDong.length)];
             soLuong = 0;
             for (String[] p : cacDong) {
                 if (p.length < 2) continue;
@@ -171,10 +169,10 @@ public class DanhSachTaiKhoan implements IQuanLyDuLieu {
 
     @Override
     public void ghiFile() {
-        List<String> dong = new ArrayList<>();
+        String[] dong = new String[0];
         for (int i = 0; i < soLuong; i++) {
             TaiKhoan tk = danhSach[i];
-            dong.add(TepVanBan.ghep(tk.getTenDangNhap(), tk.getMatKhau(), tk.getTrangThai(),
+            dong = Mang.them(dong, TepVanBan.ghep(tk.getTenDangNhap(), tk.getMatKhau(), tk.getTrangThai(),
                     tk.isPhaiDoiMatKhau(), tk.getSoLanSai()));
         }
         try {

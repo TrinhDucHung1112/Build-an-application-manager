@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Tien ich giao dien dung chung cho toan chuong trinh (CLASS MOI).
@@ -62,8 +60,8 @@ public final class GiaoDien {
     }
 
 //----in bang co STT----
-    public static void inBang(String[] tieuDe, int[] rongToiDa, String[] canh, List<String[]> dong) {
-        if (dong == null || dong.isEmpty()) {
+    public static void inBang(String[] tieuDe, int[] rongToiDa, String[] canh, String[][] dong) {
+        if (dong == null || (dong.length == 0)) {
             in("(Khong co du lieu)");
             return;
         }
@@ -79,22 +77,22 @@ public final class GiaoDien {
             max[c] = rongToiDa[c - 1];
             ca[c] = canh[c - 1];
         }
-        List<String[]> tatCa = new ArrayList<>();
-        for (int i = 0; i < dong.size(); i++) {
-            String[] g = dong.get(i);
+        String[][] tatCa = new String[0][];
+        for (int i = 0; i < dong.length; i++) {
+            String[] g = dong[i];
             String[] h = new String[n];
             h[0] = String.valueOf(i + 1);
             for (int c = 1; c < n; c++) {
                 h[c] = (c - 1 < g.length && g[c - 1] != null) ? g[c - 1] : "";
             }
-            tatCa.add(h);
+            tatCa = Mang.them(tatCa, h);
         }
         ve(td, max, ca, tatCa, true);
     }
 
 //----in bang khong co STT (dung cho thong tin chi tiet / thong ke)----
-    public static void inBangKhongStt(String[] tieuDe, int[] rongToiDa, String[] canh, List<String[]> dong) {
-        if (dong == null || dong.isEmpty()) {
+    public static void inBangKhongStt(String[] tieuDe, int[] rongToiDa, String[] canh, String[][] dong) {
+        if (dong == null || (dong.length == 0)) {
             in("(Khong co du lieu)");
             return;
         }
@@ -102,25 +100,25 @@ public final class GiaoDien {
     }
 
     //bang 2 cot: THONG TIN | GIA TRI
-    public static void inThongTin(List<String[]> cap) {
+    public static void inThongTin(String[][] cap) {
         inBangKhongStt(new String[]{"THONG TIN", "GIA TRI"}, new int[]{26, 70},
                 new String[]{TRAI, TRAI}, cap);
     }
 
     //bang 2 cot: CHI TIEU | GIA TRI (dung cho thong ke / bao cao)
-    public static void inThongKe(List<String[]> cap) {
+    public static void inThongKe(String[][] cap) {
         inBangKhongStt(new String[]{"CHI TIEU", "GIA TRI"}, new int[]{34, 60},
                 new String[]{TRAI, TRAI}, cap);
     }
 
     //bang 2 cot tuy chinh ten cot, cot 2 can phai (dung cho tien)
-    public static void inThongTin(String cot1, String cot2, List<String[]> cap) {
+    public static void inThongTin(String cot1, String cot2, String[][] cap) {
         inBangKhongStt(new String[]{cot1, cot2}, new int[]{40, 30},
                 new String[]{TRAI, PHAI}, cap);
     }
 
 //----ve bang----
-    private static void ve(String[] td, int[] max, String[] canh, List<String[]> dong, boolean choPhepChiaTrang) {
+    private static void ve(String[] td, int[] max, String[] canh, String[][] dong, boolean choPhepChiaTrang) {
         int n = td.length;
         int[] rong = new int[n];
         for (int c = 0; c < n; c++) {
@@ -152,7 +150,7 @@ public final class GiaoDien {
         for (int c = 0; c < n; c++) ngang.append("-".repeat(rong[c] + 2)).append("+");
 
         //bang dai thi chia trang (cot giu nguyen do rong giua cac trang)
-        int tong = dong.size();
+        int tong = dong.length;
         boolean chia = choPhepChiaTrang && docDong != null && tong > NGUONG_CHIA_TRANG;
         int moiTrang = chia ? DONG_MOI_TRANG : Math.max(1, tong);
         int soTrang = (tong + moiTrang - 1) / moiTrang;
@@ -161,7 +159,7 @@ public final class GiaoDien {
             System.out.println(LE + ngang);
             inHang(td, rong, canh, true);
             System.out.println(LE + ngang);
-            for (int i = tu; i < den; i++) inHang(dong.get(i), rong, canh, false);
+            for (int i = tu; i < den; i++) inHang(dong[i], rong, canh, false);
             System.out.println(LE + ngang);
             if (chia && den < tong) {
                 String r = docDong.apply("Trang " + trang + "/" + soTrang + " (" + tong + " dong). Enter = trang tiep, q = dung xem: ");
@@ -178,17 +176,17 @@ public final class GiaoDien {
 
     //in 1 hang cua bang, o nao dai qua thi xuong dong trong chinh o do
     private static void inHang(String[] o, int[] rong, String[] canh, boolean laTieuDe) {
-        List<List<String>> cot = new ArrayList<>();
+        String[][] cot = new String[rong.length][];
         int cao = 1;
         for (int c = 0; c < rong.length; c++) {
-            List<String> l = cat(o[c], rong[c]);
-            cot.add(l);
-            cao = Math.max(cao, l.size());
+            String[] l = cat(o[c], rong[c]);
+            cot[c] = l;
+            cao = Math.max(cao, l.length);
         }
         for (int i = 0; i < cao; i++) {
             StringBuilder sb = new StringBuilder(LE).append("|");
             for (int c = 0; c < rong.length; c++) {
-                String s = i < cot.get(c).size() ? cot.get(c).get(i) : "";
+                String s = i < cot[c].length ? cot[c][i] : "";
                 sb.append(" ").append(can(s, rong[c], laTieuDe ? GIUA : canh[c])).append(" |");
             }
             System.out.println(sb);
@@ -220,8 +218,8 @@ public final class GiaoDien {
     }
 
     //cat chuoi thanh nhieu dong rong toi da w, uu tien cat o dau cach
-    private static List<String> cat(String s, int w) {
-        List<String> kq = new ArrayList<>();
+    private static String[] cat(String s, int w) {
+        String[] kq = new String[0];
         if (s == null) s = "";
         s = s.replace('\t', ' ');
         for (String doan : s.split("\n", -1)) {
@@ -233,10 +231,10 @@ public final class GiaoDien {
             while (con.length() > w) {
                 int cut = con.lastIndexOf(' ', w);
                 if (cut <= dauDong.length()) cut = w;       //khong co cho cat dep thi cat cung
-                kq.add(con.substring(0, cut).stripTrailing());
+                kq = Mang.them(kq, con.substring(0, cut).stripTrailing());
                 con = dauDong + con.substring(cut).trim();
             }
-            kq.add(con);
+            kq = Mang.them(kq, con);
         }
         return kq;
     }
