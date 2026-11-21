@@ -183,7 +183,7 @@ public class Main {
         }
         List<Muc> m = new ArrayList<>();
         m.add(new Muc("Thong tin ca nhan cua toi (ho so, cham cong, nghi phep, luong...)", () -> menuCaNhan(false)));
-        if (co(Quyen.XEM_PHONG_BAN)) m.add(new Muc("Phong ban", Main::menuPhongBan));
+        if (laGiamDoc() && co(Quyen.XEM_PHONG_BAN)) m.add(new Muc("Phong ban quan li", Main::menuPhongBan));
         if (co(Quyen.XEM_NHAN_VIEN)) m.add(new Muc("Quan ly nhan vien", Main::menuNhanVien));
         if (co(Quyen.XEM_CHAM_CONG)) m.add(new Muc("Quan ly cham cong", Main::menuChamCong));
         if (rongHon(Quyen.XEM_BAO_HIEM) || co(Quyen.QUAN_LY_BAO_HIEM)) m.add(new Muc("Quan ly bao hiem", Main::menuBaoHiem));
@@ -564,7 +564,7 @@ public class Main {
 //----------------- PHONG BAN -----------------
     private static void menuPhongBan() {
         List<Muc> m = new ArrayList<>();
-        m.add(muc("Xem danh sach phong ban (chon nam, tim ma, theo phong ban)", "DANH SACH PHONG BAN", Main::pbDanhSachChung2));
+        m.add(muc("Xem phong ban quan li (chon nam; tim ma / cac loai phong ban / xem het)", "DANH SACH PHONG BAN", Main::pbDanhSachChung2));
         if (co(Quyen.QUAN_LY_PHONG_BAN)) {
             m.add(muc("Them phong ban", "THEM PHONG BAN", Main::pbThem));
             m.add(muc("Xoa phong ban", "XOA PHONG BAN", Main::pbXoa));
@@ -601,7 +601,7 @@ public class Main {
         String ma = docChuoi("Ma phong ban: ");
         String ten = docChuoi("Ten phong ban: ");
         String mota = docChuoi("Mo ta: ");
-        boolean ok = dsPB.themPhong(new PhongBan(ma, ten, mota));
+        boolean ok = dsPB.themPhong(new PhongBan(ma, ten, mota, laGiamDoc() ? phien.getMaNV() : ""));
         if (ok) ghiNhatKy("Them phong ban", ma.toUpperCase());
         GiaoDien.in(ok ? "Them thanh cong." : "Khong the them (trung ma/loi du lieu).");
     }
@@ -1917,6 +1917,8 @@ public class Main {
             case "PHONG_BAN": return ls.getMaPB();
             case "CHUC_VU": return ls.getMaCV();
             case "LUONG_CO_BAN": return TepVanBan.soDep(ls.getLuongCoBan());
+            case "PB_TEN": return nv.getPhongBan() == null ? "" : nv.getPhongBan().getTenPB();
+            case "PB_MO_TA": return nv.getPhongBan() == null ? "" : nv.getPhongBan().getMoTa();
             default: return "";
         }
     }
@@ -2285,7 +2287,9 @@ public class Main {
             ghiNhatKy("Duyet yeu cau " + yc.getMaYC(), gui.getMaNV(), NhatKyHeThong.TU_CHOI);
             throw new KhongCoQuyenException("Phong ban, chuc vu, luong, ngay vao lam chi giam doc moi duyet duoc.");
         }
-        String loi = apDungSuaHoSo(gui, yc.getNam(), yc.getTruong(), yc.getGiaTriMoi());
+        String loi = yc.getTruong().startsWith("PB_")
+                ? apDungSuaPhongBan(gui, yc.getTruong(), yc.getGiaTriMoi())
+                : apDungSuaHoSo(gui, yc.getNam(), yc.getTruong(), yc.getGiaTriMoi());
         if (loi != null) {
             GiaoDien.in("Khong ap dung duoc yeu cau: " + loi);
             GiaoDien.in("(Yeu cau van dang cho; ban co the tu choi no.)");
@@ -2323,6 +2327,13 @@ public class Main {
             cap.add(new String[]{"Nguon so lieu", kq.nguon});
             GiaoDien.in("");
             GiaoDien.inThongTin(cap);
+            VaiTro vt = PhanQuyen.xacDinhVaiTro(nv);
+            boolean truongPho = vt == VaiTro.TRUONG_PHONG || vt == VaiTro.PHO_PHONG;
+            if (hienTai && truongPho) {
+                GiaoDien.in("");
+                if (docChuoi("Gui yeu cau len giam doc de sua ten / mo ta phong ban? (y/n): ").equalsIgnoreCase("y")) guiYeuCauSuaPhongBan(nv);
+                return;
+            }
             if (!hienTai || !laGiamDoc()) {
                 if (!hienTai) GiaoDien.in("(Nam da qua chi de xem. Muon sua ho so nam cu: Ho so cua toi.)");
                 return;
@@ -3187,23 +3198,39 @@ public class Main {
     }
 
 //----------------- 2. PHONG BAN -----------------
+
+    //phong ban ma nguoi dang nhap quan ly, sap theo ten tang dan (tu dien):
+    //giam doc: cac phong co ma giam doc trung minh + cac phong chua phan cong; nguoi khac: chi phong cua minh
+    private static List<PhongBan> phongBanQuanLy() {
+        List<PhongBan> kq = new ArrayList<>();
+        if (laGiamDoc()) {
+            String me = phien.getMaNV();
+            for (PhongBan pb : dsPB.getDanhSach())
+                if (pb != null && (pb.getMaGiamDoc().isEmpty() || pb.getMaGiamDoc().equalsIgnoreCase(me))) kq.add(pb);
+        } else if (nguoi().getPhongBan() != null) {
+            kq.add(nguoi().getPhongBan());
+        }
+        kq.sort((a, b) -> {
+            int c = a.getTenPB().compareToIgnoreCase(b.getTenPB());
+            return c != 0 ? c : a.getMaPB().compareToIgnoreCase(b.getMaPB());
+        });
+        return kq;
+    }
+
     private static void pbDanhSachChung2() {
         yeuCau(Quyen.XEM_PHONG_BAN);
-        List<PhongBan> trongQ = new ArrayList<>();
-        if (phamVi(Quyen.XEM_PHONG_BAN) == PhamVi.TAT_CA) {
-            for (PhongBan pb : dsPB.getDanhSach()) if (pb != null) trongQ.add(pb);
-        } else if (nguoi().getPhongBan() != null) {
-            trongQ.add(nguoi().getPhongBan());
-        }
+        List<PhongBan> trongQ = phongBanQuanLy();
         if (trongQ.isEmpty()) {
-            GiaoDien.in("Khong co phong ban nao trong pham vi cua ban.");
+            GiaoDien.in("Ban chua quan ly phong ban nao.");
             return;
         }
+        GiaoDien.in("Ban dang quan ly " + trongQ.size() + " phong ban (xep theo ten A-Z).");
         XemChung2.Cau c = new XemChung2.Cau("PHONG BAN")
                 .cot(new String[]{"MA PB", "TEN PHONG BAN", "MO TA", "SO NV", "TRUONG PHONG"}, new int[]{7, 20, 30, 6, 18}, new String[]{T, T, T, P, T})
                 .khongCotPB()
                 .nam(tuNgayTrongQuyen(Quyen.XEM_PHONG_BAN), namNay())
-                .goiYMa("ma phong ban")
+                .nhanMenu("Tim theo ma", "Xem cac loai phong ban quan li", "Xem het")
+                .goiYMa("ma phong ban hoac ten")
                 .tenPhongBan(Main::tenPB)
                 .layDong(nam -> {
                     List<XemChung2.Dong> kq = new ArrayList<>();
@@ -3214,21 +3241,133 @@ public class Main {
                             String maCV = nam >= namNay() ? (nv.getChucVu() == null ? "" : nv.getChucVu().getMaCV()) : dsLS.xacDinh(nv, nam).ls.getMaCV();
                             if ("CV02".equals(maCV)) { tp = nv.getHoTen(); break; }
                         }
-                        kq.add(new XemChung2.Dong(pb.getMaPB(), "", pb.getMaPB(), null,
+                        kq.add(new XemChung2.Dong(pb.getMaPB(), pb.getTenPB(), pb.getMaPB(), null,
                                 new String[]{pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), String.valueOf(tv.size()), tp},
                                 new Object[]{pb, nam}));
                     }
-                    sapXepDong(kq);
-                    return kq;
+                    return kq;            //da theo thu tu ten tang dan
                 })
-                .khiChon("xem chi tiet va nhan vien", d -> {
-                    PhongBan pb = (PhongBan) ((Object[]) d.goc)[0];
-                    int nam = (Integer) ((Object[]) d.goc)[1];
-                    pb.hienThiThongTin();
-                    hienThanhVienPB(pb.getMaPB(), nam);
-                })
-                .xemTheoPhongBan((nam, maPB) -> hienThanhVienPB(maPB, nam));
+                .khiChon("xem chi tiet va nhan vien", d -> pbChiTiet((PhongBan) ((Object[]) d.goc)[0], (Integer) ((Object[]) d.goc)[1]))
+                .muc2(nam -> pbChonLoai(trongQ, nam));
         XemChung2.chay(c, Main::docChuoi);
+    }
+
+    //lua chon 2: moi phong ban quan ly 1 hang kem so nhan vien; chon theo STT hoac ma de vao phong do
+    private static void pbChonLoai(List<PhongBan> trongQ, int nam) {
+        List<String[]> dong = new ArrayList<>();
+        for (PhongBan pb : trongQ)
+            dong.add(new String[]{String.valueOf(dong.size() + 1), pb.getMaPB(), pb.getTenPB(), String.valueOf(thanhVienPB(pb.getMaPB(), nam).size())});
+        GiaoDien.in("");
+        GiaoDien.in("CAC PHONG BAN BAN QUAN LI - NAM " + nam + " (" + trongQ.size() + " phong, xep theo ten A-Z)");
+        GiaoDien.inBangKhongStt(new String[]{"STT", "MA PB", "TEN PHONG BAN", "SO NHAN VIEN"}, new int[]{5, 8, 26, 13},
+                new String[]{G, T, T, P}, dong);
+        String in = docChuoi("Chon phong ban (STT hoac ma PB, 0 = quay lai): ");
+        if (in.isEmpty() || in.equals("0")) return;
+        PhongBan chon = null;
+        if (in.matches("\\d{1,3}") && Integer.parseInt(in) >= 1 && Integer.parseInt(in) <= trongQ.size()) chon = trongQ.get(Integer.parseInt(in) - 1);
+        else for (PhongBan pb : trongQ) if (pb.getMaPB().equalsIgnoreCase(in)) chon = pb;
+        if (chon == null) {
+            GiaoDien.in("Khong co phong ban \"" + in + "\" trong danh sach tren.");
+            return;
+        }
+        pbChiTiet(chon, nam);
+    }
+
+    //chi tiet 1 phong ban + nhan vien cua phong (nam dang xem); giam doc duoc sua phong o nam hien tai
+    private static void pbChiTiet(PhongBan pb, int nam) {
+        pb.hienThiThongTin();
+        GiaoDien.in("Giam doc quan ly: " + (pb.getMaGiamDoc().isEmpty() ? "(chua phan cong)" : pb.getMaGiamDoc() + " - " + hoTenNV(pb.getMaGiamDoc())));
+        hienThanhVienPB(pb.getMaPB(), nam);
+        if (laGiamDoc() && nam == namNay() && docChuoi("Sua ten / mo ta phong " + pb.getTenPB() + "? (y/n): ").equalsIgnoreCase("y")) {
+            try {
+                String ten = docChuoi("Ten phong ban moi (Enter = giu nguyen): ");
+                String moTa = docChuoi("Mo ta moi (Enter = giu nguyen): ");
+                if (!ten.isBlank()) {
+                    for (PhongBan x : dsPB.getDanhSach())
+                        if (x != null && x != pb && x.getTenPB().equalsIgnoreCase(ten.trim())) throw new IllegalArgumentException("Da co phong ban ten " + ten.trim().toUpperCase());
+                    pb.setTenPB(ten);
+                }
+                if (!moTa.isBlank()) pb.setMoTa(moTa);
+                ghiNhatKy("Sua phong ban " + pb.getMaPB(), pb.getMaPB());
+                GiaoDien.in("Da cap nhat phong ban.");
+            } catch (IllegalArgumentException e) {
+                GiaoDien.in("Khong sua duoc: " + e.getMessage());
+            }
+        }
+    }
+
+    //truong phong / pho phong khong tu sua phong ban: gui yeu cau len giam doc
+    private static void guiYeuCauSuaPhongBan(NhanVien nv) {
+        PhongBan pb = nv.getPhongBan();
+        if (pb == null) {
+            GiaoDien.in("Ban chua thuoc phong ban nao.");
+            return;
+        }
+        List<NhanVien> nhan = cacNguoiNhanYeuCau(nv);
+        if (nhan.isEmpty()) {
+            GiaoDien.in("Hien khong co giam doc nao dang hoat dong de nhan yeu cau.");
+            return;
+        }
+        nhan.sort((a, b) -> Boolean.compare(pb.getMaGiamDoc().equalsIgnoreCase(b.getMaNV()), pb.getMaGiamDoc().equalsIgnoreCase(a.getMaNV())));
+        GiaoDien.in("");
+        GiaoDien.in("Chon GIAM DOC de gui yeu cau:");
+        List<String[]> dong = new ArrayList<>();
+        for (NhanVien x : nhan)
+            dong.add(new String[]{x.getMaNV(), x.getHoTen(), pb.getMaGiamDoc().equalsIgnoreCase(x.getMaNV()) ? "Quan ly phong " + pb.getTenPB() : ""});
+        GiaoDien.inBang(new String[]{"MA NV", "HO TEN", "GHI CHU"}, new int[]{8, 24, 30}, new String[]{T, T, T}, dong);
+        int c = docInt("Chon nguoi nhan (0 = huy): ", 0, nhan.size());
+        if (c == 0) return;
+        NhanVien nguoiNhan = nhan.get(c - 1);
+        GiaoDien.in("");
+        GiaoDien.in("1. Sua ten phong ban (hien tai: " + pb.getTenPB() + ")");
+        GiaoDien.in("2. Sua mo ta phong ban (hien tai: " + (pb.getMoTa().isEmpty() ? "(trong)" : pb.getMoTa()) + ")");
+        GiaoDien.in("0. Huy");
+        int m = docInt("Chon: ", 0, 2);
+        if (m == 0) return;
+        String truong = m == 1 ? "PB_TEN" : "PB_MO_TA";
+        String cu = m == 1 ? pb.getTenPB() : pb.getMoTa();
+        String moi = docChuoiKhongRong((m == 1 ? "Ten phong ban moi: " : "Mo ta moi: "));
+        if (m == 1) {
+            moi = moi.trim().toUpperCase();
+            for (PhongBan x : dsPB.getDanhSach())
+                if (x != null && x != pb && x.getTenPB().equalsIgnoreCase(moi)) {
+                    GiaoDien.in("Khong gui duoc: da co phong ban ten " + moi + ".");
+                    return;
+                }
+        }
+        if (moi.equals(cu)) {
+            GiaoDien.in("Gia tri moi giong gia tri hien tai, khong can gui yeu cau.");
+            return;
+        }
+        if (dsYC.daCoYeuCauCho(nv.getMaNV(), namNay(), truong)) {
+            GiaoDien.in("Ban da co 1 yeu cau cung muc dang cho duyet. Hay doi duoc xu ly hoac huy (Yeu cau chinh sua ho so cua toi).");
+            return;
+        }
+        GiaoDien.in("Gui den " + nguoiNhan.getMaNV() + " - " + nguoiNhan.getHoTen() + ": sua " + YeuCau.tenTruong(truong).toLowerCase()
+                + " tu \"" + cu + "\" thanh \"" + moi + "\".");
+        if (!docChuoi("Xac nhan gui yeu cau? (y/n): ").equalsIgnoreCase("y")) {
+            GiaoDien.in("Da huy, chua gui yeu cau.");
+            return;
+        }
+        YeuCau yc = YeuCau.moi(dsYC.taoMaMoi(), nv.getMaNV(), nguoiNhan.getMaNV(), namNay(), truong, cu, moi);
+        dsYC.them(yc);
+        ghiNhatKy("Gui yeu cau " + yc.getMaYC() + " sua " + YeuCau.tenTruong(truong), nguoiNhan.getMaNV());
+        GiaoDien.in("Da gui yeu cau " + yc.getMaYC() + ". Chi khi " + nguoiNhan.getHoTen() + " dong y thi phong ban moi duoc sua.");
+    }
+
+    //ap dung yeu cau sua phong ban da duoc duyet (phong ban hien tai cua nguoi gui)
+    private static String apDungSuaPhongBan(NhanVien gui, String truong, String moi) {
+        PhongBan pb = gui.getPhongBan();
+        if (pb == null) return "Nguoi gui khong con thuoc phong ban nao.";
+        if (moi == null || moi.isBlank()) return "Gia tri moi khong duoc de trong.";
+        if (truong.equals("PB_TEN")) {
+            for (PhongBan x : dsPB.getDanhSach())
+                if (x != null && x != pb && x.getTenPB().equalsIgnoreCase(moi.trim())) return "Da co phong ban ten " + moi.trim().toUpperCase() + ".";
+            pb.setTenPB(moi);
+        } else {
+            pb.setMoTa(moi);
+        }
+        return null;
     }
 
     //nhan vien cua 1 phong ban trong 1 nam (chia trang)

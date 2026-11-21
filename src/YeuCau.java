@@ -106,6 +106,8 @@ public class YeuCau implements Serializable {
             case "PHONG_BAN": return "Phong ban";
             case "CHUC_VU": return "Chuc vu";
             case "LUONG_CO_BAN": return "Luong co ban";
+            case "PB_TEN": return "Ten phong ban";
+            case "PB_MO_TA": return "Mo ta phong ban";
             default: return truong;
         }
     }

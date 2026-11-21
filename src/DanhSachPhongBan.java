@@ -187,16 +187,16 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
 
     private static final String FILE_TEXT = DuongDanDuLieu.file("phongban.txt");
 
-    // Dinh dang moi dong: maPB|tenPB|moTa
+    // Dinh dang moi dong: maPB|tenPB|moTa|maGiamDocQuanLy (cot cuoi co the bo trong)
     @Override
     public void ghiFile() {
         java.util.List<String> dong = new java.util.ArrayList<>();
         for (int i = 0; i < soLuong; i++) {
             PhongBan pb = danhSach[i];
-            dong.add(TepVanBan.ghep(pb.getMaPB(), pb.getTenPB(), pb.getMoTa()));
+            dong.add(TepVanBan.ghep(pb.getMaPB(), pb.getTenPB(), pb.getMoTa(), pb.getMaGiamDoc()));
         }
         try {
-            TepVanBan.ghiDong(FILE_TEXT, "maPB|tenPB|moTa", dong);
+            TepVanBan.ghiDong(FILE_TEXT, "maPB|tenPB|moTa|maGiamDocQuanLy (de trong = moi giam doc deu quan ly)", dong);
         } catch (java.io.IOException e) {
             GiaoDien.in("Loi luu phong ban: " + e.getMessage());
         }
@@ -212,7 +212,7 @@ public class DanhSachPhongBan implements IQuanLyDuLieu {
             for (String[] p : cacDong) {
                 if (p.length < 3) continue;
                 try {
-                    themPhong(new PhongBan(p[0], p[1], p[2]));
+                    themPhong(new PhongBan(p[0], p[1], p[2], p.length > 3 ? p[3] : ""));
                 } catch (IllegalArgumentException e) {
                     GiaoDien.in("Bo qua dong phong ban loi: " + e.getMessage());
                 }

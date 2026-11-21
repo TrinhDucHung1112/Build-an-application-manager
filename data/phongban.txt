@@ -1,9 +1,12 @@
-# maPB|tenPB|moTa
-PB01|HANH CHINH|Quan ly hanh chinh nhan su
-PB02|KY THUAT|Phat trien va van hanh he thong
-PB03|KINH DOANH|Ban hang va cham soc khach hang
-PB04|KE TOAN|Quan ly tai chinh, ke toan va thue
-PB05|MARKETING|Truyen thong va thuong hieu
-PB06|NHAN SU|Tuyen dung, dao tao va phuc loi nhan vien
-PB07|PHAP CHE|Tu van phap ly va quan ly hop dong
-PB08|CUNG UNG|Mua hang, kho van va quan ly nha cung cap
+# maPB|tenPB|moTa|maGiamDocQuanLy (de trong = moi giam doc deu quan ly)
+PB01|HANH CHINH|Quan ly hanh chinh nhan su|GD001
+PB02|KY THUAT|Phat trien va van hanh he thong|GD001
+PB03|KINH DOANH|Ban hang va cham soc khach hang|GD001
+PB04|KE TOAN|Quan ly tai chinh, ke toan va thue|GD002
+PB05|MARKETING|Truyen thong va thuong hieu|GD002
+PB06|NHAN SU|Tuyen dung, dao tao va phuc loi nhan vien|GD003
+PB07|PHAP CHE|Tu van phap ly va quan ly hop dong|GD003
+PB08|CUNG UNG|Mua hang, kho van va quan ly nha cung cap|GD003
+PB09|CHAM SOC KHACH HANG|Tong dai, bao hanh va ho tro sau ban|GD001
+PB10|NGHIEN CUU PHAT TRIEN|Nghien cuu san pham va cong nghe moi|GD002
+PB11|DAO TAO|To chuc dao tao noi bo va phat trien nang luc|GD003

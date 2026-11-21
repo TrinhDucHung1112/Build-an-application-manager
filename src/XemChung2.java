@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 
 /**
@@ -66,6 +67,8 @@ public final class XemChung2 {
         private boolean thoatSauKhiChon;                //sau khi xu ly 1 dong thi quay ve menu 1/2/3 (de nap lai danh sach)
         private BiConsumer<Integer, String> xemTheoPB;      //(nam, maPB): thay cach xem theo phong ban mac dinh
         private String goiYMa = "ma nhan vien hoac ma ban ghi";
+        private String nhan1 = "Tim theo ma", nhan2 = "Xem theo phong ban", nhan3 = "Xem het";
+        private IntConsumer muc2;                           //thay cach xu ly lua chon 2 (nhan vao nam)
 
         public Cau(String tieuDe) { this.tieuDe = tieuDe; }
 
@@ -93,6 +96,10 @@ public final class XemChung2 {
         /** Sau khi xu ly 1 dong (VD duyet don) quay lai menu de danh sach duoc nap lai. */
         public Cau thoatSauKhiChon() { this.thoatSauKhiChon = true; return this; }
         public Cau xemTheoPhongBan(BiConsumer<Integer, String> xem) { this.xemTheoPB = xem; return this; }
+        /** Doi ten 3 lua chon (VD "Xem cac loai phong ban quan li"). */
+        public Cau nhanMenu(String l1, String l2, String l3) { this.nhan1 = l1; this.nhan2 = l2; this.nhan3 = l3; return this; }
+        /** Tu xu ly lua chon 2 (thay cho "xem theo phong ban" mac dinh). */
+        public Cau muc2(IntConsumer xuLy) { this.muc2 = xuLy; return this; }
         public Cau goiYMa(String goiY) { this.goiYMa = goiY; return this; }
     }
 
@@ -111,15 +118,16 @@ public final class XemChung2 {
                 List<Dong> tatCa = c.layDong.apply(nam);
                 GiaoDien.in("");
                 GiaoDien.in("== " + c.tieuDe + (nam > 0 ? " - NAM " + nam : "") + ": " + tatCa.size() + " ban ghi ==");
-                GiaoDien.in("1. Tim theo ma");
-                GiaoDien.in(c.theoPhongBan ? "2. Xem theo phong ban" : "2. Xem theo phong ban (khong ap dung cho muc nay)");
-                GiaoDien.in("3. Xem het");
+                GiaoDien.in("1. " + c.nhan1);
+                GiaoDien.in(c.theoPhongBan ? "2. " + c.nhan2 : "2. " + c.nhan2 + " (khong ap dung cho muc nay)");
+                GiaoDien.in("3. " + c.nhan3);
                 GiaoDien.in("0. " + (c.tuNgay != null ? "Chon nam khac / quay lai" : "Quay lai"));
                 String ch = hoi.apply("Chon: ").trim();
                 switch (ch) {
                     case "1": timTheoMa(c, nam, tatCa, hoi); break;
                     case "2":
                         if (!c.theoPhongBan) GiaoDien.in("Muc nay khong co phong ban de loc.");
+                        else if (c.muc2 != null) c.muc2.accept(nam);
                         else xemTheoPhongBan(c, nam, tatCa, hoi);
                         break;
                     case "3": xemHet(c, tatCa, hoi); break;
