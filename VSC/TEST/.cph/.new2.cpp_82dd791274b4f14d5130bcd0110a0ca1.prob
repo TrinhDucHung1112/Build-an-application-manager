@@ -1,0 +1,1 @@
+{"name":"Local: new2","url":"c:\\VSC\\TEST\\new2.cpp","tests":[{"id":1794712354902,"input":"2\n0 100 10\n0 -100 15\n.80\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\VSC\\TEST\\new2.cpp","group":"local","local":true}

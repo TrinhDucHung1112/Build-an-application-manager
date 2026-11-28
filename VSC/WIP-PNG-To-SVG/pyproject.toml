@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "png2svg"
+version = "2.1.0"
+description = "Convert PNG to SVG literally — pixel-perfect 'exact' rectangles or full-colour 'vector' paths. Every original colour is preserved."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "PNG to SVG contributors" }]
+dependencies = ["Pillow>=8.3"]
+
+[project.optional-dependencies]
+fast = ["numpy"]
+
+[project.scripts]
+png2svg = "png2svg.cli:main"
+
+[tool.setuptools]
+packages = ["png2svg"]

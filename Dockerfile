@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY src ./src
 COPY data ./data
+COPY HUONGDAN.md ./HUONGDAN
+COPY README.md ./README
 
 RUN mkdir -p out && javac -encoding UTF-8 -d out src/*.java
 
